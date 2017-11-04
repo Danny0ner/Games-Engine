@@ -85,3 +85,19 @@ bool CompCamera::GetFrustumCulling() const
 {
 	return frustumCulling;
 }
+
+void CompCamera::OnSave(Configuration & data) const
+{
+	data.SetInt("Type", type);
+	data.SetBool("Active", active);
+	data.SetBool("Culling", frustumCulling);
+	data.SetFloat("Aspect Ratio", aspectRatio);
+	data.SetFloat("FOV", FOV);
+	data.SetFloat("Frustum Far", frustum.farPlaneDistance);
+	data.SetFloat("Frustum Near", frustum.nearPlaneDistance);
+	data.SetFloat("Frustum HFOV", frustum.horizontalFov);
+	data.SetFloat("Frustum VFOV", frustum.verticalFov);
+	data.AddArrayFloat("Position", frustum.pos.ptr(), 3);
+	data.AddArrayFloat("Frustum Up", frustum.up.ptr(), 3);
+	data.AddArrayFloat("Frustum Front", frustum.front.ptr(), 3);
+}

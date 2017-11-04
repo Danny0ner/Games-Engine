@@ -37,3 +37,7 @@ ComponentType Component::GetType() const
 {
 	return type;
 }
+
+void Component::OnSave(Configuration & data) const
+{
+}

@@ -40,7 +40,7 @@ public:
 	void OnEditor()override;
 
 	void Move(float3 lastpos,float3 newPos);
-
+	void OnSave(Configuration& data) const;
 public:
 	bool drawdebug = false;
 };

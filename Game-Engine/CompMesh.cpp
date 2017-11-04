@@ -157,3 +157,8 @@ void CompMesh::Move(float3 lastpos,float3 newPos)
 	delete[] newVertices;
 	newVertices = nullptr;
 }
+
+void CompMesh::OnSave(Configuration & data) const
+{
+
+}

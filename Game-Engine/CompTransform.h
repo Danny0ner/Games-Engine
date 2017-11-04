@@ -14,6 +14,7 @@ public:
 	void UpdatePositionMatrix();
 	void OnEditor() override;
 	float4x4 GetTransMatrix();
+	void OnSave(Configuration& data) const;
 private:
 	float3 movedposition;
 	float3 position;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-
+#include "SerializeConfig.h"
 class GameObject;
 
 enum ComponentType
@@ -26,7 +26,7 @@ public:
 	void SetName(const char* name);
 	void SetGameObject(GameObject* GO);
 	ComponentType GetType() const;
-
+	virtual void OnSave(Configuration& data) const;
 protected:
 	GameObject* myGO = nullptr;
 	std::string name;

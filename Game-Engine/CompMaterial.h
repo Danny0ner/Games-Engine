@@ -11,6 +11,6 @@ public:
 	uint idTexture;
 	
 	void OnEditor() override;
-
+	void OnSave(Configuration& data) const;
 	void OverrideTexture(const char* path);
 };

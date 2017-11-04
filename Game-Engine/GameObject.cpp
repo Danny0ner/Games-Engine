@@ -166,13 +166,13 @@ void GameObject::OnSerialize(Configuration& dataToSave) const
 
 		myConf.AddArray("Components");
 
-		/*for (int i = 0; i < components.size(); i++)
+		for (int i = 0; i < components.size(); i++)
 		{
 			Configuration compConfig;
 			compConfig.SetInt("Type", components[i]->GetType());
 			components[i]->OnSave(compConfig);
 			myConf.AddArrayEntry(compConfig);
-		}*/
+		}
 		dataToSave.AddArrayEntry(myConf);
 	}
 

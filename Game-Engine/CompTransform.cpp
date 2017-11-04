@@ -94,3 +94,11 @@ float4x4 CompTransform::GetTransMatrix()
 
 	return TransMatrix;
 }
+
+void CompTransform::OnSave(Configuration & data) const
+{
+	data.SetInt("Type", type);
+	data.AddArrayFloat("Position", &position.x, 3);
+	data.AddArrayFloat("Rotation", &rotation.x, 4);
+	data.AddArrayFloat("Scale", &scale.x, 3);
+}

@@ -19,6 +19,10 @@ void CompMaterial::OnEditor()
 	}
 }
 
+void CompMaterial::OnSave(Configuration & data) const
+{
+}
+
 void CompMaterial::OverrideTexture(const char* path)
 {
 	//idTexture = App->textures->ImportImage(path);

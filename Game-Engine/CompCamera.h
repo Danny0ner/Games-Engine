@@ -24,7 +24,7 @@ public:
 
 	bool Contains(const AABB &aabb) const;
 	bool GetFrustumCulling() const;
-
+	void OnSave(Configuration& data) const;
 private:
 	float FOV;
 	float aspectRatio;
