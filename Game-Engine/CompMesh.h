@@ -41,6 +41,7 @@ public:
 
 	void Move(float3 lastpos,float3 newPos);
 	void OnSave(Configuration& data) const;
+	void OnLoad(Configuration& data);
 public:
 	bool drawdebug = false;
 };

@@ -336,6 +336,45 @@ int ranges[2] = { mesh.numIndices, mesh.numVertices };
 
 }
 
+void GeometryLoader::LoadMeshOwnFormat(const char * inputFile, CompMesh * mesh)
+{
+	char* buffer;
+	int size;
+
+	if (App->filesystem->LoadFile(inputFile, &buffer, size, fileMesh) == true)
+	{
+		char* cursor = buffer;
+		// amount of indices / vertices / colors / normals / texture_coords
+		uint ranges[2];
+		uint bytes = sizeof(ranges);
+		memcpy(ranges, cursor, bytes);
+
+		mesh->numIndices = ranges[0];
+		mesh->numVertices = ranges[1];
+
+		// Load indices
+		cursor += bytes;
+		bytes = sizeof(uint) * mesh->numIndices;
+		mesh->indices = new uint[mesh->numIndices];
+		memcpy(mesh->indices, cursor, bytes);
+
+		glGenBuffers(1, (GLuint*)&mesh->idIndices);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->idIndices);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * mesh->numIndices, mesh->indices, GL_STATIC_DRAW);
+
+		// Load vertices
+		cursor += bytes;
+		bytes = sizeof(float) * mesh->numVertices * 3;
+		mesh->vertices = new float[mesh->numVertices * 3];
+		memcpy(mesh->vertices, cursor, bytes);
+
+		glGenBuffers(1, (GLuint*)&mesh->idVertices);
+		glBindBuffer(GL_ARRAY_BUFFER, mesh->idVertices);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * mesh->numVertices * 3, mesh->vertices, GL_STATIC_DRAW);
+	}
+
+}
+
 CompMaterial* GeometryLoader::LoadMaterial(aiMaterial* newMaterial)
 
 {

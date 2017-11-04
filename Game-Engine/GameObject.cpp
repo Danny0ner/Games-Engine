@@ -243,16 +243,15 @@ void GameObject::Deserialize(Configuration & dataToLoad)
 		case Component_Mesh:
 		{
 			CompMesh* compMesh = new CompMesh();
-			//compMesh->OnLoad(componentConfig);
+			compMesh->OnLoad(componentConfig);
 			AddComponent(compMesh);
 			break;
 		}
 		case Component_Transform:
 		{
 			CompTransform* compTrans = new CompTransform();
-			//compTrans->OnLoad(componentConfig);
+			compTrans->OnLoad(componentConfig);
 			AddComponent(compTrans);
-			
 			break;
 		}
 		default:

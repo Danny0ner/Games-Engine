@@ -27,6 +27,7 @@ public:
 	void SetGameObject(GameObject* GO);
 	ComponentType GetType() const;
 	virtual void OnSave(Configuration& data) const;
+	virtual void OnLoad(Configuration& data);
 protected:
 	GameObject* myGO = nullptr;
 	std::string name;

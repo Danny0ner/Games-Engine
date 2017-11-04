@@ -30,12 +30,13 @@ void CompTransform::UpdatePositionMatrix()
 	rotation.x *= DEGTORAD;
 	rotation.y *= DEGTORAD;
 	rotation.z *= DEGTORAD;
-	rotation.w = 1;
+	rotation.w *= DEGTORAD;
 	Quat rotation_euler = Quat::FromEulerXYZ(rotation.x, rotation.y, rotation.z);
 	TransMatrix = float4x4::FromQuat(rotation_euler);
 	rotation.x *= RADTODEG;
 	rotation.y *= RADTODEG;
 	rotation.z *= RADTODEG;
+	rotation.w *= RADTODEG;
 	TransMatrix = float4x4::Scale(scale, float3(0, 0, 0)) * TransMatrix;
 	TransMatrix.float4x4::SetTranslatePart(position.x, position.y, position.z);
 	if (myGO != nullptr)
@@ -101,4 +102,18 @@ void CompTransform::OnSave(Configuration & data) const
 	data.AddArrayFloat("Position", &position.x, 3);
 	data.AddArrayFloat("Rotation", &rotation.x, 4);
 	data.AddArrayFloat("Scale", &scale.x, 3);
+}
+
+void CompTransform::OnLoad(Configuration & data)
+{
+	position.x = data.GetFloat("Position", 0);
+	position.y = data.GetFloat("Position", 1);
+	position.z = data.GetFloat("Position", 2);
+	rotation.x = data.GetFloat("Rotation", 0);
+	rotation.y = data.GetFloat("Rotation", 1);
+	rotation.z = data.GetFloat("Rotation", 2);
+	rotation.w = data.GetFloat("Rotation", 3);
+	scale.x = data.GetFloat("Scale", 0);
+	scale.y = data.GetFloat("Scale", 1);
+	scale.z = data.GetFloat("Scale", 2);
 }

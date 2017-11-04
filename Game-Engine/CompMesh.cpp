@@ -1,6 +1,7 @@
 #include "CompMesh.h"
 #include "Primitive.h"
-
+#include "Application.h"
+#include "GeometryLoader.h"
 #include "GameObject.h"
 #include "ImGui\imgui.h"
 #include "Glew\include\glew.h"
@@ -162,4 +163,9 @@ void CompMesh::Move(float3 lastpos,float3 newPos)
 void CompMesh::OnSave(Configuration & data) const
 {
 	data.SetString("MeshFile", myGO->Getname().c_str());
+}
+
+void CompMesh::OnLoad(Configuration & data)
+{
+	App->geometryloader->LoadMeshOwnFormat(data.GetString("MeshFile"), this);
 }
