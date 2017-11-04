@@ -35,7 +35,8 @@ bool ModuleEditor::Start()
 
 update_status ModuleEditor::Update(float dt)
 {
-	
+	if (App->input->GetKey(SDL_SCANCODE_H) == KEY_DOWN) 
+		SerializeScene("Scene test");
 	return UPDATE_CONTINUE;
 }
 
@@ -185,4 +186,17 @@ void ModuleEditor::TestRay(const LineSegment& Segment, float* Distance, GameObje
 
 
 
+}
+
+void ModuleEditor::SerializeScene(const char * filename)
+{
+	Configuration save;
+	save.AddArray("Scene Game Objects");
+
+	root->OnSerialize(save);
+
+	char* buffer = nullptr;
+	uint fileSize = save.SaveFile(&buffer, "Scene save");
+	App->filesystem->SaveFile(filename, buffer, fileSize, FileType::fileScene);
+	RELEASE_ARRAY(buffer);
 }

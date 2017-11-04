@@ -16,7 +16,8 @@
 #include"Assimp\include\anim.h"
 #include "ModuleEditor.h"
 #include "GeometryLoader.h"
-
+#include "FileSystem.h"
+#include "MathGeoLib\Algorithm\Random\LCG.h"
 struct Performance
 {
 	uint	Frame_Count = 0;
@@ -26,6 +27,7 @@ struct Performance
 };
 
 class GeometryLoader;
+class FileSystem;
 class Application
 {
 public:
@@ -38,6 +40,8 @@ public:
 	GeometryLoader* geometryloader;
 	JConfig* config;
 	ModuleEditor* editor;
+	FileSystem* filesystem;
+	math::LCG* RandomUIDGen = nullptr;
 private:
 
 	Timer	ms_timer;

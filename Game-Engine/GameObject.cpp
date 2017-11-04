@@ -6,6 +6,7 @@
 GameObject::GameObject(GameObject* parent): parent(parent)
 {
 	name = "Game Object";
+	uid = App->RandomUIDGen->Int();
 }
 GameObject::~GameObject()
 {
@@ -93,6 +94,11 @@ Component* GameObject::FindComponent(ComponentType type) const
 	return nullptr;
 }
 
+int GameObject::GetUID()
+{
+	return uid;
+}
+
 void GameObject::OnEditor()
 {
 	ImGuiTreeNodeFlags flags = 0;
@@ -145,5 +151,33 @@ void GameObject::Move(float3 lastpos,float3 newPos)
 		{
 			dynamic_cast<CompMesh*>(components[i])->Move(lastpos,newPos);
 		}
+	}
+}
+
+void GameObject::OnSerialize(Configuration& dataToSave) const
+{
+	if (strcmp(name.c_str(), "Root") != 0)
+	{
+		Configuration myConf;
+
+		myConf.SetString("Name", name.c_str());
+		myConf.SetInt("UID", uid);
+		myConf.SetInt("Parent UID", parent != App->editor->GetRoot() ? parent->GetUID() : 0);
+
+		myConf.AddArray("Components");
+
+		/*for (int i = 0; i < components.size(); i++)
+		{
+			Configuration compConfig;
+			compConfig.SetInt("Type", components[i]->GetType());
+			components[i]->OnSave(compConfig);
+			myConf.AddArrayEntry(compConfig);
+		}*/
+		dataToSave.AddArrayEntry(myConf);
+	}
+
+	for (int i = 0; i < childs.size(); i++)
+	{
+		childs[i]->OnSerialize(dataToSave);
 	}
 }

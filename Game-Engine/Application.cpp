@@ -2,6 +2,8 @@
 #include "mmgr\mmgr.h"
 Application::Application()
 {
+	RandomUIDGen = new math::LCG();
+
 	window = new ModuleWindow(this);
 	input = new ModuleInput(this);
 	audio = new ModuleAudio(this, true);
@@ -10,6 +12,7 @@ Application::Application()
 	imgui = new ModuleImGui(this);
 	geometryloader = new GeometryLoader(this);
 	editor = new ModuleEditor(this);
+	filesystem = new FileSystem(this);
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
 	// They will CleanUp() in reverse order
@@ -24,17 +27,13 @@ Application::Application()
 	// Renderer last!
 	AddModule(renderer3D);
 	AddModule(editor);
+	AddModule(filesystem);
 	AddModule(imgui);
-
-
-
-
-
-
 }
 
 Application::~Application()
 {
+	RELEASE(RandomUIDGen);
 	RELEASE(config);
 	std::list<Module*>::iterator item = list_modules.end();
 	item--;

@@ -31,6 +31,8 @@ public:
 
 	void SelectGameObject(GameObject* selected);
 	void TestRay(const LineSegment& Segment, float* Distance, GameObject* &Select);
+
+	void SerializeScene(const char* filename);
 public:
 	Octree* Quadroot;
 	GameObject* root = nullptr;

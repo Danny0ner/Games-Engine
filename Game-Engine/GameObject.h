@@ -1,7 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "MathGeoLib\Math\float3.h"
-
+#include "SerializeConfig.h"
 #include <string>
 #include <vector>
 
@@ -23,13 +23,16 @@ public:
 
 	void Move(float3 lastpos,float3 newPos);
 
+	void OnSerialize(Configuration & dataToSave) const;
+
 	Component* FindComponent(ComponentType type) const;
 
 	std::vector<Component*> components;
 	std::vector<GameObject*> childs;
 
+	int GetUID();
 protected:
-	
+	int uid;
 	GameObject* parent;
 	std::string name;
 public:
