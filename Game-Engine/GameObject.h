@@ -20,11 +20,13 @@ public:
 	GameObject* GetParent();
 	void OnEditor();
 	void ShowInspector();
-
+	std::string Getname() const;
 	void Move(float3 lastpos,float3 newPos);
 
-	void OnSerialize(Configuration & dataToSave) const;
+	GameObject * FindUIDGameObject(int toFind);
 
+	void OnSerialize(Configuration & dataToSave) const;
+	void Deserialize(Configuration & dataToSave);
 	Component* FindComponent(ComponentType type) const;
 
 	std::vector<Component*> components;

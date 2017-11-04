@@ -219,7 +219,7 @@ CompMesh* GeometryLoader::LoadMesh(aiMesh* mesh ,aiNode* node, const aiScene* sc
 			m->enclosingBox.SetNegativeInfinity();
 
 			m->enclosingBox.Enclose((float3*)m->vertices, m->numVertices);
-
+			SaveMeshToOwnFormat(*m, addTo->Getname().c_str());
 			addTo->AddComponent(m);
 		}
 	return nullptr;
@@ -302,6 +302,38 @@ uint GeometryLoader::ImportImage(const char * image)
 	LOG("Texture creation successful.");
 
 	return textureID; // Return the GLuint to the texture so you can use it!
+}
+
+bool GeometryLoader::SaveMeshToOwnFormat(const CompMesh & mesh, const char * outputFile)
+{
+int ranges[2] = { mesh.numIndices, mesh.numVertices };
+		float size = sizeof(ranges);
+		size += sizeof(uint) * mesh.numIndices;
+		size += sizeof(float) * mesh.numVertices * 3;
+
+		char* data = new char[size];
+		char* cursor = data;
+
+		uint bytes = 0;
+		bytes = sizeof(ranges); // First store ranges
+		memcpy(cursor, ranges, bytes);
+		cursor += bytes;
+
+		// Store indices
+		bytes = sizeof(uint) * mesh.numIndices;
+		memcpy(cursor, mesh.indices, mesh.numIndices * sizeof(uint));
+		cursor += bytes;
+
+		// Store vertices
+		bytes = sizeof(float) * mesh.numVertices * 3;
+		memcpy(cursor, mesh.vertices, mesh.numVertices * 3 * sizeof(float));
+
+		App->filesystem->SaveFile(outputFile, data, size, fileMesh);
+
+		RELEASE_ARRAY(data);
+
+		return true;
+
 }
 
 CompMaterial* GeometryLoader::LoadMaterial(aiMaterial* newMaterial)

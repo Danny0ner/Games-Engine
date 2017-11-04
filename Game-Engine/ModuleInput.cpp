@@ -123,6 +123,10 @@ update_status ModuleInput::PreUpdate(float dt)
 				{
 					App->editor->CreateNewGameObject(dropped_filedir);
 				}
+				if (strcmp(&dropped_filedir[length - 9], ".Pochinki") == 0)
+				{
+					App->editor->LoadScene(dropped_filedir);
+				}
 				else if (strcmp(&dropped_filedir[length - 4], ".PNG") == 0 || strcmp(&dropped_filedir[length - 4], ".png") == 0)
 				{
 					//App->geometryloader->ChangeTexture(dropped_filedir);

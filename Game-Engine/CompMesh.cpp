@@ -1,6 +1,7 @@
 #include "CompMesh.h"
 #include "Primitive.h"
 
+#include "GameObject.h"
 #include "ImGui\imgui.h"
 #include "Glew\include\glew.h"
 #include "MathGeoLib\Geometry\Triangle.h"
@@ -160,5 +161,5 @@ void CompMesh::Move(float3 lastpos,float3 newPos)
 
 void CompMesh::OnSave(Configuration & data) const
 {
-
+	data.SetString("MeshFile", myGO->Getname().c_str());
 }

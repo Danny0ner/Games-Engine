@@ -33,6 +33,7 @@ public:
 	void TestRay(const LineSegment& Segment, float* Distance, GameObject* &Select);
 
 	void SerializeScene(const char* filename);
+	void LoadScene(const char * fileTitle);
 public:
 	Octree* Quadroot;
 	GameObject* root = nullptr;

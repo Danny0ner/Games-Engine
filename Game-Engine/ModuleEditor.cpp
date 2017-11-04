@@ -200,3 +200,27 @@ void ModuleEditor::SerializeScene(const char * filename)
 	App->filesystem->SaveFile(filename, buffer, fileSize, FileType::fileScene);
 	RELEASE_ARRAY(buffer);
 }
+
+void ModuleEditor::LoadScene(const char * fileTitle)
+{
+	Configuration load(fileTitle);
+
+	if (load.IsValueValid() == true)
+	{
+		root->DeleteChilds();
+		selected = nullptr;
+		for (int i = 0; i < load.GetArraySize("Scene Game Objects"); i++)
+		{
+			GameObject* tmp = new GameObject();
+			Configuration testC = load.GetArray("Scene Game Objects", i);
+			tmp->Deserialize(testC);
+		}
+		//App->Console.AddLog("Load completed in %i ms", saveLoadTimer.Read());
+		//saveLoadTimer.Stop();
+	}
+	else
+	{
+		LOG("Scene file not valid.");
+	}
+}
+

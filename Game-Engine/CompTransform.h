@@ -7,7 +7,7 @@
 class CompTransform : public Component
 {
 public:
-	CompTransform(float3 pos, float3 scale, Quat rot, ComponentType type = Component_Transform);
+	CompTransform(float3 pos = { 0,0,0 }, float3 scale = { 1,1,1 }, Quat rot = { 0, 0, 0, 1 }, ComponentType type = Component_Transform);
 	~CompTransform();
 
 	void Update();

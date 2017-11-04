@@ -32,7 +32,7 @@ public:
 
 	uint ImportImage(const char* path);
 	void LoadNewTexture(const char* fullPath);
-
+	bool SaveMeshToOwnFormat(const CompMesh & mesh, const char * outputFile);
 	void Load(CompMesh* mesh, char* buffer);
 	void Save(CompMesh* mesh);
 };

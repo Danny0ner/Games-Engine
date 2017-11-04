@@ -2,6 +2,9 @@
 #include "Application.h"
 #include "ModuleRenderer3D.h"
 #include "CompMesh.h"
+#include "CompTransform.h"
+#include "CompCamera.h"
+#include "CompMaterial.h"
 
 GameObject::GameObject(GameObject* parent): parent(parent)
 {
@@ -143,6 +146,11 @@ void GameObject::ShowInspector()
 	ImGui::End();
 }
 
+std::string GameObject::Getname() const
+{
+	return name;
+}
+
 void GameObject::Move(float3 lastpos,float3 newPos)
 {
 	for (int i = 0; i < components.size(); i++)
@@ -152,6 +160,23 @@ void GameObject::Move(float3 lastpos,float3 newPos)
 			dynamic_cast<CompMesh*>(components[i])->Move(lastpos,newPos);
 		}
 	}
+}
+
+GameObject* GameObject::FindUIDGameObject(int toFind)
+{
+	if (toFind == uid)
+	{
+		return this;
+	}
+
+	GameObject* ret = nullptr;
+	for (int i = 0; i < childs.size() && ret == nullptr; i++)
+	{
+		ret = childs[i]->FindUIDGameObject(toFind);
+	}
+
+	return ret;
+
 }
 
 void GameObject::OnSerialize(Configuration& dataToSave) const
@@ -179,5 +204,62 @@ void GameObject::OnSerialize(Configuration& dataToSave) const
 	for (int i = 0; i < childs.size(); i++)
 	{
 		childs[i]->OnSerialize(dataToSave);
+	}
+}
+
+void GameObject::Deserialize(Configuration & dataToLoad)
+{
+	SetName(dataToLoad.GetString("Name"));
+	uid = dataToLoad.GetInt("UID");
+	int parentUID = dataToLoad.GetInt("Parent UID");
+	if (parentUID == 0)
+	{
+		App->editor->GetRoot()->AddChild(this);
+	}
+	else
+	{
+		GameObject* parent = App->editor->GetRoot()->FindUIDGameObject(parentUID);
+		if (parent != nullptr)
+		{
+			parent->AddChild(this);
+		}
+	}
+
+	int componentSize = dataToLoad.GetArraySize("Components");
+
+	for (int i = 0; i < componentSize; i++)
+	{
+		Configuration componentConfig(dataToLoad.GetArray("Components", i));
+		ComponentType cType = (ComponentType)componentConfig.GetInt("Type");
+		switch (cType)
+		{
+		case Component_Camera:
+		{
+			CompCamera* compCamera = new CompCamera();
+			//compCamera->OnLoad(componentConfig);
+			AddComponent(compCamera);
+			break;
+		}
+		case Component_Mesh:
+		{
+			CompMesh* compMesh = new CompMesh();
+			//compMesh->OnLoad(componentConfig);
+			AddComponent(compMesh);
+			break;
+		}
+		case Component_Transform:
+		{
+			CompTransform* compTrans = new CompTransform();
+			//compTrans->OnLoad(componentConfig);
+			AddComponent(compTrans);
+			
+			break;
+		}
+		default:
+		{
+			LOG("Error in component %i of %s, unknown type", &i, name.c_str());
+			break;
+		}
+		}
 	}
 }

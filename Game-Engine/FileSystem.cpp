@@ -3,7 +3,7 @@
 #include <fstream>
 
 #define MESH_DIRECTORY "Library/Mesh"
-#define MESH_EXTENSION ".don"
+#define MESH_EXTENSION ".DarkyHijo"
 #define MATERIAL_DIRECTORY "Library/Material"
 #define MATERIAL_EXTENSION ".dds" 
 #define SCENE_DIRECTORY "Library/Scenes"
