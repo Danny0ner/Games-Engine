@@ -272,7 +272,7 @@ GameObject*  ModuleCamera3D::MousePicking(float3* HitPoint) const
 	MousePos.x = App->input->GetMouseX();						//we get the mouse position//
 	MousePos.y = App->input->GetMouseY();
 
-	float NormalX = -(1.0f - (MousePos.x*2.0f) / width);		//normalize the vector//
+	float NormalX = (MousePos.x*2.0f) / width-1.0f;		//normalize the vector//
 	float NormalY = 1.0f - (MousePos.y*2.0f) / height;
 
 	//CompCamera* Cam = (CompCamera*)App->editor->GetRoot()->FindComponent(Component_Camera);

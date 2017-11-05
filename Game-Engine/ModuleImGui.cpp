@@ -94,6 +94,10 @@ update_status ModuleImGui::PostUpdate(float dt)
 			{
 				showEditor = !showEditor;
 			}
+			if (ImGui::MenuItem("Show Time Controls"))
+			{	
+				showControls = !showControls;
+			}
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Exit"))
@@ -117,6 +121,11 @@ update_status ModuleImGui::PostUpdate(float dt)
 	if (showEditor)
 	{
 		ShowEditor();
+	}
+
+	if (showControls)
+	{
+		ShowControls();
 	}
 	//End About//
 
@@ -289,6 +298,8 @@ update_status ModuleImGui::PostUpdate(float dt)
 		//ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.65f);    // 2/3 of the space for widget and 1/3 for labels
 		ImGui::PushItemWidth(-140);                                 // Right align, keep 140 pixels for labels
 
+		
+		
 		if (ImGui::CollapsingHeader("GameObjects Hieriarchy"))
 		{
 			App->editor->ShowEditor();
@@ -296,4 +307,35 @@ update_status ModuleImGui::PostUpdate(float dt)
 
 		ImGui::End();
 	}
+
+	void ModuleImGui::ShowControls()
+	{
+		if (ImGui::Button("Play", ImVec2(40, 25)))
+		{
+			App->Play();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Pause", ImVec2(40, 25)))
+		{
+			App->Pause();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Stop", ImVec2(40, 25)))
+		{
+			App->Stop();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("NextFrame", ImVec2(70, 25)))
+		{
+			App->NextFrame();
+		}
+
+		ImGui::TextWrapped("Editor Dt: %0.3f", App->GetDeltaTime());
+		ImGui::TextWrapped("Frames Since Game Start: %i", App->gametime.GameStart);
+		ImGui::TextWrapped("Frames Since Editor Start: %i", App->GetFramesSinceStart());
+		ImGui::TextWrapped("Game Dt: %.1f", App->realtime.startup_timer);
+		ImGui::TextWrapped("Framerate: %i", App->GetlastFrames());
+
+
+}
 

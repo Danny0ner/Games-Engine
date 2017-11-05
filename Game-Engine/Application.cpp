@@ -80,33 +80,33 @@ bool Application::Init()
 		item++;
 	}
 
-	ms_timer.Start();
-	last_sec_frame_time.Start();
-	startup_timer.Start();
+	realtime.ms_timer.Start();
+	realtime.last_sec_frame_time.Start();
+	realtime.startup_timer.Start();
 	return ret;
 }
 
 // ---------------------------------------------
 void Application::PrepareUpdate()
 {
-	performance.Frame_Count++;
-	last_sec_frame_count++;
-	dt = (float)ms_timer.Read() / 1000.0f;
-	ms_timer.Start();
+	realtime.performance.Frame_Count++;
+	realtime.last_sec_frame_count++;
+	realtime.dt = (float)realtime.ms_timer.Read() / 1000.0f;
+	realtime.ms_timer.Start();
 }
 
 // ---------------------------------------------
 void Application::FinishUpdate()
 {
-	if (last_sec_frame_time.Read() > 1000)
+	if (realtime.last_sec_frame_time.Read() > 1000)
 	{
-		last_sec_frame_time.Start();
-		prev_last_sec_frame_count = last_sec_frame_count;
-		last_sec_frame_count = 0;
+		realtime.last_sec_frame_time.Start();
+		realtime.prev_last_sec_frame_count = realtime.last_sec_frame_count;
+		realtime.last_sec_frame_count = 0;
 	}
-	performance.Frames_Last_Second = prev_last_sec_frame_count;
-	performance.Framerate = (float)performance.Frame_Count / ((float)startup_timer.Read() / 1000.0f);
-	performance.Miliseconds_Per_Frame = ms_timer.Read();
+	realtime.performance.Frames_Last_Second = realtime.prev_last_sec_frame_count;
+	realtime.performance.Framerate = (float)realtime.performance.Frame_Count / ((float)realtime.startup_timer.Read() / 1000.0f);
+	realtime.performance.Miliseconds_Per_Frame = realtime.ms_timer.Read();
 }
 
 // Call PreUpdate, Update and PostUpdate on all modules
@@ -120,7 +120,7 @@ update_status Application::Update()
 	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		(*item)->StartTimer();
-		ret = (*item)->PreUpdate(dt);
+		ret = (*item)->PreUpdate(realtime.dt);
 		(*item)->PauseTimer();
 		item++;
 	}
@@ -130,7 +130,7 @@ update_status Application::Update()
 	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		(*item)->ResumeTimer();
-		ret = (*item)->Update(dt);
+		ret = (*item)->Update(realtime.dt);
 		(*item)->PauseTimer();
 		item++;
 
@@ -140,7 +140,7 @@ update_status Application::Update()
 	while (item != list_modules.end() && ret == UPDATE_CONTINUE)
 	{
 		(*item)->ResumeTimer();
-		ret = (*item)->PostUpdate(dt);
+		ret = (*item)->PostUpdate(realtime.dt);
 		(*item)->StopTimer();
 
 		item++;
@@ -173,7 +173,7 @@ void Application::AddModule(Module* mod)
 
 Performance* Application::GetPerformanceStruct()
 {
-	return &performance;
+	return &realtime.performance;
 }
 
 bool Application::Options()
@@ -196,3 +196,87 @@ bool Application::Options()
 	}
 	return true;
 }
+
+void Application::Play()
+{
+	gamestatus = PLAY;
+	StatusSwitch();
+}
+void Application::Pause()
+{
+	gamestatus = PAUSE;
+	StatusSwitch();
+}
+void Application::Stop()
+{
+	gamestatus = STOP;
+	StatusSwitch();
+}
+void Application::NextFrame()
+{
+	gamestatus = NEXTFRAME;
+	StatusSwitch();
+}
+void Application::StatusSwitch()
+{
+	if (gamestatus == PLAY)
+	{
+		gametime.TimeScale = 1.0f;
+		gametime.GameStart.Start();
+		StartGame();
+
+	}
+	if (gamestatus == PAUSE)
+	{
+		gametime.TimeScale = 0.0f;
+
+	}
+	if (gamestatus == STOP)
+	{
+		gametime.TimeScale = 0.0f;
+		RestartGame();
+		gametime.GameStart.Stop();
+
+	}
+	if (gamestatus == NEXTFRAME)
+	{
+		gametime.TimeScale = 0.0f;
+
+	}
+
+
+}
+
+void Application::RestartGame()
+{
+	App->editor->LoadScene("Library/Scenes/Scene test.Pochinki");
+
+
+}
+void Application::StartGame()
+{
+	App->editor->SerializeScene("Scene test");
+
+}
+
+int Application::GetEditorDt()
+{
+	return realtime.dt;
+}
+int Application::GetGameStart()
+{
+	return gametime.GameStart.actual_ms;
+}
+float Application::GetDeltaTime()
+{
+	return realtime.dt;
+}
+int Application::GetFramesSinceStart()
+{
+	return realtime.performance.Frame_Count;
+}
+int Application::GetlastFrames()
+{
+	return realtime.performance.Framerate;
+}
+

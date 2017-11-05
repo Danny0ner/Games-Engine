@@ -26,24 +26,18 @@ struct Performance
 	uint	Miliseconds_Per_Frame = 0;
 };
 
-class GeometryLoader;
-class FileSystem;
-class Application
+struct GameTime
 {
-public:
-	ModuleWindow* window;
-	ModuleInput* input;
-	ModuleAudio* audio;
-	ModuleRenderer3D* renderer3D;
-	ModuleCamera3D* camera;
-	ModuleImGui* imgui;
-	GeometryLoader* geometryloader;
-	JConfig* config;
-	ModuleEditor* editor;
-	FileSystem* filesystem;
-	math::LCG* RandomUIDGen = nullptr;
-private:
+	Timer	GameStart;
+	float	TimeScale = 1.0f;
+	bool	NextFrame = false;
 
+
+
+};
+
+struct RealTime
+{
 	Timer	ms_timer;
 	Timer	startup_timer;
 	Timer	last_sec_frame_time;
@@ -51,6 +45,42 @@ private:
 	uint	prev_last_sec_frame_count = 0;
 	uint	last_sec_frame_count = 0;
 	Performance	performance;
+
+
+
+
+};
+
+enum GameStatus
+{
+	PLAY=0,
+	PAUSE,
+	STOP,
+	NEXTFRAME
+};
+
+class GeometryLoader;
+class FileSystem;
+class Application
+{
+public:
+	ModuleWindow*		window;
+	ModuleInput*		input;
+	ModuleAudio*		audio;
+	ModuleRenderer3D*	renderer3D;
+	ModuleCamera3D*		camera;
+	ModuleImGui*		imgui;
+	GeometryLoader*		geometryloader;
+	JConfig*			config;
+	ModuleEditor*		editor;
+	FileSystem*			filesystem;
+	math::LCG*			RandomUIDGen = nullptr;
+	RealTime			realtime;
+	GameTime			gametime;
+	GameStatus			gamestatus = GameStatus::STOP;
+
+
+	
 public: 
 	std::list<Module*> list_modules;
 public:
@@ -64,6 +94,20 @@ public:
 	ExampleAppConsole2 Console;
 	Performance* GetPerformanceStruct();
 	bool Options();
+	void Play();
+	void Pause();
+	void Stop();
+	void NextFrame();
+	void StatusSwitch();
+	void RestartGame();
+	void StartGame();
+	int GetEditorDt();
+	int GetGameStart();
+	float GetDeltaTime();
+	int GetFramesSinceStart();
+	int GetlastFrames();
+
+
 private:
 
 	void AddModule(Module* mod);
