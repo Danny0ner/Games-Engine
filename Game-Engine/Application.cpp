@@ -83,6 +83,8 @@ bool Application::Init()
 	realtime.ms_timer.Start();
 	realtime.last_sec_frame_time.Start();
 	realtime.startup_timer.Start();
+	gametime.GameStart.Start();
+	gametime.GameStart.Stop();
 	return ret;
 }
 
@@ -199,21 +201,25 @@ bool Application::Options()
 
 void Application::Play()
 {
+	lastgamestatus = gamestatus;
 	gamestatus = PLAY;
 	StatusSwitch();
 }
 void Application::Pause()
 {
+	lastgamestatus = gamestatus;
 	gamestatus = PAUSE;
 	StatusSwitch();
 }
 void Application::Stop()
 {
+	lastgamestatus = gamestatus;
 	gamestatus = STOP;
 	StatusSwitch();
 }
 void Application::NextFrame()
 {
+	lastgamestatus = gamestatus;
 	gamestatus = NEXTFRAME;
 	StatusSwitch();
 }
@@ -221,25 +227,34 @@ void Application::StatusSwitch()
 {
 	if (gamestatus == PLAY)
 	{
-		gametime.TimeScale = 1.0f;
-		gametime.GameStart.Start();
-		StartGame();
+		if (lastgamestatus == PAUSE){
+			gametime.GameStart.Resume();
+		}
+		else {
+			gametime.TimeScale = 1.0f;
+			gametime.GameStart.Start();
+			StartGame();
+		}
 
 	}
 	if (gamestatus == PAUSE)
 	{
+		
 		gametime.TimeScale = 0.0f;
-
+		gametime.GameStart.Pause();
 	}
 	if (gamestatus == STOP)
 	{
+		
 		gametime.TimeScale = 0.0f;
 		RestartGame();
 		gametime.GameStart.Stop();
+		gametime.GameStart.actual_ms=0;
 
 	}
 	if (gamestatus == NEXTFRAME)
 	{
+		
 		gametime.TimeScale = 0.0f;
 
 	}
@@ -265,7 +280,7 @@ int Application::GetEditorDt()
 }
 int Application::GetGameStart()
 {
-	return gametime.GameStart.actual_ms;
+	return gametime.GameStart.Read();
 }
 float Application::GetDeltaTime()
 {

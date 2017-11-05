@@ -335,6 +335,7 @@ update_status ModuleImGui::PostUpdate(float dt)
 		ImGui::TextWrapped("Frames Since Editor Start: %i", App->GetFramesSinceStart());
 		ImGui::TextWrapped("Game Dt: %.1f", App->realtime.startup_timer);
 		ImGui::TextWrapped("Framerate: %i", App->GetlastFrames());
+		ImGui::TextWrapped("Time Since Game Start: %i s", App->GetGameStart()/1000);
 
 
 }

@@ -78,6 +78,7 @@ public:
 	RealTime			realtime;
 	GameTime			gametime;
 	GameStatus			gamestatus = GameStatus::STOP;
+	GameStatus			lastgamestatus = GameStatus::STOP;
 
 
 	

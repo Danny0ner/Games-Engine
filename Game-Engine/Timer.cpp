@@ -38,6 +38,7 @@ void Timer::Resume()
 void Timer::Pause()
 {
 	actual_ms += (SDL_GetTicks() - started_at);
+	running = false;
 
 
 }
