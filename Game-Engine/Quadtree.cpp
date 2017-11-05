@@ -30,7 +30,7 @@ OctreeNode::~OctreeNode()
 
 bool OctreeNode::IsLeaf() const
 {
-	if (childs[0] == nullptr)
+	if (childs[0] == NULL)
 	{
 		return true;
 	}
@@ -42,15 +42,16 @@ bool OctreeNode::IsLeaf() const
 
 void OctreeNode::Insert(GameObject* toInsert)
 {
-	if (objects.size() < MAX_OBJECTS || box.Size().x <= MIN_SIZE)
+	if (objects.size() < MAX_OBJECTS)
 	{
 		objects.push_back(toInsert);
 	}
 	else
 	{
-		if (IsLeaf() == true)
+		if (childscreateds == false)
 		{
 			CreateChilds();
+			childscreateds = true;
 		}
 		RedistributeChilds();
 	}

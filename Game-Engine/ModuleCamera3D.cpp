@@ -160,12 +160,12 @@ update_status ModuleCamera3D::Update(float dt)
 
 		Position = Reference + Z * (Position).Length();
 	}
-
+	FrustumPick.SetPos(Position);
+	FrustumPick.SetFront(-ViewMatrix.Col3(2));			//update the pick frustum with the editor camera//
+	FrustumPick.SetUp(ViewMatrix.Col3(1));
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_DOWN)
 	{
-		FrustumPick.SetPos(Position);
-		FrustumPick.SetFront(-ViewMatrix.Col3(2));			//update the pick frustum with the editor camera//
-		FrustumPick.SetUp(ViewMatrix.Col3(1));
+
 		
 
 

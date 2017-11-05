@@ -22,6 +22,8 @@ public:
 
 	bool Init();
 
+	
+
 	bool CleanUp();
 
 	GameObject* LoadGameObject(const char* fullPath);
@@ -34,6 +36,9 @@ public:
 	void LoadNewTexture(const char* fullPath);
 	bool SaveMeshToOwnFormat(const CompMesh & mesh, const char * outputFile);
 	void LoadMeshOwnFormat(const char * inputFile, CompMesh* mesh);
+	bool SaveTextureToOwnFormat(const char * path, char * buffer, int buffer_size);
+	bool LoadTextureToOwnFormat(const char * inputFile, CompMaterial* material);
+	uint LoadMaterial(const char * image);
 	void Load(CompMesh* mesh, char* buffer);
 	void Save(CompMesh* mesh);
 };

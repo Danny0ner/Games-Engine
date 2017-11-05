@@ -21,6 +21,13 @@ void CompMaterial::OnEditor()
 
 void CompMaterial::OnSave(Configuration & data) const
 {
+	data.SetString("MaterialFile", name.c_str());
+}
+
+void CompMaterial::OnLoad(Configuration & data)
+{
+	name = data.GetString("MaterialFile");
+	App->geometryloader->LoadTextureToOwnFormat(name.c_str(), this);
 }
 
 void CompMaterial::OverrideTexture(const char* path)

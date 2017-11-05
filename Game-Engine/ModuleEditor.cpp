@@ -142,17 +142,17 @@ GameObject* ModuleEditor::CastRay(const LineSegment& Segment, float Distance)
 
 void ModuleEditor::TestRay(const LineSegment& Segment, float* Distance, GameObject* &Select)
 {
-	//std::vector<GameObject*> Objects;
-	//Quadroot->root->CollectIntersectionsLine(Objects, Segment);
+	std::vector<GameObject*> Objects;
+	Quadroot->root->CollectIntersectionsLine(Objects, Segment);
 
-	for (std::vector<GameObject*>::const_iterator tmp = Static_Vector.begin(); tmp != Static_Vector.end(); tmp++)
+	for (std::vector<GameObject*>::const_iterator tmp = Objects.begin(); tmp != Objects.end(); tmp++)
 	{
 		// Look for meshes, nothing else can be "picked" from the screen
 		std::vector<CompMesh*> Meshes;
 		Meshes.push_back((CompMesh*)(*tmp)->FindComponent(Component_Mesh));
 		
 
-		if (Meshes.size() > 0)
+		if (Meshes.size() == 1)
 		{
 			const CompMesh* Mesh = (const CompMesh*)Meshes[0];
 			CompTransform* transf = (CompTransform*)(*tmp)->FindComponent(Component_Transform);

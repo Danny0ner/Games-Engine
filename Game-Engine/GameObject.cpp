@@ -254,6 +254,13 @@ void GameObject::Deserialize(Configuration & dataToLoad)
 			AddComponent(compTrans);
 			break;
 		}
+		case Component_Material:
+		{
+			CompMaterial* compMat = new CompMaterial();
+			compMat ->OnLoad(componentConfig);
+			AddComponent(compMat);
+			break;
+		}
 		default:
 		{
 			LOG("Error in component %i of %s, unknown type", &i, name.c_str());

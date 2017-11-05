@@ -127,3 +127,31 @@ bool FileSystem::LoadFile(const char * name, char ** buffer, int& size, FileType
 	}
 	return ret;
 }
+
+std::string FileSystem::AddDirectoryToPath(const char * name, FileType type)
+{
+	std::string path;
+	if (type == fileMesh)
+	{
+		path = MESH_DIRECTORY;
+		path += "/";
+		path += name;
+		path += MESH_EXTENSION;
+	}
+	else if (type == fileMaterial)
+	{
+		path = MATERIAL_DIRECTORY;
+		path += "/";
+		path += name;
+		path += MATERIAL_EXTENSION;
+	}
+	else if (type == fileScene)
+	{
+		path += SCENE_DIRECTORY;
+		path += "/";
+		path += name;
+		path += SCENE_EXTENSION;
+	}
+
+	return path;
+}

@@ -20,6 +20,7 @@ public:
 	void DrawDebug(Color color) const;
 
 public:
+	bool childscreateds = false;
 	AABB box;
 	std::list<GameObject*> objects;
 	OctreeNode* parent;
