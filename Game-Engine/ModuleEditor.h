@@ -34,6 +34,8 @@ public:
 
 	void SerializeScene(const char* filename);
 	void LoadScene(const char * fileTitle);
+	void EditTransform(GameObject* Select);
+
 public:
 	Octree* Quadroot;
 	GameObject* root = nullptr;

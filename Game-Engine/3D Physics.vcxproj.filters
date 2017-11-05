@@ -474,6 +474,9 @@
     <ClInclude Include="FileSystem.h">
       <Filter>Sources\FileSystem</Filter>
     </ClInclude>
+    <ClInclude Include="ImGui\ImGuizmo.h">
+      <Filter>Sources\Extra\ImGui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -682,6 +685,9 @@
     </ClCompile>
     <ClCompile Include="FileSystem.cpp">
       <Filter>Sources\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\ImGuizmo.cpp">
+      <Filter>Sources\Extra\ImGui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
