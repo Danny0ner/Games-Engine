@@ -501,8 +501,10 @@ CompMaterial* GeometryLoader::LoadMaterial(aiMaterial* newMaterial)
 		fullPath.append(lastpath);
 		m->idTexture = ImportImage(fullPath.c_str());
 
-		lastpath[length -4] = '\0';
-		m->SetName(lastpath);
+		std::string atname = lastpath;
+		uint r = atname.find_first_of(".");
+		std::string matname = atname.substr(0,r);
+		m->SetName(matname.c_str());
 
 		delete[] lastpath;
 		lastpath = nullptr;
