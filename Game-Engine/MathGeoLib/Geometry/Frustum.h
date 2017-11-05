@@ -186,7 +186,8 @@ public:
 		@note Calling this function recomputes the cached projection matrix of this Frustum.
 		@see SetKind(), SetFrame(), SetPos(), SetFront(), SetUp(), SetPerspective(), SetOrthographic(), NearPlaneDistance(), FarPlaneDistance(). */
 	void SetViewPlaneDistances(float nearPlaneDistance, float farPlaneDistance);
-
+	void SetAspectRatio(float aspect_ratio);
+	
 	/// Specifies the full coordinate space of this Frustum in one call.
 	/** @note Calling this function recomputes the cached world matrix of this Frustum.
 		@note As a micro-optimization, prefer this function over the individual SetPos/SetFront/SetUp functions if you need to do a batch of two or more changes, to avoid

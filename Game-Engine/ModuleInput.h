@@ -43,6 +43,12 @@ public:
 		return mouse_y;
 	}
 
+	void GetMousePosition(int &mouse_x, int &mouse_y) const
+	{
+		mouse_x = this->mouse_x;
+		mouse_y = this->mouse_y;
+	}
+
 	int GetMouseZ() const
 	{
 		return mouse_z;

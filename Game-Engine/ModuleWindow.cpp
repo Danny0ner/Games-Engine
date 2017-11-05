@@ -174,36 +174,43 @@ void ModuleWindow::SetBrightness(float set)
 	}
 }
 
-bool ModuleWindow::IsFullscreen()
+bool ModuleWindow::IsFullscreen() const
 {
 	return Fullscreen;
 }
 
-bool ModuleWindow::IsResizable() 
+bool ModuleWindow::IsResizable() const
 {
-
 	return Resizable;
 }
 
-bool ModuleWindow::IsBorderless() 
+bool ModuleWindow::IsBorderless() const 
 {
 	return Borderless;
 }
 
-bool ModuleWindow::IsFullscreenDesktop() 
+bool ModuleWindow::IsFullscreenDesktop()  const
 {
 	return Fullscreen_Desktop;
 }
 
-float ModuleWindow::GetBrightness()
+float ModuleWindow::GetBrightness() const
 {
 	return SDL_GetWindowBrightness(window);
 }
-float ModuleWindow::GetAspectRatio()
+float ModuleWindow::GetAspectRatio() const
 {
 	return (float)Window_Width / (float)Window_Height;
 }
+int ModuleWindow::GetWidth() const
+{
+	return Window_Width;
+}
 
+int ModuleWindow::GetHeight() const
+{
+	return Window_Height;
+}
 
 void ModuleWindow::SaveConfig(JSON_Object * root)
 {

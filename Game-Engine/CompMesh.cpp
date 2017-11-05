@@ -169,3 +169,8 @@ void CompMesh::OnLoad(Configuration & data)
 {
 	App->geometryloader->LoadMeshOwnFormat(data.GetString("MeshFile"), this);
 }
+
+math::AABB CompMesh::GetEnclosingBox()
+{
+	return enclosingBox;
+}

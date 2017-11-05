@@ -100,6 +100,13 @@ void Frustum::SetViewPlaneDistances(float n, float f)
 	ProjectionMatrixChanged();
 }
 
+void Frustum::SetAspectRatio(float aspect_ratio)
+{
+	// More about FOV: http://twgljs.org/examples/fov-checker.html
+	// fieldOfViewX = 2 * atan(tan(fieldOfViewY * 0.5) * aspect)
+	horizontalFov = 2.f * atanf(tanf(verticalFov * 0.5f) * aspect_ratio);
+}
+
 void Frustum::SetFrame(const vec &p, const vec &f, const vec &u)
 {
 	pos = p;
@@ -466,8 +473,8 @@ Ray Frustum::UnProject(float x, float y) const
 
 LineSegment Frustum::UnProjectLineSegment(float x, float y) const
 {
-	vec nearPlanePos = NearPlanePos(x, y);
-	vec farPlanePos = FarPlanePos(x, y);
+	float3 nearPlanePos = NearPlanePos(x, y);
+	float3 farPlanePos = FarPlanePos(x, y);
 	return LineSegment(nearPlanePos, farPlanePos);
 }
 

@@ -97,6 +97,7 @@ Component* GameObject::FindComponent(ComponentType type) const
 	return nullptr;
 }
 
+
 int GameObject::GetUID()
 {
 	return uid;

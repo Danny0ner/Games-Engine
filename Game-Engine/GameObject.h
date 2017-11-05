@@ -31,7 +31,6 @@ public:
 
 	std::vector<Component*> components;
 	std::vector<GameObject*> childs;
-
 	int GetUID();
 protected:
 	int uid;

@@ -35,6 +35,10 @@ bool ModuleCamera3D::Start()
 	FrustumPick.SetHorizontalFovAndAspectRatio(90 * DEGTORAD, App->window->GetAspectRatio());
 	FrustumPick.SetViewPlaneDistances(0.1f, 1000.0f);
 	FrustumPick.type = PerspectiveFrustum;
+
+	float vertical_fov = 60; /* In degrees */
+	FrustumPick.verticalFov = vertical_fov * DEGTORAD;
+	FrustumPick.horizontalFov = Atan(App->window->GetAspectRatio()*Tan(FrustumPick.verticalFov / 2)) * 2;
 	return ret;
 }
 
@@ -160,18 +164,19 @@ update_status ModuleCamera3D::Update(float dt)
 
 		Position = Reference + Z * (Position).Length();
 	}
-	FrustumPick.SetPos(Position);
-	FrustumPick.SetFront(-ViewMatrix.Col3(2));			//update the pick frustum with the editor camera//
-	FrustumPick.SetUp(ViewMatrix.Col3(1));
+
+
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_DOWN)
 	{
-
+		FrustumPick.verticalFov = DEGTORAD * 60.0f;
+		FrustumPick.SetAspectRatio(1.3f);
+		FrustumPick.SetPos(Position);
+		FrustumPick.SetFront(-ViewMatrix.Col3(2));			//update the pick frustum with the editor camera//
+		FrustumPick.SetUp(ViewMatrix.Col3(1));
 		
 
-
 		GameObject* ObjectPick = MousePicking();
-		if (ObjectPick != nullptr)
-			App->editor->SelectGameObject(ObjectPick);
+		App->editor->SelectGameObject(ObjectPick);
 
 
 	}
@@ -261,28 +266,30 @@ void ModuleCamera3D::RecentreCameraToGeometry()
 
 }
 
-GameObject*  ModuleCamera3D::MousePicking(float3* HitPoint) const
+GameObject*  ModuleCamera3D::MousePicking(float3* HitPoint)
 {
-	float height = App->window->Window_Height;
-	float width = App->window->Window_Height;
 	float distance=0;
 	float2 MousePos;
 	GameObject* Hit;
 
-	MousePos.x = App->input->GetMouseX();						//we get the mouse position//
-	MousePos.y = App->input->GetMouseY();
+	float width = (float)App->window->GetWidth();
+	float height = (float)App->window->GetHeight();
 
-	float NormalX = (MousePos.x*2.0f) / width-1.0f;		//normalize the vector//
-	float NormalY = 1.0f - (MousePos.y*2.0f) / height;
+	int mouse_x, mouse_y;
+	App->input->GetMousePosition(mouse_x, mouse_y);
 
-	//CompCamera* Cam = (CompCamera*)App->editor->GetRoot()->FindComponent(Component_Camera);
-	LineSegment Picking = FrustumPick.UnProjectLineSegment(NormalX, NormalY);
+	float normalized_x = -(1.0f - (float(mouse_x) * 2.0f) / width);
+	float normalized_y = 1.0f - (float(mouse_y) * 2.0f) / height;
+	mouse_picking = FrustumPick.UnProjectLineSegment(normalized_x, normalized_y);
 
-
-	Hit = App->editor->CastRay(Picking, distance);
+	Hit = App->editor->CastRay(mouse_picking, distance);
 	if (HitPoint != nullptr && Hit != nullptr)
 	{
-		HitPoint = &Picking.GetPoint(distance);
+		HitPoint = &mouse_picking.GetPoint(distance);
 	}
 	return Hit;
+}
+
+void ModuleCamera3D::SetRaypoints(float xx, float xy, float xz, float cx, float cy, float cz)
+{
 }

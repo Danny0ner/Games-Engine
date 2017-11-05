@@ -41,13 +41,17 @@ public:
 	void SetFullScreenDesktop(bool fullscreendesktop);
 	void SetBrightness(float brightness);
 
-	bool IsFullscreen();
-	bool IsResizable();
-	bool IsBorderless();
-	bool IsFullscreenDesktop();
-	float GetBrightness();
+	bool IsFullscreen()const;
+	bool IsResizable()const;
+	bool IsBorderless()const;
+	bool IsFullscreenDesktop() const ;
+	float GetBrightness() const ;
 	void ImGuiDrawer();
-	float GetAspectRatio();
+	float GetAspectRatio()const ;
+
+	int GetWidth()const ;
+
+	int GetHeight()const ;
 	
 
 	void SaveConfig(JSON_Object* root);

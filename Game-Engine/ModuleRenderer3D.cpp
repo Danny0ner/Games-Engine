@@ -152,6 +152,12 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 // PostUpdate present buffer to screen
 update_status ModuleRenderer3D::PostUpdate(float dt)
 {
+	glBegin(GL_LINES);
+
+	glVertex3f(App->camera->mouse_picking.a.x, App->camera->mouse_picking.a.y, App->camera->mouse_picking.a.z); glVertex3f(App->camera->mouse_picking.b.x, App->camera->mouse_picking.b.y, App->camera->mouse_picking.b.z);
+
+	glEnd();
+	App->camera->FrustumPick.DrawDebug(Orange);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	grid->Render();
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

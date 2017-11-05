@@ -117,6 +117,14 @@ GameObject * ModuleEditor::CreateNewGameObject(const char * path)
 
 void ModuleEditor::SelectGameObject(GameObject * Selected)
 {
+	if (Selected == NULL)
+	{
+		if (this->selected != nullptr) {
+			this->selected->selected = false;
+			this->selected = nullptr;
+			return;
+		}
+	}
 	if (this->selected != Selected)
 	{
 		if (this->selected != nullptr)
@@ -127,17 +135,12 @@ void ModuleEditor::SelectGameObject(GameObject * Selected)
 		this->selected = Selected;
 		
 	}
-	else
-	{
-		this->selected->selected = false;
-		this->selected = nullptr;
-	}
 }
 
 
 GameObject* ModuleEditor::CastRay(const LineSegment& Segment, float Distance)
 {
-	Distance = inf;
+	Distance = 100000;
 	GameObject* Select = nullptr;
 	TestRay(Segment, &Distance, Select);
 	return Select;
@@ -146,32 +149,41 @@ GameObject* ModuleEditor::CastRay(const LineSegment& Segment, float Distance)
 
 void ModuleEditor::TestRay(const LineSegment& Segment, float* Distance, GameObject* &Select)
 {
-	std::vector<GameObject*> Objects;
-	Quadroot->root->CollectIntersectionsLine(Objects, Segment);
+	//std::vector<GameObject*> Objects;
+	//Quadroot->root->CollectIntersectionsLine(Objects, Segment);
 
-	for (std::vector<GameObject*>::const_iterator tmp = Objects.begin(); tmp != Objects.end(); tmp++)
+	for (std::vector<GameObject*>::const_iterator tmp = Static_Vector.begin(); tmp != Static_Vector.end(); tmp++)
 	{
 		// Look for meshes, nothing else can be "picked" from the screen
-		std::vector<CompMesh*> Meshes;
-		Meshes.push_back((CompMesh*)(*tmp)->FindComponent(Component_Mesh));
+	
+		CompMesh* Mesh = (CompMesh*)(*tmp)->FindComponent(Component_Mesh);
 		
 
-		if (Meshes.size() == 1)
+		if (Mesh != nullptr)
 		{
-			const CompMesh* Mesh = (const CompMesh*)Meshes[0];
 			CompTransform* transf = (CompTransform*)(*tmp)->FindComponent(Component_Transform);
 
 			// test all triangles
 			LineSegment SegmentLocal(Segment);
-			SegmentLocal.Transform(transf->GetTransMatrix().Inverted());
-
+			//SegmentLocal.Transform(transf->GetTransMatrix().Inverted());
 			Triangle tri;
-			for (uint i = 0; i < Mesh->numVertices;)
+			AABB box = Mesh->enclosingBox;
+			box.TransformAsAABB(transf->GetTransMatrix());
+			float LocalDistance = 0;
+			float LocalHitPoint;
+			if(SegmentLocal.Intersects(box, LocalDistance, LocalHitPoint))
 			{
-
-				tri.a.Set(Mesh->numVertices[&Mesh->indices[i++]], Mesh->numVertices[&Mesh->indices[i]], Mesh->numVertices[&Mesh->indices[i]]);
-				tri.b.Set(Mesh->numVertices[&Mesh->indices[i++]], Mesh->numVertices[&Mesh->indices[i]], Mesh->numVertices[&Mesh->indices[i]]);
-				tri.c.Set(Mesh->numVertices[&Mesh->indices[i++]], Mesh->numVertices[&Mesh->indices[i]], Mesh->numVertices[&Mesh->indices[i]]);
+				if (&LocalDistance < Distance)
+				{
+					Distance = &LocalDistance;
+					Select = (*tmp);
+				}
+			}
+			/*for (uint i = 0; i <= Mesh->numIndices +1;)
+			{
+				tri.a.Set(Mesh->vertices[Mesh->indices[i++]], Mesh->vertices[Mesh->indices[i++]], Mesh->vertices[Mesh->indices[i++]]);
+				tri.b.Set(Mesh->vertices[Mesh->indices[i++]], Mesh->vertices[Mesh->indices[i++]], Mesh->vertices[Mesh->indices[i++]]);
+				tri.c.Set(Mesh->vertices[Mesh->indices[i++]], Mesh->vertices[Mesh->indices[i++]], Mesh->vertices[Mesh->indices[i++]]);
 
 				float* LocalDistance=0;
 				float3 LocalHitPoint;
@@ -184,7 +196,7 @@ void ModuleEditor::TestRay(const LineSegment& Segment, float* Distance, GameObje
 						Select = (*tmp);
 					}
 				}
-			}
+			}*/
 		}
 	}
 

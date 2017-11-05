@@ -23,14 +23,14 @@ public:
 	float* GetViewMatrix();
 	void CenterCameraToGeometry(const AABB* meshAABB);
 	void RecentreCameraToGeometry();
-	GameObject* MousePicking(float3* HitPoint = nullptr) const;
-
+	GameObject* MousePicking(float3* HitPoint = nullptr);
+	void SetRaypoints(float xx, float xy, float xz, float cx, float cy, float cz);
 private:
 
 	void CalculateViewMatrix();
 
 public:
-	
+	math::LineSegment				mouse_picking;
 	float3			X, Y, Z, Position, Reference;
 	btVector3		temp;
 	vec3			playerpos;
@@ -40,9 +40,10 @@ public:
 	vec3			VehicleLocation;
 	uint			camera_fx;
 	bool			FPS;
+	Frustum				FrustumPick;
 private:
 
 	float4x4			ViewMatrix, ViewMatrixInverse;
 	const AABB*			LastCentreGeometry = nullptr;
-	Frustum				FrustumPick;
+
 };

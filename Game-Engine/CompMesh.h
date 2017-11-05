@@ -28,7 +28,7 @@ public:
 	uint idTexCoords = 0; // id in VRAM
 	float* texCoords = nullptr;
 
-	AABB enclosingBox;
+	math::AABB enclosingBox;
 
 	void Update();
 
@@ -42,6 +42,7 @@ public:
 	void Move(float3 lastpos,float3 newPos);
 	void OnSave(Configuration& data) const;
 	void OnLoad(Configuration& data);
+	math::AABB GetEnclosingBox();
 public:
 	bool drawdebug = false;
 };
