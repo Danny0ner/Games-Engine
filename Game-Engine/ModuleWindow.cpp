@@ -199,6 +199,10 @@ float ModuleWindow::GetBrightness()
 {
 	return SDL_GetWindowBrightness(window);
 }
+float ModuleWindow::GetAspectRatio()
+{
+	return (float)Window_Width / (float)Window_Height;
+}
 
 
 void ModuleWindow::SaveConfig(JSON_Object * root)

@@ -12,12 +12,12 @@ ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(ap
 
 	CalculateViewMatrix();
 
-	X = vec3(1.0f, 0.0f, 0.0f);
-	Y = vec3(0.0f, 1.0f, 0.0f);
-	Z = vec3(0.0f, 0.0f, 1.0f);
+	X = float3(1.0f, 0.0f, 0.0f);
+	Y = float3(0.0f, 1.0f, 0.0f);
+	Z = float3(0.0f, 0.0f, 1.0f);
 
-	Position = vec3(0.0f, 2.0f, 0.0f);//2.0f to better look on camera
-	Reference = vec3(0.0f, 2.0f, 0.0f);//2.0f to better look on camera
+	Position = float3(0.0f, 2.0f, 0.0f);//2.0f to better look on camera
+	Reference = float3(0.0f, 2.0f, 0.0f);//2.0f to better look on camera
 }
 
 ModuleCamera3D::~ModuleCamera3D()
@@ -31,6 +31,10 @@ bool ModuleCamera3D::Start()
 	/*CameraLocation = vec3(0.0f, 15, 0.0f);
 	ViewVector = vec3(0.0f, 10.05f, 0.0f);
 	camera_dist = 27;*/
+	
+	FrustumPick.SetHorizontalFovAndAspectRatio(90 * DEGTORAD, App->window->GetAspectRatio());
+	FrustumPick.SetViewPlaneDistances(0.1f, 1000.0f);
+	FrustumPick.type = PerspectiveFrustum;
 	return ret;
 }
 
@@ -46,7 +50,7 @@ bool ModuleCamera3D::CleanUp()
 update_status ModuleCamera3D::Update(float dt)
 {
 
-	vec3 New_Position(0, 0, 0);
+	float3 New_Position(0, 0, 0);
 	float speed = 5.0f*dt;
 
 	bool zoomed = false;
@@ -74,27 +78,30 @@ update_status ModuleCamera3D::Update(float dt)
 		if (dx != 0)
 		{
 			float DeltaX = (float)dx * Sensitivity;
-
-			X = rotate(X, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-			Y = rotate(Y, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-			Z = rotate(Z, DeltaX, vec3(0.0f, 1.0f, 0.0f));
+			Quat Rotation;
+			Rotation.SetFromAxisAngle(float3(0.0f, 1.0f, 0.0f), DeltaX*DEGTORAD); //changed from glmath to mathgeolib//vec3 to float3//
+			X = Rotation.Transform(X);
+			Y = Rotation.Transform(Y);
+			Z = Rotation.Transform(Z);
 		}
 
 		if (dy != 0)
 		{
 			float DeltaY = (float)dy * Sensitivity;
+			Quat Rotation;
+			Rotation.SetFromAxisAngle(X, DeltaY*DEGTORAD);//changed from glmath to mathgeolib//vec3 to float3//
+			Y = Rotation.Transform(Y);
 
-			Y = rotate(Y, DeltaY, X);
-			Z = rotate(Z, DeltaY, X);
+			Z = Rotation.Transform(Z);
 
 			if (Y.y < 0.0f)
 			{
-				Z = vec3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
-				Y = cross(Z, X);
+				Z = float3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
+				Y = X.Cross(Z);
 			}
 		}
 
-		Position = Reference + Z * length(Position);
+		Position = Reference + Z * (Position).Length();
 	
 
 		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
@@ -128,35 +135,43 @@ update_status ModuleCamera3D::Update(float dt)
 		if (dx != 0)
 		{
 			float DeltaX = (float)dx * Sensitivity;
-
-			X = rotate(X, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-			Y = rotate(Y, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-			Z = rotate(Z, DeltaX, vec3(0.0f, 1.0f, 0.0f));
+			Quat Rotation;
+			Rotation.SetFromAxisAngle(float3(0.0f, 1.0f, 0.0f), DeltaX*DEGTORAD); //changed from glmath to mathgeolib//vec3 to float3//
+			X = Rotation.Transform(X);
+			Y = Rotation.Transform(Y);
+			Z = Rotation.Transform(Z);
 		}
 
 		if (dy != 0)
 		{
 			float DeltaY = (float)dy * Sensitivity;
+			Quat Rotation;
+			Rotation.SetFromAxisAngle(X, DeltaY*DEGTORAD);//changed from glmath to mathgeolib//vec3 to float3//
+			Y = Rotation.Transform(Y);
 
-			Y = rotate(Y, DeltaY, X);
-			Z = rotate(Z, DeltaY, X);
+			Z = Rotation.Transform(Z);
 
 			if (Y.y < 0.0f)
 			{
-				Z = vec3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
-				Y = cross(Z, X);
+				Z = float3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
+				Y = X.Cross(Z);
 			}
 		}
 
-		Position = Reference + Z * length(Position);
+		Position = Reference + Z * (Position).Length();
 	}
 
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_DOWN)
 	{
+		FrustumPick.SetPos(Position);
+		FrustumPick.SetFront(-ViewMatrix.Col3(2));			//update the pick frustum with the editor camera//
+		FrustumPick.SetUp(ViewMatrix.Col3(1));
+		
+
+
 		GameObject* ObjectPick = MousePicking();
 		if (ObjectPick != nullptr)
 			App->editor->SelectGameObject(ObjectPick);
-
 
 
 	}
@@ -170,14 +185,14 @@ update_status ModuleCamera3D::Update(float dt)
 }
 
 // -----------------------------------------------------------------
-void ModuleCamera3D::Look(const vec3 &Position, const vec3 &Reference, bool RotateAroundReference)
+void ModuleCamera3D::Look(const float3 &Position, const float3 &Reference, bool RotateAroundReference)
 {
 	this->Position = Position;
 	this->Reference = Reference;
 
-	Z = normalize(Position - Reference);
-	X = normalize(cross(vec3(0.0f, 1.0f, 0.0f), Z));
-	Y = cross(Z, X);
+	Z = (Position - Reference).Normalized();
+	X = (float3(0.0f, 1.0f, 0.0f).Cross(Z)).Normalized();
+	Y = Z.Cross(X);
 
 	if (!RotateAroundReference)
 	{
@@ -189,20 +204,20 @@ void ModuleCamera3D::Look(const vec3 &Position, const vec3 &Reference, bool Rota
 }
 
 // -----------------------------------------------------------------
-void ModuleCamera3D::LookAt( const vec3 &Spot)
+void ModuleCamera3D::LookAt( const float3 &Spot)
 {
 	Reference = Spot;
 
-	Z = normalize(Position - Reference);
-	X = normalize(cross(vec3(0.0f, 1.0f, 0.0f), Z));
-	Y = cross(Z, X);
+	Z = (Position - Reference).Normalized();
+	X = (float3(0.0f, 1.0f, 0.0f).Cross(Z)).Normalized();
+	Y = Z.Cross(X);
 
 	CalculateViewMatrix();
 }
 
 
 // -----------------------------------------------------------------
-void ModuleCamera3D::Move(const vec3 &Movement)
+void ModuleCamera3D::Move(const float3 &Movement)
 {
 	Position += Movement;
 	Reference += Movement;
@@ -213,14 +228,14 @@ void ModuleCamera3D::Move(const vec3 &Movement)
 // -----------------------------------------------------------------
 float* ModuleCamera3D::GetViewMatrix()
 {
-	return &ViewMatrix;
+	return (float*)ViewMatrix.v;
 }
 
 // -----------------------------------------------------------------
 void ModuleCamera3D::CalculateViewMatrix()
 {
-	ViewMatrix = mat4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -dot(X, Position), -dot(Y, Position), -dot(Z, Position), 1.0f);
-	ViewMatrixInverse = inverse(ViewMatrix);
+	ViewMatrix = float4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -X.Dot(Position), -Y.Dot(Position), -Z.Dot(Position), 1.0f);
+	ViewMatrixInverse = ViewMatrix.Inverted();
 
 
 }
@@ -228,14 +243,14 @@ void ModuleCamera3D::CalculateViewMatrix()
 void ModuleCamera3D::CenterCameraToGeometry(const AABB* meshAABB)
 {
 	if (meshAABB == nullptr)
-		Reference = vec3(0.0f, 2.0f, 0.0f);//2.0f to better look on camera
+		Reference = float3(0.0f, 2.0f, 0.0f);//2.0f to better look on camera
 	else
 	{
 		vec centre = meshAABB->CenterPoint();
 		float3 newpos = meshAABB->Size()*0.65;
-		Position = vec3(centre.x + newpos.x, centre.y + newpos.y, centre.z + newpos.z + 5);
-		Reference = vec3(centre.x + newpos.x, centre.y + newpos.y, centre.z + newpos.z);
-		LookAt(vec3(centre.x, centre.y, centre.z));
+		Position = float3(centre.x + newpos.x, centre.y + newpos.y, centre.z + newpos.z + 5);
+		Reference = float3(centre.x + newpos.x, centre.y + newpos.y, centre.z + newpos.z);
+		LookAt(float3(centre.x, centre.y, centre.z));
 		LastCentreGeometry = meshAABB;
 	}
 }
@@ -254,14 +269,15 @@ GameObject*  ModuleCamera3D::MousePicking(float3* HitPoint) const
 	float2 MousePos;
 	GameObject* Hit;
 
-	MousePos.x = App->input->GetMouseX();		//we get the mouse position//
+	MousePos.x = App->input->GetMouseX();						//we get the mouse position//
 	MousePos.y = App->input->GetMouseY();
 
 	float NormalX = -(1.0f - (MousePos.x*2.0f) / width);		//normalize the vector//
 	float NormalY = 1.0f - (MousePos.y*2.0f) / height;
 
-	CompCamera* Cam = (CompCamera*)App->editor->GetRoot()->FindComponent(Component_Camera);
-	LineSegment Picking =  Cam->frustum.UnProjectLineSegment(NormalX, NormalY);
+	//CompCamera* Cam = (CompCamera*)App->editor->GetRoot()->FindComponent(Component_Camera);
+	LineSegment Picking = FrustumPick.UnProjectLineSegment(NormalX, NormalY);
+
 
 	Hit = App->editor->CastRay(Picking, distance);
 	if (HitPoint != nullptr && Hit != nullptr)

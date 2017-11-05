@@ -47,6 +47,8 @@ public:
 	bool IsFullscreenDesktop();
 	float GetBrightness();
 	void ImGuiDrawer();
+	float GetAspectRatio();
+	
 
 	void SaveConfig(JSON_Object* root);
 	void LoadConfig(JSON_Object* root);
