@@ -404,9 +404,11 @@ uint GeometryLoader::LoadMaterial(const char * image)
 
 bool GeometryLoader::SaveMeshToOwnFormat(const CompMesh & mesh, const char * outputFile)
 {
-int ranges[2] = { mesh.numIndices, mesh.numVertices };
+int ranges[4] = { mesh.numIndices, mesh.numVertices, mesh.numVertices, mesh.numVertices};
 		float size = sizeof(ranges);
 		size += sizeof(uint) * mesh.numIndices;
+		size += sizeof(float) * mesh.numVertices * 3;
+		size += sizeof(float) * mesh.numVertices * 3;
 		size += sizeof(float) * mesh.numVertices * 3;
 
 		char* data = new char[size];
@@ -425,6 +427,20 @@ int ranges[2] = { mesh.numIndices, mesh.numVertices };
 		// Store vertices
 		bytes = sizeof(float) * mesh.numVertices * 3;
 		memcpy(cursor, mesh.vertices, mesh.numVertices * 3 * sizeof(float));
+		cursor += bytes;
+
+		// Store normals
+		bytes = sizeof(float) * mesh.numVertices * 3;
+		memcpy(cursor, mesh.normals, mesh.numVertices * 3 * sizeof(float));
+		cursor += bytes;
+
+		if (mesh.texCoords != nullptr)
+		{
+			// Store tex coords
+			bytes = sizeof(float) * mesh.numVertices * 3;
+			memcpy(cursor, mesh.texCoords, mesh.numVertices * 3 * sizeof(float));
+		}
+		cursor += bytes;
 
 		App->filesystem->SaveFile(outputFile, data, size, fileMesh);
 
@@ -443,7 +459,7 @@ void GeometryLoader::LoadMeshOwnFormat(const char * inputFile, CompMesh * mesh)
 	{
 		char* cursor = buffer;
 		// amount of indices / vertices / colors / normals / texture_coords
-		uint ranges[2];
+		uint ranges[4];
 		uint bytes = sizeof(ranges);
 		memcpy(ranges, cursor, bytes);
 
@@ -469,6 +485,24 @@ void GeometryLoader::LoadMeshOwnFormat(const char * inputFile, CompMesh * mesh)
 		glGenBuffers(1, (GLuint*)&mesh->idVertices);
 		glBindBuffer(GL_ARRAY_BUFFER, mesh->idVertices);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * mesh->numVertices * 3, mesh->vertices, GL_STATIC_DRAW);
+
+		cursor += bytes;
+		bytes = sizeof(float) * mesh->numVertices * 3;
+		mesh->normals = new float[mesh->numVertices * 3];
+		memcpy(mesh->normals, cursor, bytes);
+
+		glGenBuffers(1, (GLuint*)&mesh->idNormals);
+		glBindBuffer(GL_ARRAY_BUFFER, mesh->idNormals);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * mesh->numVertices * 3, mesh->normals, GL_STATIC_DRAW);
+
+		cursor += bytes;
+		bytes = sizeof(float) * mesh->numVertices * 3;
+		mesh->texCoords = new float[mesh->numVertices * 3];
+		memcpy(mesh->texCoords, cursor, bytes);
+
+		glGenBuffers(1, (GLuint*) &(mesh->idTexCoords));
+		glBindBuffer(GL_ARRAY_BUFFER, mesh->idTexCoords);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * mesh->numVertices * 3, mesh->texCoords, GL_STATIC_DRAW);
 	}
 
 }

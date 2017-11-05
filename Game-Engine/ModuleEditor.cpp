@@ -28,6 +28,7 @@ bool ModuleEditor::Start()
 	root = new GameObject();
 	root->SetName("Root");
 	CompCamera* cam = new CompCamera();
+	cam->frustumCulling = false;
 	root->AddComponent(cam);
 	Quadroot = new Octree(AABB(float3(-100, -20, -100), float3(100, 120, 100)));
 
@@ -56,7 +57,7 @@ void ModuleEditor::Render()
 	if (selected != nullptr)
 	{
 		selected->ShowInspector();
-		DrawGuizmo(selected);
+		//DrawGuizmo(selected);
 	}
 
 }
@@ -226,7 +227,7 @@ void ModuleEditor::LoadScene(const char * fileTitle)
 		LOG("Scene file not valid.");
 	}
 }
-
+/*
 void ModuleEditor:EditTransform(GameObject* Select)
 {
 	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::ROTATE);
@@ -285,3 +286,4 @@ void ModuleEditor:EditTransform(GameObject* Select)
 	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 	ImGuizmo::Manipulate(camera.mView.m16, camera.mProjection.m16, mCurrentGizmoOperation, mCurrentGizmoMode, matrix.m16, NULL, useSnap ? &snap.x : NULL);
 }
+*/
