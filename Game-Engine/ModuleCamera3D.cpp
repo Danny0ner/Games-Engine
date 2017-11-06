@@ -35,9 +35,9 @@ bool ModuleCamera3D::Start()
 	FrustumPick.up = float3(Y.x, Y.y, Y.z);
 	FrustumPick.nearPlaneDistance = 0.1f;
 	FrustumPick.farPlaneDistance = 1000;
-	float FOV = 60;
+	float FOV = 15;
 	FrustumPick.verticalFov = DEGTORAD * FOV;
-	FrustumPick.horizontalFov = 2.f * atanf((tanf(FrustumPick.verticalFov * 0.5f)) * (float)(App->window->GetAspectRatio()));
+	FrustumPick.horizontalFov = 2.f * atanf((tanf(FrustumPick.verticalFov * 0.5f)) * (App->window->GetAspectRatio()));
 
 	FrustumPick.ProjectionMatrix();
 	return ret;
@@ -172,8 +172,6 @@ update_status ModuleCamera3D::Update(float dt)
 	FrustumPick.pos = Position;
 	FrustumPick.front = -float3(Z.x, Z.y, Z.z);
 	FrustumPick.up = float3(Y.x, Y.y, Y.z);
-	//FrustumPick.SetFront(-ViewMatrix.Col3(2));			//update the pick frustum with the editor camera//
-	//FrustumPick.SetUp(ViewMatrix.Col3(1));
 
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_DOWN)
 	{
@@ -276,7 +274,7 @@ GameObject*  ModuleCamera3D::MousePicking(float3* HitPoint)
 
 	int mouse_x, mouse_y;
 	App->input->GetMousePosition(mouse_x, mouse_y);
-
+	//-(1 - App->input->GetNormalizedMouseX() * 2), (1 - App->input->GetNormalizedMouseY() * 2)
 	float normalized_x = -(1.0f - (float(mouse_x / width) * 2.0f));
 	float normalized_y = 1.0f - (float(mouse_y/ height) * 2.0f);
 
