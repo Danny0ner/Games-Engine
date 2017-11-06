@@ -29,7 +29,7 @@ public:
 	GameObject* CastRay(const LineSegment& Segment, float Distance);
 
 	void SelectGameObject(GameObject* selected);
-	void TestRay(const LineSegment& Segment, float* Distance, GameObject* &Select);
+	void TestRay(const LineSegment& Segment, float &Distance, GameObject* &Select);
 
 	void SerializeScene(const char* filename);
 	void LoadScene(const char * fileTitle);

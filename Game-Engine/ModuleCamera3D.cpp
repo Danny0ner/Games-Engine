@@ -274,7 +274,7 @@ GameObject*  ModuleCamera3D::MousePicking(float3* HitPoint)
 
 	int mouse_x, mouse_y;
 	App->input->GetMousePosition(mouse_x, mouse_y);
-	//-(1 - App->input->GetNormalizedMouseX() * 2), (1 - App->input->GetNormalizedMouseY() * 2)
+	
 	float normalized_x = -(1.0f - (float(mouse_x / width) * 2.0f));
 	float normalized_y = 1.0f - (float(mouse_y/ height) * 2.0f);
 

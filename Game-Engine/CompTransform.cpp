@@ -26,7 +26,6 @@ void CompTransform::Update()
 
 void CompTransform::UpdatePositionMatrix()
 {
-	
 	rotation.x *= DEGTORAD;
 	rotation.y *= DEGTORAD;
 	rotation.z *= DEGTORAD;

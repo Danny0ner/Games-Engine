@@ -142,16 +142,15 @@ GameObject* ModuleEditor::CastRay(const LineSegment& Segment, float Distance)
 {
 	Distance = 100000;
 	GameObject* Select = nullptr;
-	TestRay(Segment, &Distance, Select);
+	TestRay(Segment, Distance, Select);
 	return Select;
 
 }
 
-void ModuleEditor::TestRay(const LineSegment& Segment, float* Distance, GameObject* &Select)
+void ModuleEditor::TestRay(const LineSegment& Segment, float& Distance, GameObject* &Select)
 {
 	//std::vector<GameObject*> Objects;
 	//Quadroot->root->CollectIntersectionsLine(Objects, Segment);
-
 	for (std::vector<GameObject*>::const_iterator tmp = Static_Vector.begin(); tmp != Static_Vector.end(); tmp++)
 	{
 		// Look for meshes, nothing else can be "picked" from the screen
@@ -166,37 +165,30 @@ void ModuleEditor::TestRay(const LineSegment& Segment, float* Distance, GameObje
 			// test all triangles
 			LineSegment SegmentLocal(Segment);
 			SegmentLocal.Transform(transf->GetTransMatrix().Inverted());
-			Triangle tri;
 			AABB box = Mesh->enclosingBox;
-			box.TransformAsAABB(transf->GetTransMatrix());
 			float LocalDistance = 0;
 			float LocalHitPoint;
-			if(SegmentLocal.Intersects(box, LocalDistance, LocalHitPoint))
+			if (Mesh->numIndices > 9 || Mesh->numVertices % 3 == 0)
 			{
-				if (&LocalDistance < Distance)
+				for (int i = 0; i < Mesh->numIndices; i += 3)
 				{
-					Distance = &LocalDistance;
-					Select = (*tmp);
-				}
-			}
-			/*for (uint i = 0; i <= Mesh->numIndices +1;)
-			{
-				tri.a.Set(Mesh->vertices[Mesh->indices[i++]], Mesh->vertices[Mesh->indices[i++]], Mesh->vertices[Mesh->indices[i++]]);
-				tri.b.Set(Mesh->vertices[Mesh->indices[i++]], Mesh->vertices[Mesh->indices[i++]], Mesh->vertices[Mesh->indices[i++]]);
-				tri.c.Set(Mesh->vertices[Mesh->indices[i++]], Mesh->vertices[Mesh->indices[i++]], Mesh->vertices[Mesh->indices[i++]]);
+					Triangle face(float3(Mesh->vertices[Mesh->indices[i] * 3], Mesh->vertices[Mesh->indices[i] * 3 + 1], Mesh->vertices[Mesh->indices[i] * 3 + 2]),
+						float3(Mesh->vertices[Mesh->indices[i + 1] * 3], Mesh->vertices[Mesh->indices[i + 1] * 3 + 1], Mesh->vertices[Mesh->indices[i + 1] * 3 + 2]),
+						float3(Mesh->vertices[Mesh->indices[i + 2] * 3], Mesh->vertices[Mesh->indices[i + 2] * 3 + 1], Mesh->vertices[Mesh->indices[i + 2] * 3 + 2]));
 
-				float* LocalDistance=0;
-				float3 LocalHitPoint;
-				LocalHitPoint.x = 0; LocalHitPoint.y = 0; LocalHitPoint.z = 0;
-				if (SegmentLocal.Intersects(tri, LocalDistance, &LocalHitPoint))
-				{
-					if (LocalDistance < Distance)
+					float LocalDistance = 0;
+					float3 LocalHitPoint;
+					LocalHitPoint.x = 0; LocalHitPoint.y = 0; LocalHitPoint.z = 0;
+					if (SegmentLocal.Intersects(face, &LocalDistance, &LocalHitPoint))
 					{
-						Distance = LocalDistance;
-						Select = (*tmp);
+						if (LocalDistance < Distance)
+						{
+							Distance = LocalDistance;
+							Select = (*tmp);
+						}
 					}
 				}
-			}*/
+			}
 		}
 	}
 
