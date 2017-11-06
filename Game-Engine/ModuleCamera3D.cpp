@@ -32,9 +32,10 @@ bool ModuleCamera3D::Start()
 	ViewVector = vec3(0.0f, 10.05f, 0.0f);
 	camera_dist = 27;*/
 	
-	FrustumPick.SetHorizontalFovAndAspectRatio(90 * DEGTORAD, App->window->GetAspectRatio());
+	FrustumPick.SetHorizontalFovAndAspectRatio(60 * DEGTORAD, App->window->GetAspectRatio());
 	FrustumPick.SetViewPlaneDistances(0.1f, 1000.0f);
 	FrustumPick.type = PerspectiveFrustum;
+
 	return ret;
 }
 
@@ -167,15 +168,9 @@ update_status ModuleCamera3D::Update(float dt)
 		FrustumPick.SetPos(Position);
 		FrustumPick.SetFront(-ViewMatrix.Col3(2));			//update the pick frustum with the editor camera//
 		FrustumPick.SetUp(ViewMatrix.Col3(1));
-		
-
 		GameObject* ObjectPick = MousePicking();
 		App->editor->SelectGameObject(ObjectPick);
-
-
 	}
-	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
-		RecentreCameraToGeometry();
 	
 	// Recalculate matrix -------------
 	CalculateViewMatrix();
