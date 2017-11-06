@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Component.h"
-#include "MathGeoLib\Math\float3.h"
-#include "MathGeoLib\Math\Quat.h"
-#include "MathGeoLib\Math\float4x4.h"
+#include "MathGeo\Math\float3.h"
+#include "MathGeo\Math\Quat.h"
+#include "MathGeo\Math\float4x4.h"
 class CompTransform : public Component
 {
 public:

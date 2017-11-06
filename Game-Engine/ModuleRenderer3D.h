@@ -3,7 +3,6 @@
 #include "Globals.h"
 #include "glmath.h"
 #include "Light.h"
-#include "MathGeoLib.h"
 #include "Glew\include\glew.h"
 #include "ImGui\imgui.h"
 #include "Imgui/imgui_impl_sdl_gl3.h"

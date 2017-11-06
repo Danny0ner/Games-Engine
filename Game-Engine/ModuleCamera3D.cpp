@@ -28,14 +28,18 @@ bool ModuleCamera3D::Start()
 {
 	LOG("Setting up the camera");
 	bool ret = true;
-	/*CameraLocation = vec3(0.0f, 15, 0.0f);
-	ViewVector = vec3(0.0f, 10.05f, 0.0f);
-	camera_dist = 27;*/
-	
-	FrustumPick.SetHorizontalFovAndAspectRatio(60 * DEGTORAD, App->window->GetAspectRatio());
-	FrustumPick.SetViewPlaneDistances(0.1f, 1000.0f);
-	FrustumPick.type = PerspectiveFrustum;
 
+	FrustumPick.type = PerspectiveFrustum;
+	FrustumPick.pos = Position;
+	FrustumPick.front = -float3(Z.x, Z.y, Z.z);
+	FrustumPick.up = float3(Y.x, Y.y, Y.z);
+	FrustumPick.nearPlaneDistance = 0.1f;
+	FrustumPick.farPlaneDistance = 1000;
+	float FOV = 15;
+	FrustumPick.verticalFov = DEGTORAD * FOV;
+	FrustumPick.horizontalFov = 2.f * atanf((tanf(FrustumPick.verticalFov * 0.5f)) * (float)(16/9));
+
+	FrustumPick.ProjectionMatrix();
 	return ret;
 }
 
@@ -111,7 +115,10 @@ update_status ModuleCamera3D::Update(float dt)
 		if (App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT) New_Position.y += speed;
 		if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT) New_Position.y -= speed;
 
-		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) New_Position -= Z * speed;
+		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
+		{
+			New_Position -= Z * speed;
+		}
 		if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) New_Position += Z * speed;
 
 
@@ -161,13 +168,16 @@ update_status ModuleCamera3D::Update(float dt)
 
 		Position = Reference + Z * (Position).Length();
 	}
-
+	//FrustumPick.SetPos(Position);
+	FrustumPick.pos = Position;
+	FrustumPick.front = -float3(Z.x, Z.y, Z.z);
+	FrustumPick.up = float3(Y.x, Y.y, Y.z);
+	//FrustumPick.SetFront(-ViewMatrix.Col3(2));			//update the pick frustum with the editor camera//
+	//FrustumPick.SetUp(ViewMatrix.Col3(1));
 
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_DOWN)
 	{
-		FrustumPick.SetPos(Position);
-		FrustumPick.SetFront(-ViewMatrix.Col3(2));			//update the pick frustum with the editor camera//
-		FrustumPick.SetUp(ViewMatrix.Col3(1));
+	
 		GameObject* ObjectPick = MousePicking();
 		App->editor->SelectGameObject(ObjectPick);
 	}
@@ -240,12 +250,12 @@ void ModuleCamera3D::CenterCameraToGeometry(const AABB* meshAABB)
 		Reference = float3(0.0f, 2.0f, 0.0f);//2.0f to better look on camera
 	else
 	{
-		vec centre = meshAABB->CenterPoint();
-		float3 newpos = meshAABB->Size()*0.65;
-		Position = float3(centre.x + newpos.x, centre.y + newpos.y, centre.z + newpos.z + 5);
-		Reference = float3(centre.x + newpos.x, centre.y + newpos.y, centre.z + newpos.z);
-		LookAt(float3(centre.x, centre.y, centre.z));
-		LastCentreGeometry = meshAABB;
+		//vec centre = meshAABB->CenterPoint();
+		//float3 newpos = meshAABB->Size()*0.65;
+		//Position = float3(centre.x + newpos.x, centre.y + newpos.y, centre.z + newpos.z + 5);
+		//Reference = float3(centre.x + newpos.x, centre.y + newpos.y, centre.z + newpos.z);
+		//LookAt(float3(centre.x, centre.y, centre.z));
+		//LastCentreGeometry = meshAABB;
 	}
 }
 
@@ -269,6 +279,7 @@ GameObject*  ModuleCamera3D::MousePicking(float3* HitPoint)
 
 	float normalized_x = -(1.0f - (float(mouse_x / width) * 2.0f));
 	float normalized_y = 1.0f - (float(mouse_y/ height) * 2.0f);
+
 	mouse_picking = FrustumPick.UnProjectLineSegment(normalized_x, normalized_y);
 
 	Hit = App->editor->CastRay(mouse_picking, distance);

@@ -3,8 +3,8 @@
 #include "GameObject.h"
 #include "CompMesh.h"
 #include "CompTransform.h"
-#include "MathGeoLib\MathGeoLib.h"
-#include "MathGeoLib\Geometry\AABB.h"
+#include "MathGeo\MathGeoLib.h"
+#include "MathGeo\Geometry\AABB.h"
 
 
 #define MAX_OBJECTS 8

@@ -3,7 +3,6 @@
 #include "Globals.h"
 #include "glmath.h"
 #include "Light.h"
-#include "MathGeoLib.h"
 #include "GeometryLoader.h"
 #include "GameObject.h"
 #include "Quadtree.h"

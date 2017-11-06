@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Component.h"
-#include "MathGeoLib\Geometry\Frustum.h"
+#include "MathGeo\Geometry\Frustum.h"
 
 class CompCamera : public Component
 {

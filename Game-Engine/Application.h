@@ -17,7 +17,7 @@
 #include "ModuleEditor.h"
 #include "GeometryLoader.h"
 #include "FileSystem.h"
-#include "MathGeoLib\Algorithm\Random\LCG.h"
+#include "MathGeo\Algorithm\Random\LCG.h"
 struct Performance
 {
 	uint	Frame_Count = 0;
@@ -74,7 +74,7 @@ public:
 	JConfig*			config;
 	ModuleEditor*		editor;
 	FileSystem*			filesystem;
-	math::LCG*			RandomUIDGen = nullptr;
+	LCG*			RandomUIDGen = nullptr;
 	RealTime			realtime;
 	GameTime			gametime;
 	GameStatus			gamestatus = GameStatus::STOP;

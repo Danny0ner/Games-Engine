@@ -2,7 +2,7 @@
 
 #include "Globals.h"
 #include "Component.h"
-#include "MathGeoLib\Geometry\AABB.h"
+#include "MathGeo\Geometry\AABB.h"
 
 class CompMesh : public Component
 {

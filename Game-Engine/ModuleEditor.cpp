@@ -165,7 +165,7 @@ void ModuleEditor::TestRay(const LineSegment& Segment, float* Distance, GameObje
 
 			// test all triangles
 			LineSegment SegmentLocal(Segment);
-			//SegmentLocal.Transform(transf->GetTransMatrix().Inverted());
+			SegmentLocal.Transform(transf->GetTransMatrix().Inverted());
 			Triangle tri;
 			AABB box = Mesh->enclosingBox;
 			box.TransformAsAABB(transf->GetTransMatrix());

@@ -5,8 +5,8 @@
 #include "GameObject.h"
 #include "ImGui\imgui.h"
 #include "Glew\include\glew.h"
-#include "MathGeoLib\Geometry\Triangle.h"
-#include "MathGeoLib\Math\float4x4.h"
+#include "MathGeo\Geometry\Triangle.h"
+#include "MathGeo\Math\float4x4.h"
 
 #include <vector>
 CompMesh::CompMesh() : Component(Component_Mesh)

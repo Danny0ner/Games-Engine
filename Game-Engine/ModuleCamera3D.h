@@ -4,7 +4,8 @@
 #include "glmath.h"
 #include "CompCamera.h"
 #include "Bullet/include/btBulletDynamicsCommon.h"
-
+#include "MathGeo\MathGeoLib.h"
+#include "MathGeo\Geometry\Frustum.h"
 
 class CompCamera;
 class ModuleCamera3D : public Module

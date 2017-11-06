@@ -1,6 +1,6 @@
 #pragma once
 #include "Component.h"
-#include "MathGeoLib\Math\float3.h"
+#include "MathGeo\Math\float3.h"
 #include "SerializeConfig.h"
 #include <string>
 #include <vector>

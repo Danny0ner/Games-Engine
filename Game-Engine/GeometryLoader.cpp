@@ -5,7 +5,7 @@
 #include "CompMaterial.h"
 #include "CompTransform.h"
 #include "Glew\include\glew.h"
-#include "MathGeoLib\Math\Quat.h"
+#include "MathGeo\Math\Quat.h"
 #include "Assimp\include\cimport.h" 
 #include "Assimp\include\scene.h" 
 #include "Assimp\include\postprocess.h" 
