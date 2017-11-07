@@ -33,9 +33,12 @@ public:
 
 	void SerializeScene(const char* filename);
 	void LoadScene(const char * fileTitle);
-	void EditTransform(GameObject* Select);
+	void LockImput();
+	void UnlockImput();
+	bool IsImputLocked();
 
 public:
+	bool LockedImput;
 	Octree* Quadroot;
 	GameObject* root = nullptr;
 	GameObject* selected = nullptr;

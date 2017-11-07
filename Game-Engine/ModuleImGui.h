@@ -28,6 +28,7 @@ public:
 	bool CleanUp();
 	void ShowModules();
 	void ShowControls();
+	void LockImput();
 
 	void ShowEditor(bool* p_open = NULL);
 public:
@@ -46,6 +47,7 @@ public:
 	bool	About = false;
 	bool    showEditor = false;
 	bool	showControls = false;
+	bool	ImputLock = false;
 	uint	Play;
 	uint	Pause;
 	uint	Stop;

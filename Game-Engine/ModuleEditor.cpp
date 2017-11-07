@@ -291,3 +291,18 @@ void ModuleEditor:EditTransform(GameObject* Select)
 	ImGuizmo::Manipulate(camera.mView.m16, camera.mProjection.m16, mCurrentGizmoOperation, mCurrentGizmoMode, matrix.m16, NULL, useSnap ? &snap.x : NULL);
 }
 */
+
+
+
+void ModuleEditor::LockImput()
+{
+	LockedImput = true;
+}
+void ModuleEditor::UnlockImput() 
+{
+	LockedImput = false;
+}
+bool ModuleEditor:: IsImputLocked()
+{
+	return LockedImput;
+}

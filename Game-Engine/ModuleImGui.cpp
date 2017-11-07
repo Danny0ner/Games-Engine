@@ -12,6 +12,7 @@
 #include "SDL\include\SDL_opengl.h"
 #include <gl/GL.h>
 #include <gl/GLU.h>
+#include "ImGui\ImGuizmo.h"
 
 #include "ModuleEditor.h"
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
@@ -52,7 +53,10 @@ update_status ModuleImGui::PreUpdate(float dt)
 
 update_status ModuleImGui::PostUpdate(float dt)
 {
-
+	if (ImGui::IsMouseHoveringAnyWindow())
+		App->editor->LockImput();
+	else if(ImGuizmo::IsOver()==false)
+		App->editor->UnlockImput();
 
 
 	//		MAIN MENU		//

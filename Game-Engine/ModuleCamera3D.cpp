@@ -54,6 +54,9 @@ bool ModuleCamera3D::CleanUp()
 // -----------------------------------------------------------------
 update_status ModuleCamera3D::Update(float dt)
 {
+	if (App->editor->IsImputLocked() == true)	
+	return UPDATE_CONTINUE;
+
 	float3 New_Position(0, 0, 0);
 	float speed = 5.0f*dt;
 

@@ -1,6 +1,7 @@
 #include "CompTransform.h"
 #include "GameObject.h"
 #include "ImGui\imgui.h"
+#include "ImGui\ImGuizmo.h"
 #include "Application.h"
 
 
@@ -65,6 +66,7 @@ void CompTransform::OnEditor()
 		if (ImGui::DragFloat3("Scale", &scale.x, 0.5, -30,30, "%.2f"))
 		{
 		}
+		Guizmo(App->camera->FrustumPick);
 		ImGui::TreePop();
 	}
 }
@@ -95,4 +97,34 @@ void CompTransform::OnLoad(Configuration & data)
 	scale.x = data.GetFloat("Scale", 0);
 	scale.y = data.GetFloat("Scale", 1);
 	scale.z = data.GetFloat("Scale", 2);
+}
+
+void CompTransform::Guizmo(Frustum& Frustum)const
+{
+
+	if (ImGuizmo::IsOver())
+			App->editor->LockImput();
+		else
+			App->editor->UnlockImput();
+
+
+
+	ImGuizmo::Enable(true);
+	ImGuizmo::BeginFrame();
+	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
+	static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
+	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+		mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+		mCurrentGizmoOperation = ImGuizmo::ROTATE;
+	if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
+		mCurrentGizmoOperation = ImGuizmo::SCALE;
+
+	
+	float4x4 ViewMatrix = Frustum.ViewMatrix();
+	ImGuiIO& io = ImGui::GetIO();
+	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+	ImGuizmo::Manipulate((ViewMatrix.Transposed().ptr()), Frustum.ViewProjMatrix().Transposed().ptr(), mCurrentGizmoOperation, ImGuizmo::LOCAL, TransMatrix.Transposed().ptr());
+	
+
 }

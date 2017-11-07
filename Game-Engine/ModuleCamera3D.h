@@ -41,7 +41,7 @@ public:
 	vec3			VehicleLocation;
 	uint			camera_fx;
 	bool			FPS;
-	Frustum				FrustumPick;
+	Frustum			FrustumPick;
 private:
 
 	float4x4			ViewMatrix, ViewMatrixInverse;
