@@ -99,7 +99,7 @@ void CompTransform::OnLoad(Configuration & data)
 	scale.z = data.GetFloat("Scale", 2);
 }
 
-void CompTransform::Guizmo(Frustum& Frustum)const
+void CompTransform::Guizmo(Frustum& Frustum)
 {
 	float4x4 ViewMatrix = Frustum.ViewMatrix();
 	if (ImGuizmo::IsOver())
@@ -108,14 +108,13 @@ void CompTransform::Guizmo(Frustum& Frustum)const
 			App->editor->UnlockImput();
 
 	float* GuizmoTransMatrix = TransMatrix.Transposed().ptr();
-	float* GuizmoViewMatrix = ViewMatrix.Transposed().ptr();
+	//float* GuizmoViewMatrix = ViewMatrix.Transposed().ptr();
+	float4x4 identity;
 	float* GuizmoProjMatrix = Frustum.ViewProjMatrix().Transposed().ptr();
-	float* GPosition;
-	float* GRotation;
-	float* GScale;
 
 	ImGuizmo::Enable(true);
 	ImGuizmo::BeginFrame();
+	
 	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
 	static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
 	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
@@ -126,14 +125,13 @@ void CompTransform::Guizmo(Frustum& Frustum)const
 		mCurrentGizmoOperation = ImGuizmo::SCALE;
 
 	
-	
+	mCurrentGizmoMode = ImGuizmo::WORLD;
 	ImGuiIO& io = ImGui::GetIO();
-	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-	ImGuizmo::Manipulate(GuizmoViewMatrix, GuizmoProjMatrix, mCurrentGizmoOperation, ImGuizmo::WORLD, GuizmoTransMatrix);
+	ImGuizmo::SetRect(0,0, io.DisplaySize.x, io.DisplaySize.y);
+	ImGuizmo::Manipulate(identity.identity.ptr(),GuizmoProjMatrix, mCurrentGizmoOperation, mCurrentGizmoMode, GuizmoTransMatrix);
 	
-	ImGuizmo::DecomposeMatrixToComponents(GuizmoTransMatrix,(float*)position.ptr(), (float*)rotation.ptr(), (float*)scale.ptr());
-	
-
-	
-
+	ImGuizmo::DecomposeMatrixToComponents(GuizmoTransMatrix, (float*)position.ptr(), (float*)rotation.ptr(), (float*)scale.ptr());
+	TransMatrix.Transpose();
+	ImGuizmo::RecomposeMatrixFromComponents((float*)position.ptr(), (float*)rotation.ptr(), (float*)scale.ptr(), TransMatrix.ptr());
+	TransMatrix.Transpose();
 }

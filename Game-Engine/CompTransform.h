@@ -16,7 +16,7 @@ public:
 	float4x4 GetTransMatrix();
 	void OnSave(Configuration& data) const;
 	void OnLoad(Configuration& data);
-	void Guizmo(Frustum& Camera) const;
+	void Guizmo(Frustum& Camera);
 private:
 	float3 movedposition;
 	float3 position;

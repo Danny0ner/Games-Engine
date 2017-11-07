@@ -142,7 +142,6 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glLoadMatrixf(App->camera->FrustumPick.ViewProjMatrix().Transposed().ptr());
@@ -161,8 +160,6 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	glVertex3f(App->camera->mouse_picking.a.x, App->camera->mouse_picking.a.y, App->camera->mouse_picking.a.z); glVertex3f(App->camera->mouse_picking.b.x, App->camera->mouse_picking.b.y, App->camera->mouse_picking.b.z);
 
 	glEnd();
-
-	App->camera->FrustumPick.DrawDebug(Orange);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	grid->Render();
