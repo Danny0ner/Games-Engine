@@ -97,6 +97,27 @@ Component* GameObject::FindComponent(ComponentType type) const
 	return nullptr;
 }
 
+void GameObject::ChangeStaticState(bool Static)
+{
+	if (this->Static == Static) return;
+	else if (Static == true)
+	{
+		for (std::vector<GameObject*>::const_iterator tmp = App->editor->Dynamic_Vector.begin(); tmp != App->editor->Dynamic_Vector.end(); tmp++)
+		{
+			if ((*tmp) == this) tmp = App->editor->Dynamic_Vector.erase(tmp);
+		}
+		App->editor->Static_Vector.push_back(this);
+	}
+	else if (Static == false)
+	{
+		for (std::vector<GameObject*>::const_iterator tmp = App->editor->Static_Vector.begin(); tmp != App->editor->Static_Vector.end(); tmp++)
+		{
+			if ((*tmp) == this) tmp = App->editor->Static_Vector.erase(tmp);
+		}
+		App->editor->Dynamic_Vector.push_back(this);
+	}
+}
+
 
 int GameObject::GetUID()
 {
@@ -138,7 +159,10 @@ void GameObject::ShowInspector()
 	std::string temp = name;
 	temp += " Inspector";
 	ImGui::Begin(temp.c_str());
-
+	if (ImGui::Checkbox("Static", &Static)) 
+	{
+		ChangeStaticState(Static);
+	}
 	ImGui::PushItemWidth(-140);
 	for (int i = 0; i < components.size(); i++)
 	{

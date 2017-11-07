@@ -28,7 +28,7 @@ public:
 	void OnSerialize(Configuration & dataToSave) const;
 	void Deserialize(Configuration & dataToSave);
 	Component* FindComponent(ComponentType type) const;
-
+	void ChangeStaticState(bool Staticc);
 	std::vector<Component*> components;
 	std::vector<GameObject*> childs;
 	int GetUID();

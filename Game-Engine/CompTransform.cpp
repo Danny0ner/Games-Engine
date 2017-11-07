@@ -53,39 +53,18 @@ void CompTransform::UpdatePositionMatrix()
 
 void CompTransform::OnEditor()
 {
-	if (ImGui::TreeNodeEx(name.c_str()))
+	if (ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::Text("Position:");
-		if (ImGui::SliderFloat("X", &position.x, -200, 200))
+		if (ImGui::DragFloat3("Position", &position.x, 0.5, -1000,1000,"%.2f"))
 		{
 		}
-		if (ImGui::SliderFloat("Y", &position.y, -100, 100))
-		{
-		}
-		if (ImGui::SliderFloat("Z", &position.z, -200, 200))
-		{
-		}
-		if (ImGui::SliderFloat("rotationX", &rotation.x, 0, 360))
-		{
-		}
-		if (ImGui::SliderFloat("rotationY", &rotation.y, 0, 360))
-		{
-		}
-		if (ImGui::SliderFloat("rotationZ", &rotation.z, 0, 360))
-		{
-		}
-		if (ImGui::SliderFloat("scaleX", &scale.x, 0, 30))
-		{
-		}
-		if (ImGui::SliderFloat("scaleY", &scale.y, 0, 30))
-		{
-		}
-		if (ImGui::SliderFloat("scaleZ", &scale.z, 0, 30))
+		if (ImGui::DragFloat3("Rotation", &rotation.x, 1, -360,360, "%.2f"))
 		{
 		}
 
-		ImGui::TextColored({0.7f, 1.0f, 1.0f,1.0f},"Scale: X=%.2f, Y=%.2f, Z=%.2f", scale.x, scale.y, scale.z);
-		ImGui::TextColored({ 0.7f, 1.0f, 1.0f ,1.0f}, "Rotation: X=%.2f, Y=%.2f, Z=%.2f, W=%.2f", rotation.x, rotation.y, rotation.z, rotation.w);
+		if (ImGui::DragFloat3("Scale", &scale.x, 0.5, -30,30, "%.2f"))
+		{
+		}
 		ImGui::TreePop();
 	}
 }

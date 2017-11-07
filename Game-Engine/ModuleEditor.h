@@ -40,5 +40,6 @@ public:
 	GameObject* root = nullptr;
 	GameObject* selected = nullptr;
 	std::vector<GameObject*> Static_Vector;
+	std::vector<GameObject*> Dynamic_Vector;
 
 };

@@ -40,12 +40,11 @@ void CompCamera::SetPos(float3 newPos)
 
 void CompCamera::OnEditor()
 {
-	if (ImGui::TreeNodeEx(name.c_str()))
+	if (ImGui::TreeNodeEx(name.c_str(),ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::Text("Position:");
-		ImGui::SliderFloat("X", &frustum.pos.x, -500, 500);
-		ImGui::SliderFloat("Y", &frustum.pos.y, -500, 500);
-		ImGui::SliderFloat("Z", &frustum.pos.z, -500, 500);
+		if (ImGui::DragFloat3("Position", &frustum.pos.x, 0.5, -1000, 1000, "%.2f"))
+		{
+		}
 		ImGui::TreePop();
 
 		ImGui::Text("FOV:");

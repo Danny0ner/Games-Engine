@@ -113,7 +113,7 @@ void CompMesh::DrawDebug() const
 
 void CompMesh::OnEditor()
 {
-	if (ImGui::TreeNodeEx(name.c_str()))
+	if (ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1},"Vertices ID: %i", idVertices);
 		ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Num Vertices: %i", numVertices);

@@ -11,7 +11,7 @@ CompMaterial::~CompMaterial()
 
 void CompMaterial::OnEditor()
 {
-	if (ImGui::TreeNodeEx("Material"))
+	if (ImGui::TreeNodeEx("Material", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		ImGui::Text(name.c_str());
 		ImGui::Text("Texture ID: %i", idTexture);
