@@ -101,13 +101,18 @@ void CompTransform::OnLoad(Configuration & data)
 
 void CompTransform::Guizmo(Frustum& Frustum)const
 {
-
+	float4x4 ViewMatrix = Frustum.ViewMatrix();
 	if (ImGuizmo::IsOver())
 			App->editor->LockImput();
 		else
 			App->editor->UnlockImput();
 
-
+	float* GuizmoTransMatrix = TransMatrix.Transposed().ptr();
+	float* GuizmoViewMatrix = ViewMatrix.Transposed().ptr();
+	float* GuizmoProjMatrix = Frustum.ViewProjMatrix().Transposed().ptr();
+	float* GPosition;
+	float* GRotation;
+	float* GScale;
 
 	ImGuizmo::Enable(true);
 	ImGuizmo::BeginFrame();
@@ -121,10 +126,14 @@ void CompTransform::Guizmo(Frustum& Frustum)const
 		mCurrentGizmoOperation = ImGuizmo::SCALE;
 
 	
-	float4x4 ViewMatrix = Frustum.ViewMatrix();
+	
 	ImGuiIO& io = ImGui::GetIO();
 	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-	ImGuizmo::Manipulate((ViewMatrix.Transposed().ptr()), Frustum.ViewProjMatrix().Transposed().ptr(), mCurrentGizmoOperation, ImGuizmo::LOCAL, TransMatrix.Transposed().ptr());
+	ImGuizmo::Manipulate(GuizmoViewMatrix, GuizmoProjMatrix, mCurrentGizmoOperation, ImGuizmo::WORLD, GuizmoTransMatrix);
+	
+	ImGuizmo::DecomposeMatrixToComponents(GuizmoTransMatrix,(float*)position.ptr(), (float*)rotation.ptr(), (float*)scale.ptr());
+	
+
 	
 
 }
