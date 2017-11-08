@@ -48,7 +48,7 @@ void CompTransform::UpdatePositionMatrix()
 		while (GO != nullptr)
 		{
 			CompTransform* transf = dynamic_cast<CompTransform*>(GO->FindComponent(Component_Transform));
-			if(transf != nullptr) TransMatrix = transf->GetTransMatrix()* TransMatrix;
+			if(transf != nullptr) TransMatrix =transf->GetTransMatrix() * TransMatrix;
 			GO = GO->GetParent();
 		}
 	}

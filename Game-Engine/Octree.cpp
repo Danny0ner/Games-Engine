@@ -1,5 +1,5 @@
 #include "Application.h"
-#include "Quadtree.h"
+#include "Octree.h"
 #include "GameObject.h"
 #include "CompMesh.h"
 #include "CompTransform.h"
@@ -7,7 +7,7 @@
 #include "MathGeo\Geometry\AABB.h"
 
 
-#define MAX_OBJECTS 8
+#define MAX_OBJECTS 4
 #define MIN_SIZE 1
 
 OctreeNode::OctreeNode(const AABB& box) : box(box)
@@ -53,6 +53,7 @@ void OctreeNode::Insert(GameObject* toInsert)
 			CreateChilds();
 			childscreateds = true;
 		}
+		objects.push_back(toInsert);
 		RedistributeChilds();
 	}
 }
@@ -79,45 +80,59 @@ void OctreeNode::Remove(GameObject* toRemove)
 
 void OctreeNode::CreateChilds()
 {
-	float			cube_sizex = box.HalfSize().x;
-	float			cube_sizey = box.HalfSize().y;
-	float			cube_sizez = box.HalfSize().z;
-	math::AABB		temp_ab;
+	AABB childBox;
 
-	//Calculate new AABB for each child
+	float3 boxMin = this->box.minPoint;
+	float3 boxMax = this->box.maxPoint;
+	float3 boxHalfSize = this->box.HalfSize();
 
-	temp_ab.minPoint = box.CenterPoint();
-	temp_ab.maxPoint = { box.CenterPoint().x - cube_sizex,box.CenterPoint().y - cube_sizey,box.CenterPoint().z - cube_sizez };
-	childs[0] = new OctreeNode(temp_ab);
+	//Child 0
+	childBox.minPoint = float3(boxMin.x, boxMin.y, boxMin.z);
+	childBox.maxPoint = float3(boxMax.x - boxHalfSize.x, boxMax.y - boxHalfSize.y, boxMax.z - boxHalfSize.z);
 
-	temp_ab.minPoint = box.CenterPoint();
-	temp_ab.maxPoint = { box.CenterPoint().x + cube_sizex, box.CenterPoint().y - cube_sizey, box.CenterPoint().z - cube_sizez };
-	childs[1] = new OctreeNode(temp_ab);
+	childs[0] = new OctreeNode(childBox);
 
-	temp_ab.minPoint = box.CenterPoint();
-	temp_ab.maxPoint = { box.CenterPoint().x - cube_sizex, box.CenterPoint().y + cube_sizey, box.CenterPoint().z - cube_sizez };
-	childs[2] = new OctreeNode(temp_ab);
+	//Child 1
+	childBox.minPoint = float3(boxMin.x, boxMin.y + boxHalfSize.y, boxMin.z);
+	childBox.maxPoint = float3(boxMax.x - boxHalfSize.x, boxMax.y, boxMax.z - boxHalfSize.z);
 
-	temp_ab.minPoint = box.CenterPoint();
-	temp_ab.maxPoint = { box.CenterPoint().x - cube_sizex, box.CenterPoint().y - cube_sizey, box.CenterPoint().z + cube_sizez };
-	childs[3] = new OctreeNode(temp_ab);
+	childs[1] = new OctreeNode(childBox);
 
-	temp_ab.minPoint = box.CenterPoint();
-	temp_ab.maxPoint = { box.CenterPoint().x + cube_sizex, box.CenterPoint().y + cube_sizey,  box.CenterPoint().z + cube_sizez };
-	childs[4] = new OctreeNode(temp_ab);
+	//Child 2
+	childBox.minPoint = float3(boxMin.x, boxMin.y, boxMin.z + boxHalfSize.z);
+	childBox.maxPoint = float3(boxMax.x - boxHalfSize.x, boxMax.y - boxHalfSize.y, boxMax.z);
 
-	temp_ab.minPoint = box.CenterPoint();
-	temp_ab.maxPoint = { box.CenterPoint().x + cube_sizex, box.CenterPoint().y + cube_sizey, box.CenterPoint().z - cube_sizez };
-	childs[5] = new OctreeNode(temp_ab);
+	childs[2] = new OctreeNode(childBox);
 
-	temp_ab.minPoint = box.CenterPoint();;
-	temp_ab.maxPoint = { box.CenterPoint().x + cube_sizex, box.CenterPoint().y - cube_sizey, box.CenterPoint().z + cube_sizez };
-	childs[6] = new OctreeNode(temp_ab);
+	//Child 3
+	childBox.minPoint = float3(boxMin.x, boxMin.y + boxHalfSize.y, boxMin.z + boxHalfSize.z);
+	childBox.maxPoint = float3(boxMax.x - boxHalfSize.x, boxMax.y, boxMax.z);
 
-	temp_ab.minPoint = box.CenterPoint();
-	temp_ab.maxPoint = { box.CenterPoint().x - cube_sizex, box.CenterPoint().y + cube_sizey, box.CenterPoint().z + cube_sizez };
-	childs[7] = new OctreeNode(temp_ab);
+	childs[3] = new OctreeNode(childBox);
 
+	//Child 4
+	childBox.minPoint = float3(boxMin.x + boxHalfSize.x, boxMin.y, boxMin.z);
+	childBox.maxPoint = float3(boxMax.x, boxMax.y - boxHalfSize.y, boxMax.z - boxHalfSize.z);
+
+	childs[4] = new OctreeNode(childBox);
+
+	//Child 5
+	childBox.minPoint = float3(boxMin.x + boxHalfSize.x, boxMin.y + boxHalfSize.y, boxMin.z);
+	childBox.maxPoint = float3(boxMax.x, boxMax.y, boxMax.z - boxHalfSize.z);
+
+	childs[5] = new OctreeNode(childBox);
+
+	//Child 6
+	childBox.minPoint = float3(boxMin.x + boxHalfSize.x, boxMin.y, boxMin.z + boxHalfSize.z);
+	childBox.maxPoint = float3(boxMax.x, boxMax.y - boxHalfSize.y, boxMax.z);
+
+	childs[6] = new OctreeNode(childBox);
+
+	//Child 7
+	childBox.minPoint = float3(boxMin.x + boxHalfSize.x, boxMin.y + boxHalfSize.y, boxMin.z + boxHalfSize.z);
+	childBox.maxPoint = float3(boxMax.x, boxMax.y, boxMax.z);
+
+	childs[7] = new OctreeNode(childBox);
 	for (int i = 0; i < 8; i++)
 	{
 		childs[i]->parent = this;
@@ -128,22 +143,28 @@ void OctreeNode::RedistributeChilds()
 {
 	for (std::list<GameObject*>::iterator it = objects.begin(); it != objects.end();)
 	{
-		for (int i = 0; i < 8; i++)
+		CompMesh* tmp = (CompMesh*)(*it)->FindComponent(Component_Mesh);
+		CompTransform* transf = (CompTransform*)(*it)->FindComponent(Component_Transform);
+		if (tmp != nullptr)
 		{
-		
-			CompMesh* tmp = (CompMesh*)(*it)->FindComponent(Component_Mesh);
-			CompTransform* transf = (CompTransform*)(*it)->FindComponent(Component_Transform);
-			if (tmp != nullptr)
+			AABB Enclosing_Box = tmp->enclosingBox;
+			Enclosing_Box.TransformAsAABB(transf->GetTransMatrix());
+
+
+			bool intersect[8];
+			for (int i = 0; i < 8; i++)	intersect[i] = childs[i]->box.Intersects(Enclosing_Box);
+
+			if (intersect[0] && intersect[1] && intersect[2] && intersect[3] && intersect[4] && intersect[5] && intersect[6] && intersect[7]) it++;
+
+			else
 			{
-				AABB Enclosing_Box = tmp->enclosingBox;
-				Enclosing_Box.TransformAsAABB(transf->GetTransMatrix());
-				if (childs[i]->box.Intersects(Enclosing_Box));
+				for (int i = 0; i < 8; i++)
 				{
-					childs[i]->Insert((*it));
+					if (childs[i]->box.Intersects(Enclosing_Box)) childs[i]->Insert(*it);
 				}
+				it = objects.erase(it);
 			}
 		}
-		it = objects.erase(it);
 	}
 }
 
@@ -224,7 +245,7 @@ Octree::~Octree()
 
 void Octree::Insert(GameObject* toInsert)
 {
-	
+
 	CompMesh* tmp = (CompMesh*)toInsert->FindComponent(Component_Mesh);
 	CompTransform* transf = (CompTransform*)toInsert->FindComponent(Component_Transform);
 	AABB Enclosing_Box = tmp->enclosingBox;

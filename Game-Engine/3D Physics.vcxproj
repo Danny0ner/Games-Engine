@@ -205,7 +205,7 @@
     <ClInclude Include="p2Point.h" />
     <ClInclude Include="PhysBody3D.h" />
     <ClInclude Include="Primitive.h" />
-    <ClInclude Include="Quadtree.h" />
+    <ClInclude Include="Octree.h" />
     <ClInclude Include="SerializeConfig.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
@@ -271,7 +271,7 @@
     <ClCompile Include="ModuleEditor.cpp" />
     <ClCompile Include="PhysBody3D.cpp" />
     <ClCompile Include="Primitive.cpp" />
-    <ClCompile Include="Quadtree.cpp" />
+    <ClCompile Include="Octree.cpp" />
     <ClCompile Include="SerializeConfig.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>

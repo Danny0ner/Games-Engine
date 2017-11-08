@@ -5,7 +5,7 @@
 #include "Light.h"
 #include "GeometryLoader.h"
 #include "GameObject.h"
-#include "Quadtree.h"
+#include "Octree.h"
 
 class ModuleEditor : public Module
 {
