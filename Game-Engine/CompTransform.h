@@ -23,7 +23,9 @@ private:
 	float3 scale;
 	Quat rotation;
 	float4x4 TransMatrix;
+	float3 eulerrot;
 	
 
 	bool needToMove;
+	bool needToUpdate;
 };

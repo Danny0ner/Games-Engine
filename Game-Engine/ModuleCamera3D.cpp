@@ -35,7 +35,7 @@ bool ModuleCamera3D::Start()
 	FrustumPick.up = float3(Y.x, Y.y, Y.z);
 	FrustumPick.nearPlaneDistance = 0.1f;
 	FrustumPick.farPlaneDistance = 1000;
-	float FOV = 60;
+	float FOV = 80;
 	FrustumPick.verticalFov = DEGTORAD * FOV;
 	FrustumPick.horizontalFov = 2.f * atanf((tanf(FrustumPick.verticalFov * 0.5f)) * (App->window->GetAspectRatio()));
 

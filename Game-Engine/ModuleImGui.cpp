@@ -47,7 +47,9 @@ bool ModuleImGui::Start()
 
 update_status ModuleImGui::PreUpdate(float dt)
 {
+
 	ImGui_ImplSdlGL3_NewFrame(App->window->window);
+	ImGuizmo::BeginFrame();
 	return UPDATE_CONTINUE;
 }
 
