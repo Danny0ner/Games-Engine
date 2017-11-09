@@ -17,6 +17,9 @@ public:
 	void OnSave(Configuration& data) const;
 	void OnLoad(Configuration& data);
 	void Guizmo(Frustum& Camera);
+	void UpdateChildsTransMatrix();
+
+	bool needToUpdate;
 private:
 	float3 movedposition;
 	float3 position;
@@ -24,8 +27,4 @@ private:
 	Quat rotation;
 	float4x4 TransMatrix;
 	float3 eulerrot;
-	
-
-	bool needToMove;
-	bool needToUpdate;
 };

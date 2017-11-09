@@ -13,18 +13,25 @@ GameObject::GameObject(GameObject* parent): parent(parent)
 }
 GameObject::~GameObject()
 {
-	while (!childs.empty())
+	if (childs.size() != 0)
 	{
-		delete childs.back();
-		childs.pop_back();
+		while (!childs.empty())
+		{
+			delete childs.back();
+			childs.pop_back();
+		}
+		childs.clear();
 	}
-	childs.clear();
-	while (!components.empty())
+	if (components.size() != 0)
 	{
-		delete components.back();
-		components.pop_back();
+		while (!components.empty())
+		{
+			delete components.back();
+			components.pop_back();
+		}
+		components.clear();
 	}
-	components.clear();
+
 }
 
 void GameObject::Update()

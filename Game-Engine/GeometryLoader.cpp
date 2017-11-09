@@ -68,11 +68,11 @@ GameObject* GeometryLoader::LoadGameObject(const char* fullPath)
 		//Load transform
 		aiNode* node = scene->mRootNode;
 		newObject->AddComponent(LoadTransform(node));
-
+		
 		
 		LOG("Loading meshes");
 
-		newObject->AddChild(AddGameObjectChild(node, scene, newObject));
+		AddGameObjectChild(node, scene, newObject);
 
 		aiReleaseImport(scene);
 
@@ -87,9 +87,9 @@ GameObject* GeometryLoader::LoadGameObject(const char* fullPath)
 
 GameObject * GeometryLoader::AddGameObjectChild(aiNode * node, const aiScene * scene, GameObject * parent)
 {
+	GameObject* newObject = new GameObject(parent);
 	for (uint i = 0; i < node->mNumMeshes; i++)
 	{
-		GameObject* newObject = new GameObject(parent);
 		aiMatrix4x4 matrix = node->mTransformation;
 		newObject->AddComponent(LoadTransform(node));
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
@@ -97,11 +97,16 @@ GameObject * GeometryLoader::AddGameObjectChild(aiNode * node, const aiScene * s
 		LoadMesh(mesh ,node, scene, newObject);
 		App->editor->GetQuadtree()->Insert(newObject);
 		App->editor->Static_Vector.push_back(newObject);
-		return newObject;
+		parent->AddChild(newObject);
+	}
+	if (node->mNumMeshes == 0) {
+		aiMatrix4x4 matrix = node->mTransformation;
+		newObject->AddComponent(LoadTransform(node));
+		parent->AddChild(newObject);
 	}
 	for (uint i = 0; i < node->mNumChildren; i++)
 	{
-		parent->AddChild(AddGameObjectChild(node->mChildren[i], scene, parent));
+		AddGameObjectChild(node->mChildren[i], scene, newObject);
 	}
 	return nullptr;
 }
@@ -549,9 +554,9 @@ CompMaterial* GeometryLoader::LoadMaterial(aiMaterial* newMaterial)
 
 CompTransform* GeometryLoader::LoadTransform(aiNode* node)
 {
-	aiVector3D translation;
-	aiVector3D scale;
-	aiQuaternion q1;
+	aiVector3D translation = { 0,0,0 };
+	aiVector3D scale = { 1,1,1 };
+	aiQuaternion q1 = { 0,0,0,0 };
 	node->mTransformation.Decompose(scale, q1, translation);
 
 	float3 pos(translation.x, translation.y, translation.z);

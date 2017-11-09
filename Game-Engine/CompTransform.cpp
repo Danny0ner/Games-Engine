@@ -37,7 +37,7 @@ void CompTransform::UpdatePositionMatrix()
 	eulerrot.z *= DEGTORAD;
 	rotation = Quat::FromEulerXYZ(eulerrot.x, eulerrot.y, eulerrot.z);
 	TransMatrix = float4x4::FromQuat(rotation);
-	TransMatrix = float4x4::Scale(scale, float3(0, 0, 0));
+	TransMatrix = float4x4::Scale(scale, float3(0, 0, 0))* TransMatrix;
 	TransMatrix.float4x4::SetTranslatePart(position.x, position.y, position.z);
 	eulerrot.x *= RADTODEG;
 	eulerrot.y *= RADTODEG;
@@ -53,6 +53,7 @@ void CompTransform::UpdatePositionMatrix()
 		}
 	}
 	needToUpdate = false;
+	UpdateChildsTransMatrix();
 }
 
 void CompTransform::OnEditor()
@@ -160,5 +161,18 @@ void CompTransform::Guizmo(Frustum& Frustum)
 		TransMatrix.Transpose();
 		ImGuizmo::RecomposeMatrixFromComponents((float*)position.ptr(), (float*)eulerrot.ptr(), (float*)scale.ptr(), TransMatrix.ptr());
 		TransMatrix.Transpose();
+	}
+}
+
+void CompTransform::UpdateChildsTransMatrix()
+{
+	for (int i = 0; i < myGO->childs.size(); i++)
+	{
+		CompTransform* trans = (CompTransform*)myGO->childs[i]->FindComponent(Component_Transform);
+		if (trans != nullptr)
+		{
+			trans->needToUpdate = true;
+			trans->UpdateChildsTransMatrix();
+		}
 	}
 }
