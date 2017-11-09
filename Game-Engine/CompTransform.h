@@ -19,6 +19,8 @@ public:
 	void Guizmo(Frustum& Camera);
 	void UpdateChildsTransMatrix();
 
+	void UpdateChildsTransMatrixNow();
+
 	bool needToUpdate;
 private:
 	float3 movedposition;

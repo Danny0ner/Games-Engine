@@ -10,6 +10,7 @@ CompTransform::CompTransform(float3 pos, float3 scale, Quat rot, ComponentType t
 	name = "Transform";
 	needToUpdate = false;
 	eulerrot = rot.ToEulerXYZ();
+	eulerrot *= RADTODEG;
 	rotation = rot;
 	TransMatrix = float4x4::FromQuat(rot);
 	TransMatrix = float4x4::Scale(scale, float3(0, 0, 0)) * TransMatrix;
@@ -42,15 +43,14 @@ void CompTransform::UpdatePositionMatrix()
 	eulerrot.x *= RADTODEG;
 	eulerrot.y *= RADTODEG;
 	eulerrot.z *= RADTODEG;
+	
 	if (myGO != nullptr)
 	{
 		GameObject* GO = myGO->GetParent();
-		while (GO != nullptr)
-		{
-			CompTransform* transf = dynamic_cast<CompTransform*>(GO->FindComponent(Component_Transform));
-			if(transf != nullptr) TransMatrix =transf->GetTransMatrix() * TransMatrix;
-			GO = GO->GetParent();
-		}
+		
+		CompTransform* transf = dynamic_cast<CompTransform*>(GO->FindComponent(Component_Transform));
+		
+		if(transf != nullptr) TransMatrix =transf->GetTransMatrix() * TransMatrix;
 	}
 	needToUpdate = false;
 	UpdateChildsTransMatrix();
@@ -86,7 +86,6 @@ void CompTransform::OnEditor()
 
 float4x4 CompTransform::GetTransMatrix()
 {
-
 	return TransMatrix;
 }
 
@@ -166,13 +165,32 @@ void CompTransform::Guizmo(Frustum& Frustum)
 
 void CompTransform::UpdateChildsTransMatrix()
 {
-	for (int i = 0; i < myGO->childs.size(); i++)
+	if (!myGO->childs.empty())
 	{
-		CompTransform* trans = (CompTransform*)myGO->childs[i]->FindComponent(Component_Transform);
-		if (trans != nullptr)
+		for (int i = 0; i < myGO->childs.size(); i++)
 		{
-			trans->needToUpdate = true;
-			trans->UpdateChildsTransMatrix();
+			CompTransform* trans = (CompTransform*)myGO->childs[i]->FindComponent(Component_Transform);
+			if (trans != nullptr)
+			{
+				trans->needToUpdate = true;
+				trans->UpdateChildsTransMatrix();
+			}
+		}
+	}
+}
+
+void CompTransform::UpdateChildsTransMatrixNow()
+{
+	if (!myGO->childs.empty())
+	{
+		for (int i = 0; i < myGO->childs.size(); i++)
+		{
+			CompTransform* trans = (CompTransform*)myGO->childs[i]->FindComponent(Component_Transform);
+			if (trans != nullptr)
+			{
+				trans->UpdatePositionMatrix();
+				trans->UpdateChildsTransMatrixNow();
+			}
 		}
 	}
 }

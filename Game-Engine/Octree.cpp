@@ -247,12 +247,15 @@ void Octree::Insert(GameObject* toInsert)
 {
 
 	CompMesh* tmp = (CompMesh*)toInsert->FindComponent(Component_Mesh);
-	CompTransform* transf = (CompTransform*)toInsert->FindComponent(Component_Transform);
-	AABB Enclosing_Box = tmp->enclosingBox;
-	Enclosing_Box.TransformAsAABB(transf->GetTransMatrix());
-	if (root != nullptr && root->box.Contains(Enclosing_Box))
+	if (tmp != nullptr)
 	{
-		root->Insert(toInsert);
+		CompTransform* transf = (CompTransform*)toInsert->FindComponent(Component_Transform);
+		AABB Enclosing_Box = tmp->enclosingBox;
+		Enclosing_Box.TransformAsAABB(transf->GetTransMatrix());
+		if (root != nullptr && root->box.Contains(Enclosing_Box))
+		{
+			root->Insert(toInsert);
+		}
 	}
 }
 

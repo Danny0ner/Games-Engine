@@ -31,7 +31,6 @@ GameObject::~GameObject()
 		}
 		components.clear();
 	}
-
 }
 
 void GameObject::Update()

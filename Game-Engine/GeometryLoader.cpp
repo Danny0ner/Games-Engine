@@ -95,13 +95,13 @@ GameObject * GeometryLoader::AddGameObjectChild(aiNode * node, const aiScene * s
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 		newObject->SetName(node->mName.C_Str());
 		LoadMesh(mesh ,node, scene, newObject);
-		App->editor->GetQuadtree()->Insert(newObject);
 		App->editor->Static_Vector.push_back(newObject);
 		parent->AddChild(newObject);
 	}
 	if (node->mNumMeshes == 0) {
 		aiMatrix4x4 matrix = node->mTransformation;
 		newObject->AddComponent(LoadTransform(node));
+		App->editor->Static_Vector.push_back(newObject);
 		parent->AddChild(newObject);
 	}
 	for (uint i = 0; i < node->mNumChildren; i++)

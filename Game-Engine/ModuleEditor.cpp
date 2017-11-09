@@ -85,16 +85,19 @@ GameObject * ModuleEditor::CreateNewGameObject(const char * path)
 		//root->DeleteChilds();
 		delete Quadroot;
 		root->AddChild(ret);
+		((CompTransform*)ret->FindComponent(Component_Transform))->UpdateChildsTransMatrixNow();
 		AABB Enclosing_Box;
 		Enclosing_Box.SetNegativeInfinity();
 		for (std::vector<GameObject*>::const_iterator tmp = Static_Vector.begin(); tmp != Static_Vector.end(); tmp++)
 		{
 			CompMesh* tmpmesh = (CompMesh*)(*tmp)->FindComponent(Component_Mesh);
 			CompTransform* tmptransf = (CompTransform*)(*tmp)->FindComponent(Component_Transform);
-			AABB TempBox = tmpmesh->enclosingBox;
-			TempBox.TransformAsAABB(tmptransf->GetTransMatrix());
-			Enclosing_Box.Enclose(TempBox);
-
+			if (tmpmesh != nullptr)
+			{
+				AABB TempBox = tmpmesh->enclosingBox;
+				TempBox.TransformAsAABB(tmptransf->GetTransMatrix());
+				Enclosing_Box.Enclose(TempBox);
+			}
 		}
 
 		Quadroot = new Octree(Enclosing_Box);
