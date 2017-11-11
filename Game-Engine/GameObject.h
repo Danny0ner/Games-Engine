@@ -40,4 +40,5 @@ protected:
 public:
 	bool selected = false;
 	bool Static = true;
+	bool deletingchilds = false;
 };

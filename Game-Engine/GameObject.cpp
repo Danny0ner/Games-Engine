@@ -13,24 +13,22 @@ GameObject::GameObject(GameObject* parent): parent(parent)
 }
 GameObject::~GameObject()
 {
-	if (childs.size() != 0)
+	while (!childs.empty())
 	{
-		while (!childs.empty())
+		if (childs.back() != nullptr)
 		{
 			delete childs.back();
-			childs.pop_back();
 		}
-		childs.clear();
+		childs.pop_back();
 	}
-	if (components.size() != 0)
+	childs.clear();
+
+	while (!components.empty())
 	{
-		while (!components.empty())
-		{
-			delete components.back();
-			components.pop_back();
-		}
-		components.clear();
+		delete components.back();
+		components.pop_back();
 	}
+	components.clear();
 }
 
 void GameObject::Update()
@@ -168,6 +166,11 @@ void GameObject::ShowInspector()
 	if (ImGui::Checkbox("Static", &Static)) 
 	{
 		ChangeStaticState(Static);
+	}
+	if (ImGui::Checkbox("Delete Childs", &deletingchilds))
+	{
+		DeleteChilds();
+		deletingchilds = false;
 	}
 	ImGui::PushItemWidth(-140);
 	for (int i = 0; i < components.size(); i++)

@@ -28,7 +28,10 @@ void CompTransform::Update()
 		UpdatePositionMatrix();
 	}
 	if (myGO->selected == true)
-			Guizmo(App->camera->FrustumPick);
+	{
+		Guizmo(App->camera->FrustumPick);
+		UpdateChildsTransMatrix();
+	}
 }
 
 void CompTransform::UpdatePositionMatrix()
@@ -165,16 +168,14 @@ void CompTransform::Guizmo(Frustum& Frustum)
 
 void CompTransform::UpdateChildsTransMatrix()
 {
-	if (!myGO->childs.empty())
+
+	for (int i = 0; i < myGO->childs.size(); i++)
 	{
-		for (int i = 0; i < myGO->childs.size(); i++)
+		CompTransform* trans = (CompTransform*)myGO->childs[i]->FindComponent(Component_Transform);
+		if (trans != nullptr)
 		{
-			CompTransform* trans = (CompTransform*)myGO->childs[i]->FindComponent(Component_Transform);
-			if (trans != nullptr)
-			{
-				trans->needToUpdate = true;
-				trans->UpdateChildsTransMatrix();
-			}
+			trans->needToUpdate = true;
+			trans->UpdateChildsTransMatrix();
 		}
 	}
 }
