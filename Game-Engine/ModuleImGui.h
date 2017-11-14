@@ -27,9 +27,10 @@ public:
 	void ShowAbout();
 	bool CleanUp();
 	void ShowModules();
-	void ShowControls();
+	
 	void LockImput();
 
+	void ShowControls(bool* p_open = NULL);
 	void ShowEditor(bool* p_open = NULL);
 public:
 	char*	New_Name;

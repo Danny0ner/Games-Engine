@@ -39,6 +39,7 @@ bool ModuleImGui::Init()
 	io.WantTextInput = true;
 	io.IniFilename = "imgui.ini";
 	io.Fonts->AddFontFromFileTTF("Fonts\\Roboto-Regular.ttf", 16);
+	
 	return true;
 }
 
@@ -51,7 +52,7 @@ update_status ModuleImGui::PreUpdate(float dt)
 {
 	ImGui_ImplSdlGL3_NewFrame(App->window->window);
 	ImGuizmo::BeginFrame();
-
+	ShowControls();
 	return UPDATE_CONTINUE;
 }
 
@@ -319,35 +320,41 @@ update_status ModuleImGui::PostUpdate(float dt)
 		ImGui::End();
 	}
 
-	void ModuleImGui::ShowControls()
+	void ModuleImGui::ShowControls(bool* p_open)
 	{
-		if (ImGui::Button("Play", ImVec2(40, 25)))
-		{
-			App->Play();
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Pause", ImVec2(40, 25)))
-		{
-			App->Pause();
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Stop", ImVec2(40, 25)))
-		{
-			App->Stop();
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("NextFrame", ImVec2(70, 25)))
-		{
-			App->NextFrame();
-		}
+		std::string temp = "TimerControls";
 
-		ImGui::TextWrapped("Editor Dt: %0.3f", App->GetDeltaTime());
-		ImGui::TextWrapped("Frames Since Game Start: %i", App->gametime.GameStart);
-		ImGui::TextWrapped("Frames Since Editor Start: %i", App->GetFramesSinceStart());
-		ImGui::TextWrapped("Game Dt: %.1f", App->realtime.startup_timer);
-		ImGui::TextWrapped("Framerate: %i", App->GetlastFrames());
-		ImGui::TextWrapped("Time Since Game Start: %i s", App->GetGameStart()/1000);
+		ImGui::Begin(temp.c_str(),0,ImGuiWindowFlags_AlwaysAutoResize);
+			if (ImGui::Button("Play", ImVec2(40, 25)))
+			{
+				App->Play();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Pause", ImVec2(40, 25)))
+			{
+				App->Pause();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Stop", ImVec2(40, 25)))
+			{
+				App->Stop();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("NextFrame", ImVec2(70, 25)))
+			{
+				App->NextFrame();
+			}
 
+			ImGui::TextWrapped("ms_timer: %i", App->realtime.ms_timer.Read());
+			ImGui::TextWrapped("startup_timer: %.3fs", App->realtime.startup_timer.Read() / 1000.0f);
+			ImGui::TextWrapped("last_sec_frame_time: %i", App->realtime.last_sec_frame_time.Read());
+			ImGui::TextWrapped("dt: %.3f", App->realtime.dt);
+			ImGui::TextWrapped("prev_last_sec_frame_count: %i", App->realtime.prev_last_sec_frame_count);
+			ImGui::TextWrapped("last_sec_frame_count: %i", App->realtime.last_sec_frame_count);
+			ImGui::Separator();
+			ImGui::TextWrapped("GameSecSinceStartUp: %i s", App->GetGameStart() / 1000);
 
-}
+		
+			ImGui::End();
+	}
 
