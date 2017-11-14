@@ -266,7 +266,7 @@ void ModuleEditor::LoadScene(const char * fileTitle)
 		LOG("Scene file not valid.");
 	}
 	ReCreateQuadtree();
-	((CompTransform*)root->childs[0]->FindComponent(Component_Transform))->UpdateChildsTransMatrixNow();
+	if(root->childs.size()>0)((CompTransform*)root->childs[0]->FindComponent(Component_Transform))->UpdateChildsTransMatrixNow();
 }
 
 void ModuleEditor::LockImput()

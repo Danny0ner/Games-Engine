@@ -250,6 +250,7 @@ void Application::StatusSwitch()
 		gametime.TimeScale = 0.0f;
 		RestartGame();
 		gametime.GameStart.Stop();
+		gametime.GameStart.actual_ms = 0;
 
 	}
 	if (gamestatus == NEXTFRAME)
