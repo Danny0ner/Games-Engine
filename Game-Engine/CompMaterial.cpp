@@ -35,13 +35,15 @@ void CompMaterial::OnEditor()
 
 void CompMaterial::OnSave(Configuration & data) const
 {
-	data.SetString("MaterialFile", name.c_str());
+	if (resourceTex != nullptr)
+	{
+		data.SetInt("Texture UID", resourceTex->GetUID());
+	}
 }
 
 void CompMaterial::OnLoad(Configuration & data)
 {
-	name = data.GetString("MaterialFile");
-	App->geometryloader->LoadTextureToOwnFormat(name.c_str(), this);
+	AddResource(data.GetInt("Texture UID"));
 }
 
 void CompMaterial::OverrideTexture(const char* path)
@@ -52,7 +54,10 @@ void CompMaterial::OverrideTexture(const char* path)
 void CompMaterial::AddResource(int uid)
 {
 	resourceTex = (ResourceTexture*)App->resources->Get(uid);
-	resourceTex->LoadToComponent();
+	if (resourceTex != nullptr)
+	{
+		resourceTex->LoadToComponent();
+	}
 }
 
 int CompMaterial::GetTextureID()

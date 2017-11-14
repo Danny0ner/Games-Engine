@@ -27,10 +27,3 @@ bool ResourceTexture::UnloadFromMemory()
 	return true;
 }
 
-void ResourceTexture::Save(Configuration & config) const
-{
-}
-
-void ResourceTexture::Load(Configuration & config)
-{
-}

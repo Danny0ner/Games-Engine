@@ -51,14 +51,12 @@ GameObject* GeometryLoader::LoadGameObject(const char* fullPath)
 	std::string namePath = fullPath;
 
 	uint i = namePath.find_last_of("\\");
-	char* testM = new char[length - i + 1];
+	char* fbxname = new char[length - i + 1];
 	length = length - i;
-	namePath.copy(testM, length, i);
-	testM[length] = '\0';
-	newObject->SetName(testM);
+	namePath.copy(fbxname, length, i);
+	fbxname[length] = '\0';
+	newObject->SetName(fbxname);
 
-	delete[] testM;
-	testM = nullptr;
 
 	const aiScene* scene = aiImportFile(fullPath, aiProcessPreset_TargetRealtime_MaxQuality);
 	if (scene != nullptr && scene->HasMeshes())
@@ -69,6 +67,11 @@ GameObject* GeometryLoader::LoadGameObject(const char* fullPath)
 		aiNode* node = scene->mRootNode;
 		newObject->AddComponent(LoadTransform(node));
 		
+		for (int i = 0; i < scene->mNumMeshes; i++)
+		{
+			scene->mMeshes[i]->mName = fbxname;
+			scene->mMeshes[i]->mName.Append(std::to_string(i).c_str());
+		}
 		
 		LOG("Loading meshes");
 
@@ -76,11 +79,18 @@ GameObject* GeometryLoader::LoadGameObject(const char* fullPath)
 
 		aiReleaseImport(scene);
 
+		delete[] fbxname;
+		fbxname = nullptr;
+
 		return newObject;
 	}
 	else
 	{
 		LOG("Error loading scene %s", fullPath);
+
+		delete[] fbxname;
+		fbxname = nullptr;
+
 		return nullptr;
 	}
 }
@@ -97,8 +107,18 @@ GameObject * GeometryLoader::AddGameObjectChild(aiNode * node, const aiScene * s
 	{
 		for (uint i = 0; i < node->mNumMeshes; i++)
 		{
-			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];		
-			LoadMesh(mesh, node, scene, newObject);
+			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+
+			CompMesh* m = new CompMesh();
+
+			int meshUID = App->resources->ImportFile(mesh->mName.C_Str(), mesh);
+			if (meshUID != -1)
+			{
+				m->AddResource(meshUID);
+			}
+			m->SetName("Mesh");
+			m->CreateEnclosingBox();
+			newObject->AddComponent(m);
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 			newObject->AddComponent(LoadMaterial(material));
 			App->editor->Static_Vector.push_back(newObject);		
@@ -141,7 +161,7 @@ void GeometryLoader::LoadNewTexture(const char* fullPath)
 
 CompMesh* GeometryLoader::LoadMesh(aiMesh* mesh ,aiNode* node, const aiScene* scene, GameObject* addTo)
 {
-	CompMesh* m = new CompMesh;
+	/*CompMesh* m = new CompMesh;
 
 		if (mesh != nullptr)
 		{
@@ -217,10 +237,10 @@ CompMesh* GeometryLoader::LoadMesh(aiMesh* mesh ,aiNode* node, const aiScene* sc
 
 			m->SetName(node->mName.C_Str());
 
-			SaveMeshToOwnFormat(*m, addTo->Getname().c_str());
+			//SaveMeshToOwnFormat(*m, addTo->Getname().c_str());
 			m->CreateEnclosingBox();
 			addTo->AddComponent(m);
-		}
+		}*/
 	return nullptr;
 }
 
@@ -376,14 +396,49 @@ void GeometryLoader::UnloadTexture(uint id)
 		LOG("Deleting texture with %i ID from GPU", id);
 }
 
-bool GeometryLoader::SaveMeshToOwnFormat(const CompMesh & mesh, const char * outputFile)
+bool GeometryLoader::SaveMeshToOwnFormat(const aiMesh* mesh, const char * outputFile)
 {
-int ranges[4] = { mesh.numIndices, mesh.numVertices, mesh.numVertices, mesh.numVertices};
+
+	ResourceMesh* tmpMesh = new ResourceMesh(0);
+
+	tmpMesh->numVertices = mesh->mNumVertices;
+	tmpMesh->vertices = new float[tmpMesh->numVertices * 3];
+	memcpy(tmpMesh->vertices, mesh->mVertices, sizeof(float) * tmpMesh->numVertices * 3);
+	LOG("Saving mesh with %d vertices", tmpMesh->numVertices);
+
+	if (mesh->HasFaces())
+	{
+		tmpMesh->numIndices = mesh->mNumFaces * 3;
+		tmpMesh->indices = new uint[tmpMesh->numIndices];
+		for (uint i = 0; i < mesh->mNumFaces; ++i)
+		{
+			if (mesh->mFaces[i].mNumIndices != 3)
+			{
+				LOG("WARNING, geometry face with != 3 indices!");
+			}
+			else
+			{
+				memcpy(&tmpMesh->indices[i * 3], mesh->mFaces[i].mIndices, 3 * sizeof(uint));
+			}
+		}
+	}
+	if (mesh->HasNormals())
+	{
+		tmpMesh->normals = new float[tmpMesh->numVertices * 3];
+		memcpy(tmpMesh->normals, mesh->mNormals, sizeof(float) * tmpMesh->numVertices * 3);
+	}
+	if (mesh->HasTextureCoords(0))
+	{
+		tmpMesh->texCoords = new float[tmpMesh->numVertices * 3];
+		memcpy(tmpMesh->texCoords, mesh->mTextureCoords[0], sizeof(float) * tmpMesh->numVertices * 3);
+	}
+	//SAVING MESH TO OWN FORMAT
+int ranges[4] = { tmpMesh->numIndices, tmpMesh->numVertices, tmpMesh->numVertices, tmpMesh->numVertices};
 		float size = sizeof(ranges);
-		size += sizeof(uint) * mesh.numIndices;
-		size += sizeof(float) * mesh.numVertices * 3;
-		size += sizeof(float) * mesh.numVertices * 3;
-		size += sizeof(float) * mesh.numVertices * 3;
+		size += sizeof(uint) *  tmpMesh->numIndices;
+		size += sizeof(float) *  tmpMesh->numVertices * 3;
+		size += sizeof(float) *  tmpMesh->numVertices * 3;
+		size += sizeof(float) *  tmpMesh->numVertices * 3;
 
 		char* data = new char[size];
 		char* cursor = data;
@@ -394,25 +449,25 @@ int ranges[4] = { mesh.numIndices, mesh.numVertices, mesh.numVertices, mesh.numV
 		cursor += bytes;
 
 		// Store indices
-		bytes = sizeof(uint) * mesh.numIndices;
-		memcpy(cursor, mesh.indices, mesh.numIndices * sizeof(uint));
+		bytes = sizeof(uint) *  tmpMesh->numIndices;
+		memcpy(cursor, tmpMesh->indices, tmpMesh->numIndices * sizeof(uint));
 		cursor += bytes;
 
 		// Store vertices
-		bytes = sizeof(float) * mesh.numVertices * 3;
-		memcpy(cursor, mesh.vertices, mesh.numVertices * 3 * sizeof(float));
+		bytes = sizeof(float) *  tmpMesh->numVertices * 3;
+		memcpy(cursor, tmpMesh->vertices, tmpMesh->numVertices * 3 * sizeof(float));
 		cursor += bytes;
 
 		// Store normals
-		bytes = sizeof(float) * mesh.numVertices * 3;
-		memcpy(cursor, mesh.normals, mesh.numVertices * 3 * sizeof(float));
+		bytes = sizeof(float) *  tmpMesh->numVertices * 3;
+		memcpy(cursor, tmpMesh->normals, tmpMesh->numVertices * 3 * sizeof(float));
 		cursor += bytes;
 
-		if (mesh.texCoords != nullptr)
+		if (tmpMesh->texCoords != nullptr)
 		{
 			// Store tex coords
-			bytes = sizeof(float) * mesh.numVertices * 3;
-			memcpy(cursor, mesh.texCoords, mesh.numVertices * 3 * sizeof(float));
+			bytes = sizeof(float) *  tmpMesh->numVertices * 3;
+			memcpy(cursor, tmpMesh->texCoords, tmpMesh->numVertices * 3 * sizeof(float));
 		}
 		cursor += bytes;
 
@@ -424,7 +479,7 @@ int ranges[4] = { mesh.numIndices, mesh.numVertices, mesh.numVertices, mesh.numV
 
 }
 
-void GeometryLoader::LoadMeshOwnFormat(const char * inputFile, CompMesh * mesh)
+void GeometryLoader::LoadMeshOwnFormat(const char * inputFile, ResourceMesh * mesh)
 {
 	char* buffer;
 	int size;

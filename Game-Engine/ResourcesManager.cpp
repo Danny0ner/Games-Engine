@@ -81,7 +81,7 @@ int ResourcesManager::ImportFile(const char* meshName, aiMesh * mesh)
 		int UID = App->RandomUIDGen->Int();
 		std::string exFile = std::to_string(UID);
 
-		//save mesh
+		imported = App->geometryloader->SaveMeshToOwnFormat(mesh, exFile.c_str());
 
 		if (imported == true)
 		{
@@ -117,15 +117,16 @@ Resource * ResourcesManager::CreateNewResource(ResourceType type, int UID)
 
 	switch (type)
 	{
-	case Resource_Texture:
-	{
-		ret = (Resource*) new ResourceTexture(UID);
-		break;
-	}
-	case Resource_Mesh:
-	{
-		break;
-	}
+		case Resource_Texture:
+		{
+			ret = (Resource*) new ResourceTexture(UID);
+			break;
+		}
+		case Resource_Mesh:
+		{
+			ret = (Resource*) new ResourceMesh(UID);
+			break;
+		}
 	}
 
 	if (ret != nullptr)
@@ -135,3 +136,41 @@ Resource * ResourcesManager::CreateNewResource(ResourceType type, int UID)
 
 	return ret;
 }
+
+void ResourcesManager::SaveResources(Configuration& save) const
+{
+	for (std::map<int, Resource*>::const_iterator it = resources.begin(); it != resources.end(); ++it)
+	{
+		(it)->second->Save(save);
+	}
+}
+
+void ResourcesManager::LoadResources(Configuration& resources)
+{
+	uint re = resources.GetArraySize("Scene Resources");
+	for (int i = 0; i < re; i++)
+	{
+		Configuration tmpConfig = resources.GetArray("Scene Resources", i);
+		int tmpUID = tmpConfig.GetInt("UID");
+		if (Get(tmpUID) == nullptr)
+		{
+			switch (tmpConfig.GetInt("Type"))
+			{
+			case Resource_Mesh:
+			{
+				ResourceMesh* resourceMesh = (ResourceMesh*)CreateNewResource(Resource_Mesh, tmpUID);
+				resourceMesh->Load(tmpConfig);
+				break;
+			}
+			case Resource_Texture:
+			{
+				ResourceTexture* resourceTexture = (ResourceTexture*)CreateNewResource(Resource_Texture, tmpUID);
+				resourceTexture->Load(tmpConfig);
+				break;
+			}
+			}
+		}
+	}
+}
+
+

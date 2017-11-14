@@ -21,7 +21,6 @@ public:
 	void OnEditor();
 	void ShowInspector();
 	std::string Getname() const;
-	void Move(float3 lastpos,float3 newPos);
 
 	GameObject * FindUIDGameObject(int toFind);
 
@@ -32,6 +31,7 @@ public:
 
 	std::vector<Component*> components;
 	std::vector<GameObject*> childs;
+	void DeleteChild(GameObject* todelete);
 	int GetUID();
 protected:
 	int uid;
@@ -41,4 +41,5 @@ public:
 	bool selected = false;
 	bool Static = true;
 	bool deletingchilds = false;
+	bool deletingmyself = false;
 };

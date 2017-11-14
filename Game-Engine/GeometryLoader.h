@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include "Globals.h"
-
+#include "ResourceMesh.h"
 #include "Assimp\include\cimport.h"
 #include "Assimp\include\scene.h"
 #include "Assimp\include\postprocess.h"
@@ -35,8 +35,8 @@ public:
 	uint ImportImage(const char* path, std::string& output_file);
 	void LoadNewTexture(const char* fullPath);
 	void UnloadTexture(uint id);
-	bool SaveMeshToOwnFormat(const CompMesh & mesh, const char * outputFile);
-	void LoadMeshOwnFormat(const char * inputFile, CompMesh* mesh);
+	bool SaveMeshToOwnFormat(const aiMesh* mesh, const char * outputFile);
+	void LoadMeshOwnFormat(const char * inputFile, ResourceMesh* mesh);
 	bool SaveTextureToOwnFormat(const char * path, char * buffer, int buffer_size);
 	bool LoadTextureToOwnFormat(const char * inputFile, CompMaterial* material);
 	uint LoadMaterial(const char * image);

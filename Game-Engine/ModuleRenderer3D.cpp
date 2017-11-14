@@ -427,6 +427,7 @@ void ModuleRenderer3D::Render(GameObject * toDraw)
 		{
 			CompTransform* transf = dynamic_cast<CompTransform*>(toDraw->FindComponent(Component_Transform));
 			CompMesh* CMesh = dynamic_cast<CompMesh*> (toDraw->components[i]);
+			
 			if (CMesh->drawdebug)
 			{
 				CMesh->DrawDebug();
@@ -440,22 +441,22 @@ void ModuleRenderer3D::Render(GameObject * toDraw)
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			}
 
-			if (CMesh->idNormals > 0)
+			if (CMesh->resourceMesh->idNormals > 0)
 			{
 				glEnable(GL_LIGHTING);
 				glEnableClientState(GL_NORMAL_ARRAY);
 
-				glBindBuffer(GL_ARRAY_BUFFER, CMesh->idNormals);
+				glBindBuffer(GL_ARRAY_BUFFER, CMesh->resourceMesh->idNormals);
 				glNormalPointer(GL_FLOAT, 0, NULL);
 			}
 
 			glEnableClientState(GL_VERTEX_ARRAY);
 			glEnableClientState(GL_ELEMENT_ARRAY_BUFFER);
-			glBindBuffer(GL_ARRAY_BUFFER, CMesh->idVertices);
+			glBindBuffer(GL_ARRAY_BUFFER, CMesh->resourceMesh->idVertices);
 			glVertexPointer(3, GL_FLOAT, 0, NULL);
 
 
-			if (CMesh->idTexCoords > 0)
+			if (CMesh->resourceMesh->idTexCoords > 0)
 			{
 				CompMaterial* mat = dynamic_cast<CompMaterial*>(toDraw->FindComponent(Component_Material));
 				if (mat != nullptr)
@@ -464,12 +465,12 @@ void ModuleRenderer3D::Render(GameObject * toDraw)
 					glBindTexture(GL_TEXTURE_2D, mat->GetTextureID());
 				}
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				glBindBuffer(GL_ARRAY_BUFFER, CMesh->idTexCoords);
+				glBindBuffer(GL_ARRAY_BUFFER, CMesh->resourceMesh->idTexCoords);
 				glTexCoordPointer(3, GL_FLOAT, 0, NULL);
 			}
 
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, CMesh->idIndices);
-			glDrawElements(GL_TRIANGLES, CMesh->numIndices, GL_UNSIGNED_INT, NULL);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, CMesh->resourceMesh->idIndices);
+			glDrawElements(GL_TRIANGLES, CMesh->resourceMesh->numIndices, GL_UNSIGNED_INT, NULL);
 
 
 			glDisableClientState(GL_COLOR_ARRAY);

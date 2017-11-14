@@ -52,6 +52,11 @@ void GameObject::Update()
 	{
 		components[i]->Update();
 	}
+	if (deletingmyself == true)
+	{
+		App->editor->GetRoot()->DeleteChild(this);
+		delete this;
+	}
 }
 
 void GameObject::AddChild(GameObject* child)
@@ -124,6 +129,11 @@ void GameObject::ChangeStaticState()
 }
 
 
+void GameObject::DeleteChild(GameObject * todelete)
+{
+	App->editor->GetRoot()->childs.erase(std::remove(App->editor->GetRoot()->childs.begin(), App->editor->GetRoot()->childs.end(), todelete), App->editor->GetRoot()->childs.end());
+}
+
 int GameObject::GetUID()
 {
 	return uid;
@@ -173,6 +183,8 @@ void GameObject::ShowInspector()
 		DeleteChilds();
 		deletingchilds = false;
 	}
+	if (ImGui::Checkbox("Delete Me", &deletingmyself))
+	{}
 	ImGui::PushItemWidth(-140);
 	for (int i = 0; i < components.size(); i++)
 	{
@@ -186,16 +198,6 @@ std::string GameObject::Getname() const
 	return name;
 }
 
-void GameObject::Move(float3 lastpos,float3 newPos)
-{
-	for (int i = 0; i < components.size(); i++)
-	{
-		if (components[i]->GetType() == Component_Mesh)
-		{
-			dynamic_cast<CompMesh*>(components[i])->Move(lastpos,newPos);
-		}
-	}
-}
 
 GameObject* GameObject::FindUIDGameObject(int toFind)
 {

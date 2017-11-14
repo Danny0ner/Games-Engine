@@ -182,13 +182,13 @@ void ModuleEditor::TestRay(const LineSegment& Segment, float& Distance, GameObje
 			AABB box = Mesh->enclosingBox;
 			float LocalDistance = 0;
 			float LocalHitPoint;
-			if (Mesh->numIndices > 9 || Mesh->numVertices % 3 == 0)
+			if (Mesh->resourceMesh->numIndices > 9 || Mesh->resourceMesh->numVertices % 3 == 0)
 			{
-				for (int i = 0; i < Mesh->numIndices; i += 3)
+				for (int i = 0; i < Mesh->resourceMesh->numIndices; i += 3)
 				{
-					Triangle face(float3(Mesh->vertices[Mesh->indices[i] * 3], Mesh->vertices[Mesh->indices[i] * 3 + 1], Mesh->vertices[Mesh->indices[i] * 3 + 2]),
-						float3(Mesh->vertices[Mesh->indices[i + 1] * 3], Mesh->vertices[Mesh->indices[i + 1] * 3 + 1], Mesh->vertices[Mesh->indices[i + 1] * 3 + 2]),
-						float3(Mesh->vertices[Mesh->indices[i + 2] * 3], Mesh->vertices[Mesh->indices[i + 2] * 3 + 1], Mesh->vertices[Mesh->indices[i + 2] * 3 + 2]));
+					Triangle face(float3(Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i] * 3], Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i] * 3 + 1], Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i] * 3 + 2]),
+						float3(Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i + 1] * 3], Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i + 1] * 3 + 1], Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i + 1] * 3 + 2]),
+						float3(Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i + 2] * 3], Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i + 2] * 3 + 1], Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i + 2] * 3 + 2]));
 
 					float LocalDistance = 0;
 					float3 LocalHitPoint;
@@ -231,6 +231,9 @@ void ModuleEditor::CollectIntersectionsLineDynamicObjects(std::vector<GameObject
 void ModuleEditor::SerializeScene(const char * filename)
 {
 	Configuration save;
+
+	save.AddArray("Scene Resources");
+	App->resources->SaveResources(save);
 	save.AddArray("Scene Game Objects");
 
 	root->OnSerialize(save);
@@ -249,14 +252,14 @@ void ModuleEditor::LoadScene(const char * fileTitle)
 	{
 		root->DeleteChilds();
 		selected = nullptr;
+		App->resources->LoadResources(load);
 		for (int i = 0; i < load.GetArraySize("Scene Game Objects"); i++)
 		{
 			GameObject* tmp = new GameObject();
 			Configuration testC = load.GetArray("Scene Game Objects", i);
 			tmp->Deserialize(testC);
 		}
-		//App->Console.AddLog("Load completed in %i ms", saveLoadTimer.Read());
-		//saveLoadTimer.Stop();
+
 	}
 	else
 	{

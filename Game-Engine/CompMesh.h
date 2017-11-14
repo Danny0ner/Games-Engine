@@ -3,6 +3,7 @@
 #include "Globals.h"
 #include "Component.h"
 #include "MathGeo\Geometry\AABB.h"
+#include "ResourceMesh.h"
 
 class CompMesh : public Component
 {
@@ -10,23 +11,6 @@ public:
 	CompMesh();
 
 	~CompMesh();
-
-	uint idVertices = 0; // id in VRAM 
-	uint numVertices = 0;
-	float* vertices = nullptr;
-
-	uint idIndices = 0; // id in VRAM 
-	uint numIndices = 0;
-	uint* indices = nullptr;
-
-	uint idNormals = 0; // id in VRAM
-	float* normals = nullptr;
-
-	uint idColors = 0; // id in VRAM
-	float* colors = nullptr;
-
-	uint idTexCoords = 0; // id in VRAM
-	float* texCoords = nullptr;
 
 	AABB enclosingBox;
 
@@ -39,11 +23,13 @@ public:
 
 	void OnEditor()override;
 
-	void Move(float3 lastpos,float3 newPos);
 	void OnSave(Configuration& data) const;
 	void OnLoad(Configuration& data);
 	AABB GetEnclosingBox();
 	void CreateEnclosingBox();
+
+	void AddResource(int uid);
 public:
 	bool drawdebug = false;
+	ResourceMesh* resourceMesh = nullptr;
 };
