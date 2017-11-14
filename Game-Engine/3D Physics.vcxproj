@@ -123,6 +123,8 @@
     <ClInclude Include="glm\vec4.hpp" />
     <ClInclude Include="glm\vector_relational.hpp" />
     <ClInclude Include="Globals.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="ResourcesManager.h" />
     <ClInclude Include="imguiconsole.h" />
     <ClInclude Include="ImGui\imconfig.h" />
     <ClInclude Include="ImGui\imgui.h" />
@@ -272,6 +274,8 @@
     <ClCompile Include="PhysBody3D.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="Octree.cpp" />
+    <ClCompile Include="Resource.cpp" />
+    <ClCompile Include="ResourcesManager.cpp" />
     <ClCompile Include="SerializeConfig.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>

@@ -11,12 +11,14 @@
 #include "ModuleImGui.h"
 #include "imguiconsole.h"
 #include "JConfig.h"
-#include "Assimp\include\ai_assert.h"
-#include"Assimp\include\anim.h"
-#include "ModuleEditor.h"
 #include "GeometryLoader.h"
 #include "FileSystem.h"
+#include "ResourcesManager.h"
+#include "ModuleEditor.h"
+
 #include "MathGeo\Algorithm\Random\LCG.h"
+
+
 struct Performance
 {
 	uint	Frame_Count = 0;
@@ -60,6 +62,9 @@ enum GameStatus
 
 class GeometryLoader;
 class FileSystem;
+class ResourcesManager;
+
+
 class Application
 {
 public:
@@ -74,6 +79,7 @@ public:
 	ModuleEditor*		editor;
 	FileSystem*			filesystem;
 	LCG*			RandomUIDGen = nullptr;
+	ResourcesManager*   resources;
 	RealTime			realtime;
 	GameTime			gametime;
 	GameStatus			gamestatus = GameStatus::STOP;
