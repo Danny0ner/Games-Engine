@@ -167,7 +167,14 @@ void CompMesh::OnLoad(Configuration & data)
 	App->geometryloader->LoadMeshOwnFormat(data.GetString("MeshFile"), this);
 }
 
-math::AABB CompMesh::GetEnclosingBox()
+AABB CompMesh::GetEnclosingBox()
 {
 	return enclosingBox;
 }
+
+void CompMesh::CreateEnclosingBox()
+{
+	enclosingBox.SetNegativeInfinity();
+	enclosingBox.Enclose((float3*)vertices, numVertices);
+}
+

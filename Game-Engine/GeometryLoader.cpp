@@ -219,10 +219,8 @@ CompMesh* GeometryLoader::LoadMesh(aiMesh* mesh ,aiNode* node, const aiScene* sc
 
 			m->SetName(node->mName.C_Str());
 
-			m->enclosingBox.SetNegativeInfinity();
-
-			m->enclosingBox.Enclose((float3*)m->vertices, m->numVertices);
 			SaveMeshToOwnFormat(*m, addTo->Getname().c_str());
+			m->CreateEnclosingBox();
 			addTo->AddComponent(m);
 		}
 	return nullptr;

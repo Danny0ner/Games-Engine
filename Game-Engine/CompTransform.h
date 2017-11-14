@@ -29,4 +29,5 @@ private:
 	Quat rotation;
 	float4x4 TransMatrix;
 	float3 eulerrot;
+	bool showinspector = true;
 };

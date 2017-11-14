@@ -13,6 +13,14 @@ GameObject::GameObject(GameObject* parent): parent(parent)
 }
 GameObject::~GameObject()
 {
+	if (Static == true)
+	{
+		App->editor->Static_Vector.erase(std::remove(App->editor->Static_Vector.begin(), App->editor->Static_Vector.end(), this), App->editor->Static_Vector.end());
+	}
+	else 
+	{
+		App->editor->Dynamic_Vector.erase(std::remove(App->editor->Dynamic_Vector.begin(), App->editor->Dynamic_Vector.end(), this), App->editor->Dynamic_Vector.end());
+	}
 	while (!childs.empty())
 	{
 		if (childs.back() != nullptr)
@@ -101,23 +109,16 @@ Component* GameObject::FindComponent(ComponentType type) const
 	return nullptr;
 }
 
-void GameObject::ChangeStaticState(bool Static)
+void GameObject::ChangeStaticState()
 {
-	if (this->Static == Static) return;
-	else if (Static == true)
+	if (Static == true)
 	{
-		for (std::vector<GameObject*>::const_iterator tmp = App->editor->Dynamic_Vector.begin(); tmp != App->editor->Dynamic_Vector.end(); tmp++)
-		{
-			if ((*tmp) == this) tmp = App->editor->Dynamic_Vector.erase(tmp);
-		}
+		App->editor->Dynamic_Vector.erase(std::remove(App->editor->Dynamic_Vector.begin(), App->editor->Dynamic_Vector.end(), this), App->editor->Dynamic_Vector.end());
 		App->editor->Static_Vector.push_back(this);
 	}
-	else if (Static == false)
+	if (Static == false)
 	{
-		for (std::vector<GameObject*>::const_iterator tmp = App->editor->Static_Vector.begin(); tmp != App->editor->Static_Vector.end(); tmp++)
-		{
-			if ((*tmp) == this) tmp = App->editor->Static_Vector.erase(tmp);
-		}
+		App->editor->Static_Vector.erase(std::remove(App->editor->Static_Vector.begin(), App->editor->Static_Vector.end(), this), App->editor->Static_Vector.end());
 		App->editor->Dynamic_Vector.push_back(this);
 	}
 }
@@ -165,7 +166,7 @@ void GameObject::ShowInspector()
 	ImGui::Begin(temp.c_str());
 	if (ImGui::Checkbox("Static", &Static)) 
 	{
-		ChangeStaticState(Static);
+		ChangeStaticState();
 	}
 	if (ImGui::Checkbox("Delete Childs", &deletingchilds))
 	{
@@ -278,6 +279,7 @@ void GameObject::Deserialize(Configuration & dataToLoad)
 		{
 			CompMesh* compMesh = new CompMesh();
 			compMesh->OnLoad(componentConfig);
+			compMesh->CreateEnclosingBox();
 			AddComponent(compMesh);
 			break;
 		}
@@ -302,4 +304,5 @@ void GameObject::Deserialize(Configuration & dataToLoad)
 		}
 		}
 	}
+	App->editor->Static_Vector.push_back(this);
 }

@@ -68,9 +68,11 @@ void CompTransform::OnEditor()
 
 
 	}
-	if (ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
+	
+
+	if (ImGui::CollapsingHeader(name.c_str(), false))
 	{
-		if (ImGui::DragFloat3("Position", &position.x, 0.5, -1000,1000,"%.2f"))
+		if (ImGui::DragFloat3("Position", &position.x, 0.5, NULL, NULL,"%.2f"))
 		{
 			needToUpdate = true;
 		}
@@ -79,11 +81,10 @@ void CompTransform::OnEditor()
 			needToUpdate = true;
 		}
 
-		if (ImGui::DragFloat3("Scale", &scale.x, 0.5, -30,30, "%.2f"))
+		if (ImGui::DragFloat3("Scale", &scale.x, 0.5,NULL,NULL,"%.2f"))
 		{
 			needToUpdate = true;
 		}
-		ImGui::TreePop();
 	}
 }
 

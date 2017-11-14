@@ -37,6 +37,9 @@ bool ModuleEditor::Start()
 
 update_status ModuleEditor::Update(float dt)
 {
+	if (StaticVecSize != Static_Vector.size())
+		ReCreateQuadtree();
+	StaticVecSize = Static_Vector.size();
 	if (App->input->GetKey(SDL_SCANCODE_H) == KEY_DOWN) 
 		SerializeScene("Scene test");
 	return UPDATE_CONTINUE;
@@ -86,28 +89,8 @@ GameObject * ModuleEditor::CreateNewGameObject(const char * path)
 		delete Quadroot;
 		root->AddChild(ret);
 		((CompTransform*)ret->FindComponent(Component_Transform))->UpdateChildsTransMatrixNow();
-		AABB Enclosing_Box;
-		Enclosing_Box.SetNegativeInfinity();
-		for (std::vector<GameObject*>::const_iterator tmp = Static_Vector.begin(); tmp != Static_Vector.end(); tmp++)
-		{
-			CompMesh* tmpmesh = (CompMesh*)(*tmp)->FindComponent(Component_Mesh);
-			CompTransform* tmptransf = (CompTransform*)(*tmp)->FindComponent(Component_Transform);
-			if (tmpmesh != nullptr)
-			{
-				AABB TempBox = tmpmesh->enclosingBox;
-				TempBox.TransformAsAABB(tmptransf->GetTransMatrix());
-				Enclosing_Box.Enclose(TempBox);
-			}
-		}
-
-		Quadroot = new Octree(Enclosing_Box);
-		for (std::vector<GameObject*>::const_iterator tmp = Static_Vector.begin(); tmp != Static_Vector.end(); tmp++)
-		{
-
-			Quadroot->Insert((*tmp));
-
-
-		}
+		ReCreateQuadtree();
+		StaticVecSize = Static_Vector.size();
 		//App->camera->CenterToGO(ret);
 	}
 	else
@@ -116,6 +99,32 @@ GameObject * ModuleEditor::CreateNewGameObject(const char * path)
 	}
 
 	return ret;
+}
+
+void ModuleEditor::ReCreateQuadtree()
+{
+	AABB Enclosing_Box;
+	Enclosing_Box.SetNegativeInfinity();
+	for (std::vector<GameObject*>::const_iterator tmp = Static_Vector.begin(); tmp != Static_Vector.end(); tmp++)
+	{
+		CompMesh* tmpmesh = (CompMesh*)(*tmp)->FindComponent(Component_Mesh);
+		CompTransform* tmptransf = (CompTransform*)(*tmp)->FindComponent(Component_Transform);
+		if (tmpmesh != nullptr)
+		{
+			AABB TempBox = tmpmesh->enclosingBox;
+			TempBox.TransformAsAABB(tmptransf->GetTransMatrix());
+			Enclosing_Box.Enclose(TempBox);
+		}
+	}
+
+	Quadroot = new Octree(Enclosing_Box);
+	for (std::vector<GameObject*>::const_iterator tmp = Static_Vector.begin(); tmp != Static_Vector.end(); tmp++)
+	{
+
+		Quadroot->Insert((*tmp));
+
+
+	}
 }
 
 void ModuleEditor::SelectGameObject(GameObject * Selected)
@@ -154,6 +163,8 @@ void ModuleEditor::TestRay(const LineSegment& Segment, float& Distance, GameObje
 {
 	std::vector<GameObject*> Objects;
 	Quadroot->root->CollectIntersectionsLine(Objects, Segment);
+	CollectIntersectionsLineDynamicObjects(Objects, Segment);
+
 	for (std::vector<GameObject*>::const_iterator tmp = Objects.begin(); tmp != Objects.end(); tmp++)
 	{
 		// Look for meshes, nothing else can be "picked" from the screen
@@ -199,6 +210,24 @@ void ModuleEditor::TestRay(const LineSegment& Segment, float& Distance, GameObje
 
 }
 
+void ModuleEditor::CollectIntersectionsLineDynamicObjects(std::vector<GameObject*> &objects, const LineSegment& line) const
+{
+	for (std::vector<GameObject*>::const_iterator it = Dynamic_Vector.begin(); it != Dynamic_Vector.end(); ++it)
+	{
+		CompMesh* tmp = (CompMesh*)(*it)->FindComponent(Component_Mesh);
+		CompTransform* transf = (CompTransform*)(*it)->FindComponent(Component_Transform);
+		AABB Enclosing_Box = tmp->enclosingBox;
+		Enclosing_Box.TransformAsAABB(transf->GetTransMatrix());
+		if (tmp != nullptr)
+		{
+			if (line.Intersects(Enclosing_Box))
+			{
+				objects.push_back(*it);
+			}
+		}
+	}
+}
+
 void ModuleEditor::SerializeScene(const char * filename)
 {
 	Configuration save;
@@ -233,6 +262,7 @@ void ModuleEditor::LoadScene(const char * fileTitle)
 	{
 		LOG("Scene file not valid.");
 	}
+	ReCreateQuadtree();
 	((CompTransform*)root->childs[0]->FindComponent(Component_Transform))->UpdateChildsTransMatrixNow();
 }
 
@@ -248,3 +278,5 @@ bool ModuleEditor:: IsImputLocked()
 {
 	return LockedImput;
 }
+
+

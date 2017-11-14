@@ -35,8 +35,10 @@ bool ModuleImGui::Init()
 	glewInit();
 	ImGui_ImplSdlGL3_Init(App->window->window);
 	ImGuiIO& io = ImGui::GetIO();
+	io.WantCaptureKeyboard = true;
 	io.WantTextInput = true;
 	io.IniFilename = "imgui.ini";
+	io.Fonts->AddFontFromFileTTF("Fonts\\Roboto-Regular.ttf", 16);
 	return true;
 }
 
@@ -47,18 +49,20 @@ bool ModuleImGui::Start()
 
 update_status ModuleImGui::PreUpdate(float dt)
 {
-
 	ImGui_ImplSdlGL3_NewFrame(App->window->window);
 	ImGuizmo::BeginFrame();
+
 	return UPDATE_CONTINUE;
 }
 
 update_status ModuleImGui::PostUpdate(float dt)
 {
+
 	if (ImGui::IsMouseHoveringAnyWindow())
 		App->editor->LockImput();
 	else if(ImGuizmo::IsOver()==false)
 		App->editor->UnlockImput();
+
 
 
 	//		MAIN MENU		//
