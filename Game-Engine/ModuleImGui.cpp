@@ -58,6 +58,7 @@ update_status ModuleImGui::PreUpdate(float dt)
 update_status ModuleImGui::PostUpdate(float dt)
 {
 
+	
 	if (ImGui::IsMouseHoveringAnyWindow())
 		App->editor->LockImput();
 	else if(ImGuizmo::IsOver()==false)

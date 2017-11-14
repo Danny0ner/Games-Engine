@@ -270,9 +270,9 @@ void ModuleWindow::ImGuiDrawer()
 		SDL_SetWindowSize(window, Window_Width, Window_Height);
 		App->renderer3D->OnResize(Window_Width, Window_Height);
 	}
+	if (ImGui::DragFloat("FoV", &App->camera->FOV, 1.0f, 1, 179, "%1.0f"))
+		App->renderer3D->OnResize(Window_Width, Window_Height);
 
-
-	ImGui::SameLine();
 
 	if (ImGui::Checkbox("Resizable", &Resizable))
 	{

@@ -35,7 +35,7 @@ bool ModuleCamera3D::Start()
 	FrustumPick.up = float3(Y.x, Y.y, Y.z);
 	FrustumPick.nearPlaneDistance = 0.1f;
 	FrustumPick.farPlaneDistance = 1000;
-	float FOV = 80;
+	FOV = 80;
 	FrustumPick.verticalFov = DEGTORAD * FOV;
 	FrustumPick.horizontalFov = 2.f * atanf((tanf(FrustumPick.verticalFov * 0.5f)) * (App->window->GetAspectRatio()));
 
@@ -55,7 +55,7 @@ bool ModuleCamera3D::CleanUp()
 update_status ModuleCamera3D::Update(float dt)
 {
 	if (App->editor->IsImputLocked() == true)	
-	return UPDATE_CONTINUE;
+ 	return UPDATE_CONTINUE;
 
 	float3 New_Position(0, 0, 0);
 	float speed = 5.0f*dt;
@@ -72,7 +72,7 @@ update_status ModuleCamera3D::Update(float dt)
 	if (!zoomed)
 		Reference += New_Position;
 
-	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT) 
+	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT&& App->input->GetKey(SDL_SCANCODE_LALT))
 	{
 		Reference = Position;
 		int dx = -App->input->GetMouseXMotion();
@@ -292,4 +292,10 @@ GameObject*  ModuleCamera3D::MousePicking(float3* HitPoint)
 
 void ModuleCamera3D::SetRaypoints(float xx, float xy, float xz, float cx, float cy, float cz)
 {
+}
+
+void ModuleCamera3D::SetAspectRatio()
+{
+	FrustumPick.verticalFov = DEGTORAD * FOV;
+	FrustumPick.horizontalFov = 2.f * atanf((tanf(FrustumPick.verticalFov * 0.5f)) * (App->window->GetAspectRatio()));
 }

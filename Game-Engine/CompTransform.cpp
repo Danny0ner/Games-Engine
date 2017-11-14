@@ -61,16 +61,19 @@ void CompTransform::UpdatePositionMatrix()
 
 void CompTransform::OnEditor()
 {
+	
 	if (myGO->Static)
 	{
-
-
+	
+		ImGui::InputFloat3("Position", &position.x, 1, ImGuiInputTextFlags_ReadOnly);
+		ImGui::InputFloat3("Rotation", &eulerrot.x, 1, ImGuiInputTextFlags_ReadOnly);
+		ImGui::InputFloat3("Scale", &scale.x, 1, ImGuiInputTextFlags_ReadOnly);
 
 
 	}
 	
 
-	if (ImGui::CollapsingHeader(name.c_str(), false))
+	else if (ImGui::CollapsingHeader(name.c_str(), true))
 	{
 		if (ImGui::DragFloat3("Position", &position.x, 0.5, NULL, NULL,"%.2f"))
 		{
@@ -120,51 +123,56 @@ void CompTransform::OnLoad(Configuration & data)
 
 void CompTransform::Guizmo(Frustum& Frustum)
 {
-	float4x4 ViewMatrix = Frustum.ViewMatrix();
-	if (ImGuizmo::IsOver())
+	if (myGO->Static == false) 
+	{
+		float4x4 ViewMatrix = Frustum.ViewMatrix();
+		
+		
+		if (ImGuizmo::IsOver())
 			App->editor->LockImput();
 		else
 			App->editor->UnlockImput();
 
-	float* GuizmoTransMatrix = TransMatrix.Transposed().ptr();
-	float4x4 identity;
-	float* GuizmoProjMatrix = Frustum.ViewProjMatrix().Transposed().ptr();
+		float* GuizmoTransMatrix = TransMatrix.Transposed().ptr();
+		float4x4 identity;
+		float* GuizmoProjMatrix = Frustum.ViewProjMatrix().Transposed().ptr();
 
-	ImGuizmo::Enable(true);
-	ImGuizmo::BeginFrame();
-	
-	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
-	static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
-	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
-	{
-		mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
-		mCurrentGizmoMode = ImGuizmo::WORLD;
-	}
+		ImGuizmo::Enable(true);
+		ImGuizmo::BeginFrame();
 
-	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
-	{
-		mCurrentGizmoOperation = ImGuizmo::ROTATE;
-		mCurrentGizmoMode = ImGuizmo::LOCAL;
-	}
+		static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
+		static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
+		if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+		{
+			mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+			mCurrentGizmoMode = ImGuizmo::WORLD;
+		}
 
-	if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
-	{
-		mCurrentGizmoOperation = ImGuizmo::SCALE;
-		mCurrentGizmoMode = ImGuizmo::LOCAL;
+		if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+		{
+			mCurrentGizmoOperation = ImGuizmo::ROTATE;
+			mCurrentGizmoMode = ImGuizmo::LOCAL;
+		}
 
-	}
+		if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
+		{
+			mCurrentGizmoOperation = ImGuizmo::SCALE;
+			mCurrentGizmoMode = ImGuizmo::LOCAL;
 
-	
-	
-	ImGuiIO& io = ImGui::GetIO();
-	ImGuizmo::SetRect(0,0, io.DisplaySize.x, io.DisplaySize.y);
-	ImGuizmo::Manipulate(identity.identity.ptr(),GuizmoProjMatrix, mCurrentGizmoOperation, mCurrentGizmoMode, GuizmoTransMatrix);
-	if (ImGuizmo::IsUsing())
-	{
-		ImGuizmo::DecomposeMatrixToComponents(GuizmoTransMatrix, (float*)position.ptr(), (float*)eulerrot.ptr(), (float*)scale.ptr());
-		TransMatrix.Transpose();
-		ImGuizmo::RecomposeMatrixFromComponents((float*)position.ptr(), (float*)eulerrot.ptr(), (float*)scale.ptr(), TransMatrix.ptr());
-		TransMatrix.Transpose();
+		}
+
+
+
+		ImGuiIO& io = ImGui::GetIO();
+		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+		ImGuizmo::Manipulate(identity.identity.ptr(), GuizmoProjMatrix, mCurrentGizmoOperation, mCurrentGizmoMode, GuizmoTransMatrix);
+		if (ImGuizmo::IsUsing())
+		{
+			ImGuizmo::DecomposeMatrixToComponents(GuizmoTransMatrix, (float*)position.ptr(), (float*)eulerrot.ptr(), (float*)scale.ptr());
+			TransMatrix.Transpose();
+			ImGuizmo::RecomposeMatrixFromComponents((float*)position.ptr(), (float*)eulerrot.ptr(), (float*)scale.ptr(), TransMatrix.ptr());
+			TransMatrix.Transpose();
+		}
 	}
 }
 

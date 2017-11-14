@@ -26,6 +26,7 @@ public:
 	void RecentreCameraToGeometry();
 	GameObject* MousePicking(float3* HitPoint = nullptr);
 	void SetRaypoints(float xx, float xy, float xz, float cx, float cy, float cz);
+	void SetAspectRatio();
 private:
 
 	void CalculateViewMatrix();
@@ -40,6 +41,7 @@ public:
 	int				camera_dist;
 	vec3			VehicleLocation;
 	uint			camera_fx;
+	float			FOV;
 	bool			FPS;
 	Frustum			FrustumPick;
 private:
