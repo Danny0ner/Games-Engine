@@ -28,6 +28,7 @@ public:
 	ComponentType GetType() const;
 	virtual void OnSave(Configuration& data) const;
 	virtual void OnLoad(Configuration& data);
+	virtual void AddResource(int UID);
 protected:
 	GameObject* myGO = nullptr;
 	std::string name;

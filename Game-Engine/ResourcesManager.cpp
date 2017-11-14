@@ -1,6 +1,8 @@
 #include "ResourcesManager.h"
 #include "Application.h"
 
+#include "ResourceTexture.h"
+
 #include "Assimp\include\cimport.h" 
 #include "Assimp\include\scene.h" 
 #include "Assimp\include\postprocess.h" 
@@ -38,20 +40,15 @@ int ResourcesManager::ImportFile(const char * fileName, ResourceType type)
 	{
 		bool imported;
 		UID = App->RandomUIDGen->Int();
-		std::string exFile = std::to_string(UID);
+		std::string outfile = std::to_string(UID);
 
 		switch (type)
 		{
-		case Resource_Texture:
-		{
-			//import texture
-			break;
-		}
-		case Resource_Unknown:
-		{
-			LOG("Trying to import a resource with unknown format!");
-			return -1;
-		}
+			case Resource_Texture:
+			{
+				imported = App->geometryloader->ImportImage(fileName, outfile);
+				break;
+			}
 		}
 
 		if (imported == true)
@@ -59,7 +56,7 @@ int ResourcesManager::ImportFile(const char * fileName, ResourceType type)
 			Resource* newResource = CreateNewResource(type, UID);
 			newResource->file = fileName;
 			newResource->exportedFile = "Library/Material/";
-			newResource->exportedFile += exFile;
+			newResource->exportedFile += outfile;
 			newResource->exportedFile += ".dds";
 			return UID;
 		}
@@ -122,6 +119,7 @@ Resource * ResourcesManager::CreateNewResource(ResourceType type, int UID)
 	{
 	case Resource_Texture:
 	{
+		ret = (Resource*) new ResourceTexture(UID);
 		break;
 	}
 	case Resource_Mesh:

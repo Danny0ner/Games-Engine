@@ -461,7 +461,7 @@ void ModuleRenderer3D::Render(GameObject * toDraw)
 				if (mat != nullptr)
 				{
 					glEnable(GL_TEXTURE_2D);
-					glBindTexture(GL_TEXTURE_2D, mat->idTexture);
+					glBindTexture(GL_TEXTURE_2D, mat->GetTextureID());
 				}
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				glBindBuffer(GL_ARRAY_BUFFER, CMesh->idTexCoords);

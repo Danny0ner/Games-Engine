@@ -2,19 +2,33 @@
 #include "CompMaterial.h"
 #include "ImGui\imgui.h"
 
+
 CompMaterial::CompMaterial() : Component(Component_Material)
 {
 }
 
 CompMaterial::~CompMaterial()
-{}
+{
+	if (resourceTex != nullptr)
+	{
+		resourceTex->UnloadFromComponent();
+	}
+}
 
 void CompMaterial::OnEditor()
 {
 	if (ImGui::TreeNodeEx("Material", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		ImGui::Text(name.c_str());
-		ImGui::Text("Texture ID: %i", idTexture);
+
+		if (resourceTex != nullptr)
+		{
+			ImGui::Text("Texture ID: %i", resourceTex->textureID);
+			ImGui::Text("Resource ID: %i", resourceTex->GetUID());
+			ImGui::Text("Resource reference counting: %i", resourceTex->GetReferenceCount());
+			ImGui::Image((ImTextureID)resourceTex->textureID, ImVec2(124, 124));
+		}
+
 		ImGui::TreePop();
 	}
 }
@@ -33,4 +47,19 @@ void CompMaterial::OnLoad(Configuration & data)
 void CompMaterial::OverrideTexture(const char* path)
 {
 	//idTexture = App->textures->ImportImage(path);
+}
+
+void CompMaterial::AddResource(int uid)
+{
+	resourceTex = (ResourceTexture*)App->resources->Get(uid);
+	resourceTex->LoadToComponent();
+}
+
+int CompMaterial::GetTextureID()
+{
+	if (resourceTex != nullptr)
+	{
+		return resourceTex->textureID;
+	}
+	else return -1;
 }

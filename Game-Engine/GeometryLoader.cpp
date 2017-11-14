@@ -99,6 +99,8 @@ GameObject * GeometryLoader::AddGameObjectChild(aiNode * node, const aiScene * s
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];		
 			LoadMesh(mesh, node, scene, newObject);
+			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+			newObject->AddComponent(LoadMaterial(material));
 			App->editor->Static_Vector.push_back(newObject);		
 		}
 	}
@@ -211,10 +213,6 @@ CompMesh* GeometryLoader::LoadMesh(aiMesh* mesh ,aiNode* node, const aiScene* sc
 				glBindBuffer(GL_ARRAY_BUFFER, m->idTexCoords);
 				glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m->numVertices * 3, m->texCoords, GL_STATIC_DRAW);
 
-				aiMaterial* material = nullptr;
-				material = scene->mMaterials[mesh->mMaterialIndex];
-				addTo->AddComponent(LoadMaterial(material));
-
 			}
 
 			m->SetName(node->mName.C_Str());
@@ -226,7 +224,74 @@ CompMesh* GeometryLoader::LoadMesh(aiMesh* mesh ,aiNode* node, const aiScene* sc
 	return nullptr;
 }
 
-uint GeometryLoader::ImportImage(const char * image)
+uint GeometryLoader::ImportImage(const char * image, std::string& output_file)
+{
+	bool ret = false;
+
+	ILuint TextureName;
+	ilGenImages(1, &TextureName);
+	ilBindImage(TextureName);
+
+	ILboolean success = ilLoadImage(image);
+	if (success == IL_TRUE)
+	{
+		ilEnable(IL_FILE_OVERWRITE);
+
+		ILuint size;
+		ILubyte *data;
+
+		ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);
+		size = ilSaveL(IL_DDS, NULL, 0);
+
+		if (size > 0)
+		{
+			data = new ILubyte[size];
+			if (ilSaveL(IL_DDS, data, size) > 0)
+			{
+				App->filesystem->SaveFile(output_file.c_str(), (char*)data, size, fileMaterial);
+				RELEASE_ARRAY(data);
+				ret = true;
+			}
+			ilDeleteImages(1, &TextureName);
+		}
+		else
+		{
+			LOG("Cannot load texture from buffer of size %u", size);
+			ret = false;
+		}
+	}
+	return ret;
+}
+
+bool GeometryLoader::SaveTextureToOwnFormat(const char * path, char * buffer, int buffer_size)
+{
+	uint length = strlen(path);
+	std::string namePath = path;
+	uint lenght = 0;
+	uint i = namePath.find_last_of("/");
+	i++;
+	char* testM = new char[length - i - 3];
+	length = length - i;
+	namePath.copy(testM, length, i);
+	testM[length - 4] = '\0';
+	App->filesystem->SaveFile(testM, buffer, buffer_size, fileMaterial);
+	return true;
+}
+
+bool GeometryLoader::LoadTextureToOwnFormat(const char * inputFile, CompMaterial * material)
+{
+	/*char* buffer;
+	int size;
+
+	if (App->filesystem->LoadFile(inputFile, &buffer, size, fileMaterial) == true)
+	{
+		std::string path = App->filesystem->AddDirectoryToPath(inputFile, fileMaterial);
+		material->GetTextureID() = LoadMaterial(path.c_str());
+	}*/
+	return true;
+}
+
+uint GeometryLoader::LoadMaterial(const char * image)
 {
 	ILuint imageID;				// Create an image ID as a ULuint
 
@@ -290,16 +355,6 @@ uint GeometryLoader::ImportImage(const char * image)
 			GL_UNSIGNED_BYTE,		// Image data type
 			ilGetData());			// The actual image data itself
 
-		ILuint size;
-		ILubyte *data;
-		ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);// To pick a specific DXT compression use
-		size = ilSaveL(IL_DDS, NULL, 0); // Get the size of the data buffer
-		if (size > 0) {
-			data = new ILubyte[size]; // allocate data buffer
-			if (ilSaveL(IL_DDS, data, size) > 0) // Save to buffer with the ilSaveIL function
-				SaveTextureToOwnFormat(image, (char*)data, size);
-			RELEASE_ARRAY(data);
-		}
 	}
 	else // If we failed to open the image file in the first place...
 	{
@@ -315,92 +370,10 @@ uint GeometryLoader::ImportImage(const char * image)
 	return textureID; // Return the GLuint to the texture so you can use it!
 }
 
-bool GeometryLoader::SaveTextureToOwnFormat(const char * path, char * buffer, int buffer_size)
+void GeometryLoader::UnloadTexture(uint id)
 {
-	uint length = strlen(path);
-	std::string namePath = path;
-	uint lenght = 0;
-	uint i = namePath.find_last_of("/");
-	i++;
-	char* testM = new char[length - i - 3];
-	length = length - i;
-	namePath.copy(testM, length, i);
-	testM[length - 4] = '\0';
-	App->filesystem->SaveFile(testM, buffer, buffer_size, fileMaterial);
-	return true;
-}
-
-bool GeometryLoader::LoadTextureToOwnFormat(const char * inputFile, CompMaterial * material)
-{
-	char* buffer;
-	int size;
-
-	if (App->filesystem->LoadFile(inputFile, &buffer, size, fileMaterial) == true)
-	{
-		std::string path = App->filesystem->AddDirectoryToPath(inputFile, fileMaterial);
-		material->idTexture = LoadMaterial(path.c_str());
-	}
-	return true;
-}
-
-uint GeometryLoader::LoadMaterial(const char * image)
-{
-	ILuint textureID;
-	glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_2D, textureID);
-
-	ILenum error = IL_FALSE;
-
-	ILboolean success = ilLoadImage(image);
-	if (success)
-	{
-
-		ILinfo ImageInfo;
-		iluGetImageInfo(&ImageInfo);
-
-		/*
-		if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT)
-		{
-		iluFlipImage();
-		}*/
-
-		success = ilConvertImage(ilGetInteger(IL_IMAGE_FORMAT), IL_UNSIGNED_BYTE);
-
-		// Quit out if we failed the conversion
-		if (!success)
-		{
-			error = ilGetError();
-			LOG("ERROR on path:%s ERROR: %s", image, iluErrorString(error))
-		}
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexImage2D(GL_TEXTURE_2D, 		// Type of texture
-			0,								// Pyramid level (for mip-mapping) - 0 is the top level
-			ilGetInteger(IL_IMAGE_FORMAT),	// Internal pixel format to use. Can be a generic type like GL_RGB or GL_RGBA, or a sized type
-			ilGetInteger(IL_IMAGE_WIDTH),	// Image width
-			ilGetInteger(IL_IMAGE_HEIGHT),	// Image height
-			0,								// Border width in pixels (can either be 1 or 0)
-			ilGetInteger(IL_IMAGE_FORMAT),	// Format of image pixel data
-			GL_UNSIGNED_BYTE,				// Image data type
-			ilGetData());					// The actual image data itself
-
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-
-		LOG("Load Texture on path %s with no errors", image);
-	}
-	else
-	{
-		error = ilGetError();
-		LOG("ERROR on path:%s ERROR: %s", image, iluErrorString(error))
-	}
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	return textureID;
+		glDeleteTextures(1, &id);
+		LOG("Deleting texture with %i ID from GPU", id);
 }
 
 bool GeometryLoader::SaveMeshToOwnFormat(const CompMesh & mesh, const char * outputFile)
@@ -534,7 +507,12 @@ CompMaterial* GeometryLoader::LoadMaterial(aiMaterial* newMaterial)
 		std::string fullPath = "Models&Textures/";
 		uint l = fullPath.size();
 		fullPath.append(lastpath);
-		m->idTexture = ImportImage(fullPath.c_str());
+
+		int texUID = App->resources->ImportFile(fullPath.c_str(), Resource_Texture);
+		if (texUID != -1)
+		{
+			m->AddResource(texUID);
+		}
 
 		std::string atname = lastpath;
 		uint r = atname.find_first_of(".");

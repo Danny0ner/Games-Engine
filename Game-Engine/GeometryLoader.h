@@ -32,8 +32,9 @@ public:
 	CompMaterial* LoadMaterial(aiMaterial* newMaterial);
 	CompTransform* LoadTransform(aiNode* node);
 
-	uint ImportImage(const char* path);
+	uint ImportImage(const char* path, std::string& output_file);
 	void LoadNewTexture(const char* fullPath);
+	void UnloadTexture(uint id);
 	bool SaveMeshToOwnFormat(const CompMesh & mesh, const char * outputFile);
 	void LoadMeshOwnFormat(const char * inputFile, CompMesh* mesh);
 	bool SaveTextureToOwnFormat(const char * path, char * buffer, int buffer_size);
