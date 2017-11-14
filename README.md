@@ -1,4 +1,4 @@
-Pochinki's Engine
+﻿Pochinki's Engine
 
 We are a pair of students who are working on a 3d Game Engine c++ based.
 We are using ImGui library, DevIL,OpenGl,mmgr, Assimp, Glew and MathGeoLib.
@@ -28,11 +28,48 @@ Alt+LeftClick to rotate the camera arround the object.
 
 F-> Focus on the object
 
+Inovation:
 
-
+·ImGuizmo.
+·Adaptative Octree.
 
 ChangeLog
 
+Version 0.9.5.
+
+·Resource Manager.
+·Reference Counting.
+·Finished Adaptative Octree.
+·Finished Imguizmo.
+·Finished MousePicking.
+·Finished Serialized Scene.
+
+
+
+Version 0.9(Here we Change our Repository).
+
+·FileSystem.
+·Load And Save Scenes.
+·Start Serializing.
+·ImGuizmo.
+·MousePicking.
+·Timers.
+
+Version 0.8.5.
+
+·Quadtree Updated To Octree.
+
+·Camera Culling.
+
+Version 0.8.
+
+·Quadtree
+
+Version 0.7.
+
+·Game Object hierarchy.
+
+·Game Objects Transform.
 
 Version 0.6.
 
@@ -97,7 +134,7 @@ Javier Ortiz. -> https://github.com/JaviOrtiz
 
 Code.-> https://github.com/JaviOrtiz/Game-Engines
 
-Releases.->https://github.com/JaviOrtiz/Game-Engines/releases
+Releases.->https://github.com/Danny0ner/Games-Engine
 
 
 Licenses.
