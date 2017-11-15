@@ -17,6 +17,10 @@ ResourcesManager::ResourcesManager(Application* app, bool startEnabled) : Module
 
 ResourcesManager::~ResourcesManager()
 {
+	for (std::map<int, Resource*>::iterator it = resources.begin(); it != resources.end(); ++it)
+	{
+			delete it->second;
+	}
 }
 
 int ResourcesManager::Find(const char * fileName)

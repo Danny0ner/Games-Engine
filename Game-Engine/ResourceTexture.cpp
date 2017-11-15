@@ -1,7 +1,7 @@
 #include "ResourceTexture.h"
 #include "Application.h"
 #include "GeometryLoader.h"
-
+#include "mmgr\mmgr.h"
 ResourceTexture::ResourceTexture(int UID): Resource(UID, Resource_Texture)
 {
 }

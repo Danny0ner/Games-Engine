@@ -5,7 +5,7 @@
 #include "CompTransform.h"
 #include "MathGeo\MathGeoLib.h"
 #include "MathGeo\Geometry\AABB.h"
-
+#include "mmgr\mmgr.h"
 
 #define MAX_OBJECTS 4
 #define MIN_SIZE 1

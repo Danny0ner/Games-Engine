@@ -13,7 +13,7 @@
 #include "Devil\include\il.h"
 #include "Devil\include\ilu.h"
 #include "Devil\include\ilut.h"
-
+#include "mmgr\mmgr.h"
 #pragma comment (lib, "Devil/libx86/DevIL.lib" ) /* Loading Devil lib */
 #pragma comment (lib, "Devil/libx86/ILU.lib" ) /* Loading ILU lib */
 #pragma comment (lib, "Devil/libx86/ILUT.lib" ) 
@@ -482,6 +482,7 @@ int ranges[4] = { tmpMesh->numIndices, tmpMesh->numVertices, tmpMesh->numVertice
 
 		App->filesystem->SaveFile(outputFile, data, size, fileMesh);
 
+		delete tmpMesh;
 		RELEASE_ARRAY(data);
 
 		return true;
@@ -541,6 +542,9 @@ void GeometryLoader::LoadMeshOwnFormat(const char * inputFile, ResourceMesh * me
 		glGenBuffers(1, (GLuint*) &(mesh->idTexCoords));
 		glBindBuffer(GL_ARRAY_BUFFER, mesh->idTexCoords);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * mesh->numVertices * 3, mesh->texCoords, GL_STATIC_DRAW);
+
+		delete[] buffer;
+		buffer = nullptr;
 	}
 
 }

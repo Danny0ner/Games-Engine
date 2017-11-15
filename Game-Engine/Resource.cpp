@@ -1,6 +1,6 @@
 #include "Resource.h"
 #include "SerializeConfig.h"
-
+#include "mmgr\mmgr.h"
 Resource::Resource(int UID, ResourceType type) : UID(UID), type(type)
 {
 }
