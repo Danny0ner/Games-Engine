@@ -572,7 +572,7 @@ CompMaterial* GeometryLoader::LoadMaterial(aiMaterial* newMaterial)
 	
 		namePath.copy(lastpath, length, i + 1);
 		lastpath[length] = '\0';
-		std::string fullPath = "Models&Textures/";
+		std::string fullPath = "Assets/";
 		uint l = fullPath.size();
 		fullPath.append(lastpath);
 
