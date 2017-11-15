@@ -44,13 +44,22 @@ int ResourcesManager::ImportFile(const char * fileName, ResourceType type)
 	{
 		bool imported;
 		UID = App->RandomUIDGen->Int();
-		std::string outfile = std::to_string(UID);
+
+		std::string tmpPath = fileName;
+		int length = tmpPath.length();
+		uint i = tmpPath.find_last_of("/");
+		length = length - i - 1;
+		char* tmp = new char[length + 1];
+		tmpPath.copy(tmp, length, i + 1);
+		tmp[length] = '\0';
+		std::string exFile = tmp;
+		delete[] tmp;
 
 		switch (type)
 		{
 			case Resource_Texture:
 			{
-				imported = App->geometryloader->ImportImage(fileName, outfile);
+				imported = App->geometryloader->ImportImage(fileName, exFile);
 				break;
 			}
 		}
@@ -60,7 +69,7 @@ int ResourcesManager::ImportFile(const char * fileName, ResourceType type)
 			Resource* newResource = CreateNewResource(type, UID);
 			newResource->file = fileName;
 			newResource->exportedFile = "Library/Material/";
-			newResource->exportedFile += outfile;
+			newResource->exportedFile += exFile;
 			newResource->exportedFile += ".dds";
 			return UID;
 		}
@@ -85,15 +94,15 @@ int ResourcesManager::ImportFile(const char* meshName, aiMesh * mesh)
 		int UID = App->RandomUIDGen->Int();
 		std::string exFile = std::to_string(UID);
 
-		imported = App->geometryloader->SaveMeshToOwnFormat(mesh, exFile.c_str());
+		imported = App->geometryloader->SaveMeshToOwnFormat(mesh, meshName);
 
 		if (imported == true)
 		{
 			Resource* newResource = CreateNewResource(Resource_Mesh, UID);
 			newResource->file = meshName;
 			newResource->exportedFile = "Library/Mesh/";
-			newResource->exportedFile += exFile;
-			newResource->exportedFile += ".don";
+			newResource->exportedFile += meshName;
+			newResource->exportedFile += ".DarkyHijo";
 			return UID;
 		}
 		else

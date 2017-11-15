@@ -45,7 +45,7 @@ ResourceMesh::~ResourceMesh()
 
 bool ResourceMesh::LoadInMemory()
 {
-	App->geometryloader->LoadMeshOwnFormat(std::to_string(UID).c_str(), this);
+	App->geometryloader->LoadMeshOwnFormat(file.c_str(), this);
 	return true;
 }
 
