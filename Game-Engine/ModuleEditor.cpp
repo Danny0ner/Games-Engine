@@ -1,3 +1,4 @@
+#include <experimental\filesystem>
 #include "Application.h"
 #include "ModuleEditor.h"
 #include "GeometryLoader.h"
@@ -8,6 +9,8 @@
 #include "CompTransform.h"
 #include "GameObject.h"
 #include "ImGui\ImGuizmo.h"
+
+
 ModuleEditor::ModuleEditor(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	name = "Editor";
@@ -30,6 +33,9 @@ bool ModuleEditor::Start()
 	cam->frustumCulling = false;
 	root->AddComponent(cam);
 	Quadroot = new Octree(AABB(float3(-100, -20, -100), float3(100, 120, 100)));
+	std::string yeahyo;
+	for (auto& p : std::experimental::filesystem::recursive_directory_iterator("Assets"))
+		yeahyo = p.path().string();
 
 	return true;
 }
