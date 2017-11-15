@@ -15,7 +15,6 @@ ModuleEditor::ModuleEditor(Application* app, bool start_enabled) : Module(app, s
 
 ModuleEditor::~ModuleEditor()
 {
-	
 }
 
 bool ModuleEditor::Init()

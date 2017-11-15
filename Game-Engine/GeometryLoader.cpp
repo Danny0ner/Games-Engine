@@ -97,18 +97,26 @@ GameObject* GeometryLoader::LoadGameObject(const char* fullPath)
 
 GameObject * GeometryLoader::AddGameObjectChild(aiNode * node, const aiScene * scene, GameObject * parent)
 {
-	GameObject* newObject = new GameObject(parent);
+	GameObject* newparent = nullptr;
+	if (node->mNumMeshes == 0)
+	{
+		GameObject* newObject = new GameObject(parent);
 
-	newObject->AddComponent(LoadTransform(node));
-	newObject->SetName(node->mName.C_Str());
-	parent->AddChild(newObject);
-
+		newObject->AddComponent(LoadTransform(node));
+		newObject->SetName(node->mName.C_Str());
+		parent->AddChild(newObject);
+		newparent = newObject;
+	}
 	if (node->mNumMeshes != 0)
 	{
 		for (uint i = 0; i < node->mNumMeshes; i++)
 		{
-			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+			GameObject* newObject = new GameObject(parent);
 
+			newObject->AddComponent(LoadTransform(node));
+			newObject->SetName(node->mName.C_Str());
+			parent->AddChild(newObject);
+			aiMesh* mesh= scene->mMeshes[node->mMeshes[i]];
 			CompMesh* m = new CompMesh();
 
 			int meshUID = App->resources->ImportFile(mesh->mName.C_Str(), mesh);
@@ -121,12 +129,13 @@ GameObject * GeometryLoader::AddGameObjectChild(aiNode * node, const aiScene * s
 			newObject->AddComponent(m);
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 			newObject->AddComponent(LoadMaterial(material));
-			App->editor->Static_Vector.push_back(newObject);		
+			App->editor->Static_Vector.push_back(newObject);
+			newparent = newObject;
 		}
 	}
 	for (uint i = 0; i < node->mNumChildren; i++)
 	{
-		AddGameObjectChild(node->mChildren[i], scene, newObject);
+		AddGameObjectChild(node->mChildren[i], scene, newparent);
 	}
 	return nullptr;
 }
