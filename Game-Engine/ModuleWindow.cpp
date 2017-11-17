@@ -174,6 +174,12 @@ void ModuleWindow::SetBrightness(float set)
 	}
 }
 
+void ModuleWindow::SetWindowWidhtHeight(int width, int height)
+{
+	Window_Width = width;
+	Window_Height = height;
+}
+
 bool ModuleWindow::IsFullscreen() const
 {
 	return Fullscreen;

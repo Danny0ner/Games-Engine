@@ -40,6 +40,7 @@ public:
 	void SetBorderless(bool borderless);
 	void SetFullScreenDesktop(bool fullscreendesktop);
 	void SetBrightness(float brightness);
+	void SetWindowWidhtHeight(int width, int height);
 
 	bool IsFullscreen()const;
 	bool IsResizable()const;

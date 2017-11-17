@@ -211,14 +211,9 @@ bool ModuleRenderer3D::CleanUp()
 void ModuleRenderer3D::OnResize(int width, int height)
 {
 	glViewport(0, 0, width, height);
+	App->window->SetWindowWidhtHeight(width, height);
 	App->camera->SetAspectRatio();
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	ProjectionMatrix = perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
-	glLoadMatrixf(&ProjectionMatrix);
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
 }
 
 void ModuleRenderer3D::Gl_State(bool state, GLenum dummy) {

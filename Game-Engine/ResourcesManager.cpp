@@ -1,8 +1,7 @@
+#include <experimental\filesystem>
 #include "ResourcesManager.h"
 #include "Application.h"
-
 #include "ResourceTexture.h"
-
 #include "Assimp\include\cimport.h" 
 #include "Assimp\include\scene.h" 
 #include "Assimp\include\postprocess.h" 
@@ -21,6 +20,34 @@ ResourcesManager::~ResourcesManager()
 	{
 			delete it->second;
 	}
+}
+
+bool ResourcesManager::Start()
+{
+	checkingTimer.Start();
+	return true;
+}
+
+update_status ResourcesManager::Update(float dt)
+{
+	std::string yeahyo;
+	if (checkingTimer.Read() > 3000)
+	{
+		for (std::experimental::filesystem::recursive_directory_iterator::value_type p : std::experimental::filesystem::recursive_directory_iterator("Assets"))
+		{
+			App->Console.AddLog(p.path().string().c_str());
+			if (std::experimental::filesystem::is_directory(p))
+			{
+				std::string ye = "Library/";
+				ye += p.path().filename().string();
+				std::experimental::filesystem::create_directory(ye.c_str());
+			}
+		}
+		checkingTimer.Start();
+	}
+
+
+	return UPDATE_CONTINUE;
 }
 
 int ResourcesManager::Find(const char * fileName)

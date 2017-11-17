@@ -12,6 +12,11 @@ class ResourcesManager : public Module
 public:
 	ResourcesManager(Application* app, bool startEnabled = true);
 	~ResourcesManager();
+	
+	bool Start();
+	update_status Update(float dt);
+	
+	
 	int Find(const char* fileName);
 	int ImportFile(const char* fileName, ResourceType type = Resource_Unknown);
 	int ImportFile(const char* meshName, aiMesh* mesh);
@@ -24,4 +29,6 @@ public:
 
 private:
 	std::map<int, Resource*> resources;
+
+	Timer checkingTimer;
 };

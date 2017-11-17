@@ -1,4 +1,4 @@
-#include <experimental\filesystem>
+
 #include "Application.h"
 #include "ModuleEditor.h"
 #include "GeometryLoader.h"
@@ -33,10 +33,8 @@ bool ModuleEditor::Start()
 	cam->frustumCulling = false;
 	root->AddComponent(cam);
 	Quadroot = new Octree(AABB(float3(-100, -20, -100), float3(100, 120, 100)));
-	//std::string yeahyo;
-	//for (std::experimental::filesystem::directory_entry p : std::experimental::filesystem::recursive_directory_iterator("Assets"))
-		//yeahyo = p.path().string();
-	//std::experimental::filesystem::create_directory("Assets/YEHAOTY");
+	
+	
 	return true;
 }
 
