@@ -33,6 +33,8 @@ public:
 
 	void CollectIntersectionsLineDynamicObjects(std::vector<GameObject*>& objects, const LineSegment & line) const;
 
+	void CollectIntersectionsFrustumDynamicObjects(std::vector<GameObject*>& objects, const Frustum & line) const;
+
 	void SerializeScene(const char* filename);
 	void LoadScene(const char * fileTitle);
 	void LockImput();

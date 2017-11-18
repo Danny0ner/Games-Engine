@@ -1,4 +1,4 @@
-
+#include <experimental\filesystem>
 #include "Application.h"
 #include "ModuleEditor.h"
 #include "GeometryLoader.h"
@@ -224,6 +224,24 @@ void ModuleEditor::CollectIntersectionsLineDynamicObjects(std::vector<GameObject
 		if (tmp != nullptr)
 		{
 			if (line.Intersects(Enclosing_Box))
+			{
+				objects.push_back(*it);
+			}
+		}
+	}
+}
+
+void ModuleEditor::CollectIntersectionsFrustumDynamicObjects(std::vector<GameObject*> &objects, const Frustum& frustum) const
+{
+	for (std::vector<GameObject*>::const_iterator it = Dynamic_Vector.begin(); it != Dynamic_Vector.end(); ++it)
+	{
+		CompMesh* tmp = (CompMesh*)(*it)->FindComponent(Component_Mesh);
+		CompTransform* transf = (CompTransform*)(*it)->FindComponent(Component_Transform);
+		AABB Enclosing_Box = tmp->enclosingBox;
+		Enclosing_Box.TransformAsAABB(transf->GetTransMatrix());
+		if (tmp != nullptr)
+		{
+			if (frustum.Contains(Enclosing_Box) || frustum.Intersects(Enclosing_Box))
 			{
 				objects.push_back(*it);
 			}

@@ -14,10 +14,10 @@ public:
 	void Remove(GameObject* toRemove);
 	void CreateChilds();
 	void RedistributeChilds();
-	template<typename TYPE>
-	void CollectIntersections(std::vector<GameObject*>& objects, const TYPE & primitive) const;
 	void CollectIntersectionsLine(std::vector<GameObject*> &objects, const LineSegment&) const;
 	void DrawDebug(Color color) const;
+
+	void CollectIntersectionsFrustum(std::vector<GameObject*>& objects, const Frustum& primitive) const;
 
 public:
 	bool childscreateds = false;

@@ -183,11 +183,10 @@ void OctreeNode::DrawDebug(Color color) const
 	}
 }
 
-template<typename TYPE>
-void OctreeNode::CollectIntersections(std::vector<GameObject*>& objects, const TYPE & primitive) const
+void OctreeNode::CollectIntersectionsFrustum(std::vector<GameObject*>& objects, const Frustum& primitive) const
 {
 
-	if (primitive.Intersects(box))
+	if (primitive.Contains(box) || primitive.Intersects(box))
 	{
 		for (std::list<GameObject*>::const_iterator it = this->objects.begin(); it != this->objects.end(); ++it)
 		{
@@ -197,14 +196,22 @@ void OctreeNode::CollectIntersections(std::vector<GameObject*>& objects, const T
 			Enclosing_Box.TransformAsAABB(transf->GetTransMatrix());
 			if (tmp != nullptr)
 			{
-				if (primitive.Intersects(Enclosing_Box))
+				if (primitive.Contains(Enclosing_Box) || primitive.Intersects(Enclosing_Box))
 				{
-					objects.push_back(*it);
+					bool found = false;
+					for (std::vector<GameObject*>::iterator itt = objects.begin(); itt != objects.end(); ++itt)
+					{
+						if ((*it) == (*itt))
+						{
+							found = true;
+						}
+					}
+					if (found == false)		objects.push_back(*it);
 				}
 			}
 		}
 		for (int i = 0; i < 8; ++i)
-			if (childs[i] != nullptr) childs[i]->CollectIntersections(objects, primitive);
+			if (childs[i] != nullptr) childs[i]->CollectIntersectionsFrustum(objects, primitive);
 	}
 }
 
@@ -229,7 +236,7 @@ void OctreeNode::CollectIntersectionsLine(std::vector<GameObject*> &objects, con
 			}
 		}
 		for (int i = 0; i < 8; ++i)
-			if (childs[i] != nullptr) childs[i]->CollectIntersections(objects, line);
+			if (childs[i] != nullptr) childs[i]->CollectIntersectionsLine(objects, line);
 	}
 }
 

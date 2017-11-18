@@ -165,6 +165,7 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	grid->Render();
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+	FrustumCulling();
 	App->editor->Render();
 
 	return UPDATE_CONTINUE;
@@ -378,37 +379,46 @@ void ModuleRenderer3D::LoadConfig(JSON_Object* root)
 
 }
 
-void ModuleRenderer3D::FrustumCulling(GameObject * ObjecttoDraw)
+void ModuleRenderer3D::FrustumCulling()
 {
-	CompTransform* tmpTrans = (CompTransform*)ObjecttoDraw->FindComponent(Component_Transform);
 	CompCamera* camera = (CompCamera*)App->editor->GetRoot()->FindComponent(Component_Camera);
 
-	glPushMatrix();
-	if (tmpTrans != nullptr)
+	std::vector<GameObject*> cullingVector;
+	if (camera->GetFrustumCulling() == false)
 	{
-		glMultMatrixf((GLfloat*)tmpTrans->GetTransMatrix().Transposed().ptr());
+		App->editor->GetQuadtree()->root->CollectIntersectionsFrustum(cullingVector, App->camera->FrustumPick);
+		App->editor->CollectIntersectionsFrustumDynamicObjects(cullingVector, App->camera->FrustumPick);
+	}
+	else 
+	{
+		App->editor->GetQuadtree()->root->CollectIntersectionsFrustum(cullingVector, camera->frustum);
+		App->editor->CollectIntersectionsFrustumDynamicObjects(cullingVector, camera->frustum);
 	}
 
-	for (int i = 0; i < ObjecttoDraw->components.size(); i++)
+	for (std::vector<GameObject*>::const_iterator it = cullingVector.begin(); it != cullingVector.end(); ++it)
 	{
-		if (ObjecttoDraw->components[i]->GetType() == Component_Mesh)
+		for (int i = 0; i < (*it)->components.size(); ++i)
 		{
-			CompMesh* toDraw = dynamic_cast<CompMesh*> (ObjecttoDraw->components[i]);
-			if (camera != nullptr && camera->GetFrustumCulling() == true)
+			if ((*it)->components[i]->GetType() == Component_Mesh)
 			{
-				AABB recalculatedBox = toDraw->enclosingBox;
-				recalculatedBox.TransformAsAABB(tmpTrans->GetTransMatrix());
-				
-				if (camera->Contains(recalculatedBox))
+				CompTransform* tmpTrans = (CompTransform*)(*it)->FindComponent(Component_Transform);
+				CompMesh* toDraw = (CompMesh*)(*it)->FindComponent(Component_Mesh);
+				if (tmpTrans != nullptr && toDraw != nullptr) 
 				{
-					Render(ObjecttoDraw);
+					glPushMatrix();
+					if (tmpTrans != nullptr)
+					{
+						glMultMatrixf((GLfloat*)tmpTrans->GetTransMatrix().Transposed().ptr());
+					}
+						Render((*it));
+						glPopMatrix();
 				}
 			}
-			else
-			{
-				Render(ObjecttoDraw);
-			}
 		}
+			//else
+			//{
+				//Render(ObjecttoDraw);
+			//}
 	}
 	glPopMatrix();
 	glUseProgram(0);
@@ -416,64 +426,53 @@ void ModuleRenderer3D::FrustumCulling(GameObject * ObjecttoDraw)
 
 void ModuleRenderer3D::Render(GameObject * toDraw)
 {
-	for (int i = 0; i < toDraw->components.size(); i++)
-	{
-		if (toDraw->components[i]->GetType() == Component_Mesh)
+	CompMesh* CMesh = (CompMesh*)toDraw->FindComponent(Component_Mesh);
+		if (CMesh->resourceMesh != nullptr)
 		{
-
-			CompTransform* transf = (CompTransform*)(toDraw->FindComponent(Component_Transform));
-			CompMesh* CMesh = (CompMesh*)(toDraw->components[i]);
-			if (CMesh->resourceMesh != nullptr)
+			if (CMesh->resourceMesh->numVertices > 4)
 			{
-				if (CMesh->resourceMesh->numVertices > 4)
+				if (CMesh->drawdebug)
 				{
-					if (CMesh->drawdebug)
-					{
-						CMesh->DrawDebug();
-					}
-					if (WireFrame == true)
-					{
-						glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-					}
-					else
-					{
-						glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-					}
-
-					if (CMesh->resourceMesh->idNormals > 0)
-					{
-						glEnable(GL_LIGHTING);
-						glEnableClientState(GL_NORMAL_ARRAY);
-						glBindBuffer(GL_ARRAY_BUFFER, CMesh->resourceMesh->idNormals);
-						glNormalPointer(GL_FLOAT, 0, NULL);
-					}
-
-					if (CMesh->resourceMesh->idTexCoords > 0)
-					{
-						CompMaterial* mat = (CompMaterial*)(toDraw->FindComponent(Component_Material));
-						if (mat != nullptr)
-						{
-							glEnable(GL_TEXTURE_2D);
-							glBindTexture(GL_TEXTURE_2D, mat->GetTextureID());
-						}
-						glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-						glBindBuffer(GL_ARRAY_BUFFER, CMesh->resourceMesh->idTexCoords);
-						glTexCoordPointer(3, GL_FLOAT, 0, NULL);
-					}
-					if (CMesh->resourceMesh->idVertices != 0) {
-						glEnableClientState(GL_VERTEX_ARRAY);
-						glBindBuffer(GL_ARRAY_BUFFER, CMesh->resourceMesh->idVertices);
-						glVertexPointer(3, GL_FLOAT, 0, NULL);
-					}
-					if (CMesh->resourceMesh->idIndices != 0)
-					{
-						glEnableClientState(GL_ELEMENT_ARRAY_BUFFER);
-						glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, CMesh->resourceMesh->idIndices);
-						glDrawElements(GL_TRIANGLES, CMesh->resourceMesh->numIndices, GL_UNSIGNED_INT, NULL);
-					}
-					glBindTexture(GL_TEXTURE_2D, 0);
+					CMesh->DrawDebug();
 				}
+				if (WireFrame == true)
+				{
+					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				}
+				else
+				{
+					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+				}
+				if (CMesh->resourceMesh->idNormals > 0)
+				{
+					glEnable(GL_LIGHTING);
+					glEnableClientState(GL_NORMAL_ARRAY);
+					glBindBuffer(GL_ARRAY_BUFFER, CMesh->resourceMesh->idNormals);
+					glNormalPointer(GL_FLOAT, 0, NULL);
+				}
+				if (CMesh->resourceMesh->idTexCoords > 0)
+				{
+					CompMaterial* mat = (CompMaterial*)(toDraw->FindComponent(Component_Material));
+					if (mat != nullptr)
+					{
+						glEnable(GL_TEXTURE_2D);
+						glBindTexture(GL_TEXTURE_2D, mat->GetTextureID());
+					}
+					glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+					glBindBuffer(GL_ARRAY_BUFFER, CMesh->resourceMesh->idTexCoords);
+					glTexCoordPointer(3, GL_FLOAT, 0, NULL);
+				}
+				if (CMesh->resourceMesh->idVertices != 0) {
+				glEnableClientState(GL_VERTEX_ARRAY);
+				glBindBuffer(GL_ARRAY_BUFFER, CMesh->resourceMesh->idVertices);
+				glVertexPointer(3, GL_FLOAT, 0, NULL);
 			}
+			if (CMesh->resourceMesh->idIndices != 0)				{
+				glEnableClientState(GL_ELEMENT_ARRAY_BUFFER);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, CMesh->resourceMesh->idIndices);
+				glDrawElements(GL_TRIANGLES, CMesh->resourceMesh->numIndices, GL_UNSIGNED_INT, NULL);
+			}
+			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 	}
 }

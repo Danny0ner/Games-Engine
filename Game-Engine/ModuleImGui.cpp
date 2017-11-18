@@ -106,6 +106,10 @@ update_status ModuleImGui::PostUpdate(float dt)
 			{
 				showEditor = !showEditor;
 			}
+			if (ImGui::MenuItem("Show Assets Folder"))
+			{
+				showAssetsFolder = !showAssetsFolder;
+			}
 			if (ImGui::MenuItem("Show Time Controls"))
 			{	
 				showControls = !showControls;
@@ -134,7 +138,10 @@ update_status ModuleImGui::PostUpdate(float dt)
 	{
 		ShowEditor();
 	}
-
+	if (showAssetsFolder)
+	{
+		ShowAssetsFolder();
+	}
 	if (showControls)
 	{
 		ShowControls();
@@ -294,6 +301,11 @@ update_status ModuleImGui::PostUpdate(float dt)
 		App->Options();
 
 		ImGui::End();
+	}
+
+	void ModuleImGui::ShowAssetsFolder()
+	{
+		App->resources->ShowAssetsFolder();
 	}
 
 	void ModuleImGui::ShowEditor(bool* p_open)

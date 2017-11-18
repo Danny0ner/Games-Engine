@@ -38,7 +38,7 @@ public:
 	void SaveConfig(JSON_Object *root);
 	void LoadConfig(JSON_Object *root);
 
-	void FrustumCulling(GameObject* toDraw);
+	void FrustumCulling();
 	void Render(GameObject* toDraw);
 	void ImGuiDrawer();
 

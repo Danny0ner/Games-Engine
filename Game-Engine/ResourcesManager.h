@@ -27,7 +27,7 @@ public:
 	void ReimportFile(const char* filename);
 	void CheckResources();
 	void SaveResources(Configuration & save) const;
-
+	void ShowAssetsFolder();
 	void LoadResources(Configuration & resources);
 
 private:

@@ -273,6 +273,28 @@ void ResourcesManager::SaveResources(Configuration& save) const
 	}
 }
 
+void ResourcesManager::ShowAssetsFolder()
+{
+	std::string temp = "Assets Folder";
+
+	ImGui::Begin(temp.c_str(), 0, ImGuiWindowFlags_AlwaysVerticalScrollbar);
+	ImGui::BeginChild("Assets Files", ImVec2(0, 200), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);
+		for (std::experimental::filesystem::recursive_directory_iterator::value_type p : std::experimental::filesystem::recursive_directory_iterator("Assets"))
+		{
+			ImGui::Text(p.path().filename().string().c_str());
+			if (ImGui::IsItemClicked())
+			{
+				if (strcmp(p.path().filename().extension().string().c_str(), ".FBX") == 0 || strcmp(p.path().filename().extension().string().c_str(), ".fbx") == 0)
+				{
+					App->editor->CreateNewGameObject(p.path().string().c_str());
+				}
+			}
+		}
+		ImGui::EndChild();
+
+		ImGui::End();
+}
+
 void ResourcesManager::LoadResources(Configuration& resources)
 {
 	uint re = resources.GetArraySize("Scene Resources");

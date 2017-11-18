@@ -27,7 +27,7 @@ public:
 	void ShowAbout();
 	bool CleanUp();
 	void ShowModules();
-	
+	void ShowAssetsFolder();
 	void LockImput();
 
 	void ShowControls(bool* p_open = NULL);
@@ -46,6 +46,7 @@ public:
 	bool    Showconsole = false;
 	bool	Modules = false;
 	bool	About = false;
+	bool	showAssetsFolder = false;
 	bool    showEditor = false;
 	bool	showControls = false;
 	bool	ImputLock = false;

@@ -41,8 +41,6 @@ GameObject::~GameObject()
 
 void GameObject::Update()
 {
-	App->renderer3D->FrustumCulling(this);
-
 	for (int i = 0; i < childs.size(); i++)
 	{
 		/*if (childs[i]->deletingmyself == true)

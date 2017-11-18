@@ -128,10 +128,6 @@ update_status ModuleInput::PreUpdate(float dt)
 				{
 					App->editor->LoadScene(dropped_filedir);
 				}
-				else if (strcmp(&dropped_filedir[length - 4], ".PNG") == 0 || strcmp(&dropped_filedir[length - 4], ".png") == 0)
-				{
-					//App->geometryloader->ChangeTexture(dropped_filedir);
-				}
 				SDL_ShowSimpleMessageBox(
 					SDL_MESSAGEBOX_INFORMATION,
 					"File dropped on window",
