@@ -8,6 +8,7 @@ public:
 	ResourceTexture(int UID);
 	~ResourceTexture();
 
+	void ReimportResource();
 	bool LoadInMemory()override;
 	bool UnloadFromMemory()override;
 

@@ -60,6 +60,10 @@ uint Resource::GetReferenceCount() const
 	return references;
 }
 
+void Resource::ReimportResource(const char * filename)
+{
+}
+
 void Resource::Save(Configuration & config) const
 {
 	Configuration myConf;

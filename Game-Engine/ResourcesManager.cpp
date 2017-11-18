@@ -33,8 +33,12 @@ update_status ResourcesManager::Update(float dt)
 	std::string yeahyo;
 	if (checkingTimer.Read() > 3000)
 	{
-		for (std::experimental::filesystem::recursive_directory_iterator::value_type p : std::experimental::filesystem::recursive_directory_iterator("Assets"))
+		CheckResources();
+		/*for (std::experimental::filesystem::recursive_directory_iterator::value_type p : std::experimental::filesystem::recursive_directory_iterator("Assets"))
 		{
+			/*std::experimental::filesystem::file_time_type ftime = std::experimental::filesystem::last_write_time(p.path());
+			std::time_t cftime = decltype(ftime)::clock::to_time_t(ftime);
+			res->file_date = std::asctime(std::localtime(&cftime));
 			App->Console.AddLog(p.path().string().c_str());
 			if (std::experimental::filesystem::is_directory(p))
 			{
@@ -42,12 +46,53 @@ update_status ResourcesManager::Update(float dt)
 				ye += p.path().filename().string();
 				std::experimental::filesystem::create_directory(ye.c_str());
 			}
-		}
+		}*/
 		checkingTimer.Start();
 	}
 
 
 	return UPDATE_CONTINUE;
+}
+
+void ResourcesManager::CheckResources()
+{
+	for (std::map<int, Resource*>::iterator it = resources.begin(); it != resources.end(); ++it)
+	{
+		for (std::experimental::filesystem::recursive_directory_iterator::value_type p : std::experimental::filesystem::recursive_directory_iterator("Assets"))
+		{
+			ResourceTexture* tmpres = nullptr;
+
+			std::experimental::filesystem::file_time_type ftime;
+			std::time_t cftime;
+			std::string fileWriteTime;
+
+			std::string ye = p.path().filename().string();
+			if (strcmp(it->second->file.c_str(), ye.c_str()) == 0)
+			{
+				switch (it->second->GetType())
+				{
+				case Resource_Texture:
+					ftime = std::experimental::filesystem::last_write_time(p.path());
+					cftime = decltype(ftime)::clock::to_time_t(ftime);
+					fileWriteTime = std::asctime(std::localtime(&cftime));
+
+					if (strcmp(it->second->LastWriteTime.c_str(), fileWriteTime.c_str()) != 0)
+					{
+						tmpres = (ResourceTexture*)it->second;
+						tmpres->UnloadFromMemory();
+						ReimportFile(tmpres->file.c_str());
+						if (tmpres->GetReferenceCount() > 0)
+						{
+							tmpres->LoadInMemory();
+						}
+					}
+					break;
+				case Resource_Mesh:
+					break;
+				}
+			}
+		}
+	}
 }
 
 int ResourcesManager::Find(const char * fileName)
@@ -77,22 +122,25 @@ Resource* ResourcesManager::GetResourceByName(const char * fileName)
 int ResourcesManager::ImportFile(const char * fileName, ResourceType type)
 {
 	//Check that the file isn't already loaded
-	int UID = Find(fileName);
+
+	std::string assetsfile = fileName;
+	std::string tmpPath = fileName;
+	int length = tmpPath.length();
+	uint i = tmpPath.find_last_of("/");
+	length = length - i - 1;
+	char* tmp = new char[length + 1];
+	tmpPath.copy(tmp, length, i + 1);
+	tmp[length] = '\0';
+	std::string exFile = tmp;
+	delete[] tmp;
+
+	int UID = Find(exFile.c_str());
 
 	if (UID == 0)
 	{
 		bool imported;
 		UID = App->RandomUIDGen->Int();
-
-		std::string tmpPath = fileName;
-		int length = tmpPath.length();
-		uint i = tmpPath.find_last_of("/");
-		length = length - i - 1;
-		char* tmp = new char[length + 1];
-		tmpPath.copy(tmp, length, i + 1);
-		tmp[length] = '\0';
-		std::string exFile = tmp;
-		delete[] tmp;
+	
 
 		switch (type)
 		{
@@ -106,10 +154,24 @@ int ResourcesManager::ImportFile(const char * fileName, ResourceType type)
 		if (imported == true)
 		{
 			Resource* newResource = CreateNewResource(type, UID);
-			newResource->file = fileName;
+			newResource->file = exFile;
 			newResource->exportedFile = "Library/Material/";
 			newResource->exportedFile += exFile;
 			newResource->exportedFile += ".dds";
+
+			for (std::experimental::filesystem::recursive_directory_iterator::value_type file_in_path : std::experimental::filesystem::recursive_directory_iterator("Assets"))
+			{
+				if (std::experimental::filesystem::is_regular_file(file_in_path.path()))
+				{
+					if (strcmp(newResource->file.c_str(), file_in_path.path().filename().string().c_str()) == 0)
+					{
+						std::experimental::filesystem::file_time_type ftime = std::experimental::filesystem::last_write_time(file_in_path.path());
+						std::time_t cftime = decltype(ftime)::clock::to_time_t(ftime);
+						newResource->LastWriteTime = std::asctime(std::localtime(&cftime));
+					}
+				}
+			}
+
 			return UID;
 		}
 		else
@@ -142,6 +204,8 @@ int ResourcesManager::ImportFile(const char* meshName, aiMesh * mesh)
 			newResource->exportedFile = "Library/Mesh/";
 			newResource->exportedFile += meshName;
 			newResource->exportedFile += ".DarkyHijo";
+			newResource->LastWriteTime = "nowritetime";
+
 			return UID;
 		}
 		else
@@ -188,6 +252,16 @@ Resource * ResourcesManager::CreateNewResource(ResourceType type, int UID)
 
 	return ret;
 }
+
+void ResourcesManager::ReimportFile(const char* filename)
+{
+	std::string tmpPath = filename;
+	std::string fullPath = "Assets/";
+	fullPath.append(filename);
+	App->geometryloader->ImportImage(fullPath.c_str(), tmpPath);
+}
+
+
 
 void ResourcesManager::SaveResources(Configuration& save) const
 {

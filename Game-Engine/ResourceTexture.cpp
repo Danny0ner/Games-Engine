@@ -10,6 +10,12 @@ ResourceTexture::~ResourceTexture()
 {
 }
 
+void ResourceTexture::ReimportResource()
+{
+	App->geometryloader->UnloadTexture(textureID);
+
+}
+
 bool ResourceTexture::LoadInMemory()
 {
 	textureID = App->geometryloader->LoadMaterial(exportedFile.c_str());

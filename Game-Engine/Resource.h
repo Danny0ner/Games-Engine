@@ -28,6 +28,7 @@ public:
 	void UnloadFromComponent();
 	uint GetReferenceCount()const;
 
+	virtual void ReimportResource(const char* filename);
 	virtual void Save(Configuration& config) const;
 	virtual void Load(Configuration& config);
 	virtual bool LoadInMemory() = 0;
@@ -37,7 +38,7 @@ protected:
 	int UID = 0;
 	std::string file;
 	std::string exportedFile;
-
+	std::string LastWriteTime;
 	ResourceType type = Resource_Unknown;
 	uint references = 0;
 };

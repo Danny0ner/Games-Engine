@@ -24,7 +24,8 @@ public:
 	Resource* Get(int UID);
 	Resource* GetResourceByName(const char * fileName);
 	Resource* CreateNewResource(ResourceType type, int UID);
-
+	void ReimportFile(const char* filename);
+	void CheckResources();
 	void SaveResources(Configuration & save) const;
 
 	void LoadResources(Configuration & resources);
