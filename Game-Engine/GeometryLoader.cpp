@@ -42,6 +42,102 @@ bool GeometryLoader::Init()
 	return true;
 }
 
+void GeometryLoader::ImportFBX(const char* fbxName)
+{
+	uint length = strlen(fbxName);
+
+	std::string namePath = fbxName;
+
+	uint i = namePath.find_last_of("\\");
+	char* fbxname = new char[length - i + 1];
+	length = length - i;
+	namePath.copy(fbxname, length, i);
+	fbxname[length] = '\0';
+
+	const aiScene* scene = aiImportFile(fbxName, aiProcessPreset_TargetRealtime_MaxQuality);
+	if (scene != nullptr && scene->HasMeshes())
+	{
+		LOG("Scene %s loaded succesfully", fbxName);
+
+		//Load transform
+		aiNode* node = scene->mRootNode;
+
+		for (int i = 0; i < scene->mNumMeshes; i++)
+		{
+			scene->mMeshes[i]->mName = fbxname;
+			scene->mMeshes[i]->mName.Append(std::to_string(i).c_str());
+		}
+
+		LOG("Loading meshes");
+
+		ImportFBXNode(node, scene);
+
+		aiReleaseImport(scene);
+
+		delete[] fbxname;
+		fbxname = nullptr;
+
+	}
+	else
+	{
+		LOG("Error loading scene %s", fbxName);
+
+		delete[] fbxname;
+		fbxname = nullptr;
+	}
+}
+
+void GeometryLoader::ImportFBXNode(aiNode * node, const aiScene * scene)
+{
+	if (node->mNumMeshes != 0)
+	{
+		for (uint i = 0; i < node->mNumMeshes; i++)
+		{
+			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+
+			App->resources->ImportFile(mesh->mName.C_Str(), mesh);
+			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+			ImportImage(material);
+
+		}
+	}
+	for (uint i = 0; i < node->mNumChildren; i++)
+	{
+		ImportFBXNode(node->mChildren[i], scene);
+	}
+}
+
+void GeometryLoader::ImportImage(aiMaterial * material)
+{
+	if (material != nullptr)
+	{
+		uint numTextures = material->GetTextureCount(aiTextureType_DIFFUSE);
+		aiString path;
+
+		material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
+
+		uint length = path.length;
+
+		std::string namePath = path.C_Str();
+
+		uint i = namePath.find_last_of("\\");
+		length = length - i - 1;
+		char* lastpath = new char[length + 1];
+
+		namePath.copy(lastpath, length, i + 1);
+		lastpath[length] = '\0';
+		std::string fullPath = "Assets/";
+		uint l = fullPath.size();
+		fullPath.append(lastpath);
+
+		App->resources->ImportFile(fullPath.c_str(), Resource_Texture);
+
+		delete[] lastpath;
+		lastpath = nullptr;
+	}
+}
+
+
 GameObject* GeometryLoader::LoadGameObject(const char* fullPath)
 {
 	GameObject* newObject = new GameObject();
@@ -140,119 +236,6 @@ GameObject * GeometryLoader::AddGameObjectChild(aiNode * node, const aiScene * s
 	return nullptr;
 }
 
-/*
-void GeometryLoader::LoadNewTexture(const char* fullPath)
-{
-	int count = 0;
-	for (int i = 0; i < App->editor->GetRoot()->childs.size(); i++)
-	{
-		count = 0;
-		for (int j = 0; j < App->editor->GetRoot()->childs[i]->components.size(); j++)
-		{
-			if (App->editor->GetRoot()->childs[i]->components[j]->GetType() == Component_Material)
-			{
-				dynamic_cast<ComponentMaterial*>(App->editor->GetRoot()->childs[i]->components[j])->OverrideTexture(fullPath);
-				count++;
-			}
-		}
-
-		//In case it didn't have any previous material
-		if (count == 0)
-		{
-			ComponentMaterial* newMat = new ComponentMaterial();
-			newMat->idTexture = App->textures->ImportImage(fullPath);
-			newMat->SetName(fullPath);
-			App->sceneEditor->GetRoot()->childs[i]->AddComponent(newMat);
-		}
-	}
-	LOG("Set %s as new texture for current meshes.");
-}*/
-
-CompMesh* GeometryLoader::LoadMesh(aiMesh* mesh ,aiNode* node, const aiScene* scene, GameObject* addTo)
-{
-	/*CompMesh* m = new CompMesh;
-
-		if (mesh != nullptr)
-		{
-			//VERTICES
-			m->numVertices = mesh->mNumVertices;
-
-			m->vertices = new float[m->numVertices * 3];
-
-			memcpy(m->vertices, mesh->mVertices, sizeof(float)* m->numVertices * 3);
-
-			LOG("New mesh with %d vertices", m->numVertices);
-
-			glGenBuffers(1, (GLuint*)&m->idVertices);
-			glBindBuffer(GL_ARRAY_BUFFER, m->idVertices);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m->numVertices * 3, m->vertices, GL_STATIC_DRAW);
-
-			//INDICES
-			if (mesh->HasFaces())
-			{
-				m->numIndices = mesh->mNumFaces * 3;
-				m->indices = new uint[m->numIndices];
-
-				for (uint i = 0; i < mesh->mNumFaces; ++i)
-				{
-					if (mesh->mFaces[i].mNumIndices != 3)
-					{
-						LOG("WARNING, geometry face with != 3 indices!");
-					}
-					else
-					{
-						memcpy(&m->indices[i * 3], mesh->mFaces[i].mIndices, 3 * sizeof(uint));
-					}
-				}
-
-				glGenBuffers(1, (GLuint*)&m->idIndices);
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->idIndices);
-				glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * m->numIndices, m->indices, GL_STATIC_DRAW);
-			}
-
-			//NORMALS
-			if (mesh->HasNormals())
-			{
-				m->normals = new float[m->numVertices * 3];
-				memcpy(m->normals, mesh->mNormals, sizeof(float) * m->numVertices * 3);
-
-				glGenBuffers(1, (GLuint*) &(m->idNormals));
-				glBindBuffer(GL_ARRAY_BUFFER, m->idNormals);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m->numVertices * 3, m->normals, GL_STATIC_DRAW);
-			}
-
-			//COLORS
-			if (mesh->HasVertexColors(0))
-			{
-				m->colors = new float[m->numVertices * 3];
-				memcpy(m->colors, mesh->mColors, sizeof(float) * m->numVertices * 3);
-
-				glGenBuffers(1, (GLuint*) &(m->idColors));
-				glBindBuffer(GL_ARRAY_BUFFER, m->idColors);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m->numVertices * 3, m->colors, GL_STATIC_DRAW);
-			}
-
-			//TEXTURE COORDS
-			if (mesh->HasTextureCoords(0))
-			{
-				m->texCoords = new float[m->numVertices * 3];
-				memcpy(m->texCoords, mesh->mTextureCoords[0], sizeof(float) * m->numVertices * 3);
-
-				glGenBuffers(1, (GLuint*) &(m->idTexCoords));
-				glBindBuffer(GL_ARRAY_BUFFER, m->idTexCoords);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m->numVertices * 3, m->texCoords, GL_STATIC_DRAW);
-
-			}
-
-			m->SetName(node->mName.C_Str());
-
-			//SaveMeshToOwnFormat(*m, addTo->Getname().c_str());
-			m->CreateEnclosingBox();
-			addTo->AddComponent(m);
-		}*/
-	return nullptr;
-}
-
 uint GeometryLoader::ImportImage(const char * image, std::string& output_file)
 {
 	bool ret = false;
@@ -304,19 +287,6 @@ bool GeometryLoader::SaveTextureToOwnFormat(const char * path, char * buffer, in
 	namePath.copy(testM, length, i);
 	testM[length - 4] = '\0';
 	App->filesystem->SaveFile(testM, buffer, buffer_size, fileMaterial);
-	return true;
-}
-
-bool GeometryLoader::LoadTextureToOwnFormat(const char * inputFile, CompMaterial * material)
-{
-	/*char* buffer;
-	int size;
-
-	if (App->filesystem->LoadFile(inputFile, &buffer, size, fileMaterial) == true)
-	{
-		std::string path = App->filesystem->AddDirectoryToPath(inputFile, fileMaterial);
-		material->GetTextureID() = LoadMaterial(path.c_str());
-	}*/
 	return true;
 }
 
@@ -616,3 +586,4 @@ bool GeometryLoader::CleanUp()
 {
 	return true;
 }
+

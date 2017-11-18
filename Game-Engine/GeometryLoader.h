@@ -21,25 +21,19 @@ public:
 	~GeometryLoader();
 
 	bool Init();
-
-	
-
 	bool CleanUp();
-
+	void ImportFBX(const char* fbxName);
+	void ImportFBXNode(aiNode* node, const aiScene* scene);
+	void ImportImage(aiMaterial* material);
 	GameObject* LoadGameObject(const char* fullPath);
 	GameObject* AddGameObjectChild(aiNode* node, const aiScene* scene, GameObject* addTo);
-	CompMesh* LoadMesh(aiMesh* mesh,aiNode* node, const aiScene* scene, GameObject* addTo);
 	CompMaterial* LoadMaterial(aiMaterial* newMaterial);
 	CompTransform* LoadTransform(aiNode* node);
 
 	uint ImportImage(const char* path, std::string& output_file);
-	void LoadNewTexture(const char* fullPath);
 	void UnloadTexture(uint id);
 	bool SaveMeshToOwnFormat(const aiMesh* mesh, const char * outputFile);
 	void LoadMeshOwnFormat(const char * inputFile, ResourceMesh* mesh);
 	bool SaveTextureToOwnFormat(const char * path, char * buffer, int buffer_size);
-	bool LoadTextureToOwnFormat(const char * inputFile, CompMaterial* material);
 	uint LoadMaterial(const char * image);
-	void Load(CompMesh* mesh, char* buffer);
-	void Save(CompMesh* mesh);
 };

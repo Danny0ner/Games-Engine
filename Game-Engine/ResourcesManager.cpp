@@ -1,5 +1,6 @@
 #include <experimental\filesystem>
 #include "ResourcesManager.h"
+#include "GeometryLoader.h"
 #include "Application.h"
 #include "ResourceTexture.h"
 #include "Assimp\include\cimport.h" 
@@ -25,6 +26,14 @@ ResourcesManager::~ResourcesManager()
 bool ResourcesManager::Start()
 {
 	checkingTimer.Start();
+	for (std::experimental::filesystem::recursive_directory_iterator::value_type p : std::experimental::filesystem::recursive_directory_iterator("Assets"))
+	{
+		if (strcmp(p.path().filename().extension().string().c_str(),".FBX") == 0 || strcmp(p.path().filename().extension().string().c_str(),".fbx") == 0)
+		{
+			App->geometryloader->ImportFBX(p.path().string().c_str());
+		}
+	}
+
 	return true;
 }
 
@@ -34,19 +43,6 @@ update_status ResourcesManager::Update(float dt)
 	if (checkingTimer.Read() > 3000)
 	{
 		CheckResources();
-		/*for (std::experimental::filesystem::recursive_directory_iterator::value_type p : std::experimental::filesystem::recursive_directory_iterator("Assets"))
-		{
-			/*std::experimental::filesystem::file_time_type ftime = std::experimental::filesystem::last_write_time(p.path());
-			std::time_t cftime = decltype(ftime)::clock::to_time_t(ftime);
-			res->file_date = std::asctime(std::localtime(&cftime));
-			App->Console.AddLog(p.path().string().c_str());
-			if (std::experimental::filesystem::is_directory(p))
-			{
-				std::string ye = "Library/";
-				ye += p.path().filename().string();
-				std::experimental::filesystem::create_directory(ye.c_str());
-			}
-		}*/
 		checkingTimer.Start();
 	}
 
