@@ -37,13 +37,19 @@ void CompMaterial::OnSave(Configuration & data) const
 {
 	if (resourceTex != nullptr)
 	{
-		data.SetInt("Texture UID", resourceTex->GetUID());
+		data.SetString("ResourceTex Name", resourceTex->GetFile());
+	}
+	else
+	{
+		data.SetString("ResourceTex Name", "noresource");
 	}
 }
 
 void CompMaterial::OnLoad(Configuration & data)
 {
-	AddResource(data.GetInt("Texture UID"));
+	std::string resname = data.GetString("ResourceTex Name");
+	if(resname.length() > 0)
+	AddResourceByName(resname);
 }
 
 void CompMaterial::OverrideTexture(const char* path)
@@ -51,13 +57,18 @@ void CompMaterial::OverrideTexture(const char* path)
 	//idTexture = App->textures->ImportImage(path);
 }
 
+void CompMaterial::AddResourceByName(std::string filename)
+{
+	resourceTex = (ResourceTexture*)App->resources->GetResourceByName(filename.c_str());
+	if (resourceTex != nullptr)
+		resourceTex->LoadToComponent();
+}
+
 void CompMaterial::AddResource(int uid)
 {
 	resourceTex = (ResourceTexture*)App->resources->Get(uid);
 	if (resourceTex != nullptr)
-	{
 		resourceTex->LoadToComponent();
-	}
 }
 
 int CompMaterial::GetTextureID()

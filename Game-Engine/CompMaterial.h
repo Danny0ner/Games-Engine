@@ -13,6 +13,7 @@ public:
 	void OnLoad(Configuration & data);
 	void OverrideTexture(const char* path);
 
+	void AddResourceByName(std::string filename);
 	void AddResource(int uid);
 	int GetTextureID();
 private:

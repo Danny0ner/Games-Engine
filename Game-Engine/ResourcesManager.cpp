@@ -62,6 +62,18 @@ int ResourcesManager::Find(const char * fileName)
 	return 0;
 }
 
+Resource* ResourcesManager::GetResourceByName(const char * fileName)
+{
+	for (std::map<int, Resource*>::iterator it = resources.begin(); it != resources.end(); ++it)
+	{
+		if (strcmp(it->second->GetFile(), fileName) == 0)
+		{
+			return it->second;
+		}
+	}
+	return nullptr;
+}
+
 int ResourcesManager::ImportFile(const char * fileName, ResourceType type)
 {
 	//Check that the file isn't already loaded
@@ -192,7 +204,8 @@ void ResourcesManager::LoadResources(Configuration& resources)
 	{
 		Configuration tmpConfig = resources.GetArray("Scene Resources", i);
 		int tmpUID = tmpConfig.GetInt("UID");
-		if (Get(tmpUID) == nullptr)
+		std::string str = tmpConfig.GetString("File Name");
+		if (Find(str.c_str()) == 0)
 		{
 			switch (tmpConfig.GetInt("Type"))
 			{

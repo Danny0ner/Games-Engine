@@ -29,6 +29,7 @@ public:
 	virtual void OnSave(Configuration& data) const;
 	virtual void OnLoad(Configuration& data);
 	virtual void AddResource(int UID);
+	virtual void AddResourceByName(std::string filename);
 protected:
 	GameObject* myGO = nullptr;
 	std::string name;

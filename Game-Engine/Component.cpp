@@ -49,3 +49,7 @@ void Component::OnLoad(Configuration & data)
 void Component::AddResource(int UID)
 {
 }
+
+void Component::AddResourceByName(std::string filename)
+{
+}

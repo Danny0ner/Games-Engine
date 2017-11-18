@@ -28,6 +28,7 @@ public:
 	AABB GetEnclosingBox();
 	void CreateEnclosingBox();
 
+	void AddResourceByName(std::string filename);
 	void AddResource(int uid);
 public:
 	bool drawdebug = false;

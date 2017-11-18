@@ -106,12 +106,20 @@ void CompMesh::OnEditor()
 
 void CompMesh::OnSave(Configuration & data) const
 {
-	data.SetInt("Resource UID", resourceMesh->GetUID());
+	if (resourceMesh != nullptr)
+	{
+		data.SetString("ResourceMesh Name", resourceMesh->GetFile());
+	}
+	else
+	{
+		data.SetString("ResourceMesh Name", "noresource");
+	}
+
 }
 
 void CompMesh::OnLoad(Configuration & data)
 {
-	AddResource(data.GetInt("Resource UID"));
+	AddResourceByName(data.GetString("ResourceMesh Name"));
 }
 
 AABB CompMesh::GetEnclosingBox()
@@ -128,10 +136,17 @@ void CompMesh::CreateEnclosingBox()
 	}
 }
 
+void CompMesh::AddResourceByName(std::string filename)
+{
+	resourceMesh = (ResourceMesh*)App->resources->GetResourceByName(filename.c_str());
+	if(resourceMesh != nullptr)
+	resourceMesh->LoadToComponent();
+}
+
 void CompMesh::AddResource(int uid)
 {
 	resourceMesh = (ResourceMesh*)App->resources->Get(uid);
-	if(resourceMesh != nullptr)
-	resourceMesh->LoadToComponent();
+	if (resourceMesh != nullptr)
+		resourceMesh->LoadToComponent();
 }
 

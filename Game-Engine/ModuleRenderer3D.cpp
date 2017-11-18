@@ -423,53 +423,56 @@ void ModuleRenderer3D::Render(GameObject * toDraw)
 
 			CompTransform* transf = (CompTransform*)(toDraw->FindComponent(Component_Transform));
 			CompMesh* CMesh = (CompMesh*)(toDraw->components[i]);
-			if (CMesh->resourceMesh->numVertices > 4)
+			if (CMesh->resourceMesh != nullptr)
 			{
-				if (CMesh->drawdebug)
+				if (CMesh->resourceMesh->numVertices > 4)
 				{
-					CMesh->DrawDebug();
-				}
-				if (WireFrame == true)
-				{
-					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-				}
-				else
-				{
-					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-				}
-
-				if (CMesh->resourceMesh->idNormals > 0)
-				{
-					glEnable(GL_LIGHTING);
-					glEnableClientState(GL_NORMAL_ARRAY);
-					glBindBuffer(GL_ARRAY_BUFFER, CMesh->resourceMesh->idNormals);
-					glNormalPointer(GL_FLOAT, 0, NULL);
-				}
-
-				if (CMesh->resourceMesh->idTexCoords > 0)
-				{
-					CompMaterial* mat = (CompMaterial*)(toDraw->FindComponent(Component_Material));
-					if (mat != nullptr)
+					if (CMesh->drawdebug)
 					{
-						glEnable(GL_TEXTURE_2D);
-						glBindTexture(GL_TEXTURE_2D, mat->GetTextureID());
+						CMesh->DrawDebug();
 					}
-					glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-					glBindBuffer(GL_ARRAY_BUFFER, CMesh->resourceMesh->idTexCoords);
-					glTexCoordPointer(3, GL_FLOAT, 0, NULL);
+					if (WireFrame == true)
+					{
+						glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+					}
+					else
+					{
+						glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+					}
+
+					if (CMesh->resourceMesh->idNormals > 0)
+					{
+						glEnable(GL_LIGHTING);
+						glEnableClientState(GL_NORMAL_ARRAY);
+						glBindBuffer(GL_ARRAY_BUFFER, CMesh->resourceMesh->idNormals);
+						glNormalPointer(GL_FLOAT, 0, NULL);
+					}
+
+					if (CMesh->resourceMesh->idTexCoords > 0)
+					{
+						CompMaterial* mat = (CompMaterial*)(toDraw->FindComponent(Component_Material));
+						if (mat != nullptr)
+						{
+							glEnable(GL_TEXTURE_2D);
+							glBindTexture(GL_TEXTURE_2D, mat->GetTextureID());
+						}
+						glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+						glBindBuffer(GL_ARRAY_BUFFER, CMesh->resourceMesh->idTexCoords);
+						glTexCoordPointer(3, GL_FLOAT, 0, NULL);
+					}
+					if (CMesh->resourceMesh->idVertices != 0) {
+						glEnableClientState(GL_VERTEX_ARRAY);
+						glBindBuffer(GL_ARRAY_BUFFER, CMesh->resourceMesh->idVertices);
+						glVertexPointer(3, GL_FLOAT, 0, NULL);
+					}
+					if (CMesh->resourceMesh->idIndices != 0)
+					{
+						glEnableClientState(GL_ELEMENT_ARRAY_BUFFER);
+						glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, CMesh->resourceMesh->idIndices);
+						glDrawElements(GL_TRIANGLES, CMesh->resourceMesh->numIndices, GL_UNSIGNED_INT, NULL);
+					}
+					glBindTexture(GL_TEXTURE_2D, 0);
 				}
-				if (CMesh->resourceMesh->idVertices != 0) {
-					glEnableClientState(GL_VERTEX_ARRAY);
-					glBindBuffer(GL_ARRAY_BUFFER, CMesh->resourceMesh->idVertices);
-					glVertexPointer(3, GL_FLOAT, 0, NULL);
-				}
-				if (CMesh->resourceMesh->idIndices != 0)
-				{
-					glEnableClientState(GL_ELEMENT_ARRAY_BUFFER);
-					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, CMesh->resourceMesh->idIndices);
-					glDrawElements(GL_TRIANGLES, CMesh->resourceMesh->numIndices, GL_UNSIGNED_INT, NULL);
-				}
-				glBindTexture(GL_TEXTURE_2D, 0);
 			}
 		}
 	}
