@@ -96,8 +96,6 @@ void GeometryLoader::ImportFBXNode(aiNode * node, const aiScene * scene)
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 
 			App->resources->ImportFile(mesh->mName.C_Str(), mesh);
-			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-			ImportImage(material);
 
 		}
 	}

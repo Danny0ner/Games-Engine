@@ -32,6 +32,12 @@ bool ResourcesManager::Start()
 		{
 			App->geometryloader->ImportFBX(p.path().string().c_str());
 		}
+		else if (strcmp(p.path().filename().extension().string().c_str(), ".PNG") == 0 || strcmp(p.path().filename().extension().string().c_str(), ".png") == 0 || strcmp(p.path().filename().extension().string().c_str(), ".tga") == 0 || strcmp(p.path().filename().extension().string().c_str(), ".TGA") == 0)
+		{
+			std::string AssetsPath = "Assets/";
+			AssetsPath.append(p.path().filename().string().c_str());
+			App->geometryloader->ImportImage(AssetsPath.c_str(), p.path().filename().string());
+		}
 	}
 
 	return true;
