@@ -30,10 +30,16 @@ F-> Focus on the object
 
 Inovation:
 
-·ImGuizmo.
+·ImGuizmo(when using guizmo, load scene does not work propperly,
 ·Adaptative Octree.
 
 ChangeLog
+
+Version 1.0.
+·Bug Fixing.
+·Assets Window.
+·Textures and Meshes can be change on engine.
+·Import when Start.
 
 Version 0.9.5.
 
