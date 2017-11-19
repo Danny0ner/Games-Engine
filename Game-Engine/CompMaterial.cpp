@@ -1,7 +1,7 @@
 #include "Application.h"
 #include "CompMaterial.h"
 #include "ImGui\imgui.h"
-
+#include "mmgr\mmgr.h"
 
 CompMaterial::CompMaterial() : Component(Component_Material)
 {

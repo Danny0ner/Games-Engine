@@ -89,7 +89,6 @@ GameObject * ModuleEditor::CreateNewGameObject(const char * path)
 	if (ret != nullptr)
 	{
 		//root->DeleteChilds();
-		delete Quadroot;
 		root->AddChild(ret);
 		((CompTransform*)ret->FindComponent(Component_Transform))->UpdateChildsTransMatrixNow();
 		ReCreateQuadtree();
@@ -106,6 +105,10 @@ GameObject * ModuleEditor::CreateNewGameObject(const char * path)
 
 void ModuleEditor::ReCreateQuadtree()
 {
+	if (Quadroot != nullptr)
+	{
+		delete Quadroot;
+	}
 	AABB Enclosing_Box;
 	Enclosing_Box.SetNegativeInfinity();
 	for (std::vector<GameObject*>::const_iterator tmp = Static_Vector.begin(); tmp != Static_Vector.end(); tmp++)
