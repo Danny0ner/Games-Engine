@@ -299,17 +299,17 @@ void ModuleEditor::LoadScene(const char * fileTitle)
 	if(root->childs.size()>0)((CompTransform*)root->childs[0]->FindComponent(Component_Transform))->UpdateChildsTransMatrixNow();
 }
 
-void ModuleEditor::LockImput()
+void ModuleEditor::LockInput()			//Locking input from camera//
 {
-	LockedImput = true;
+	LockedInput = true;
 }
-void ModuleEditor::UnlockImput() 
+void ModuleEditor::UnlockInput() 
 {
-	LockedImput = false;
+	LockedInput = false;
 }
-bool ModuleEditor:: IsImputLocked()
+bool ModuleEditor:: IsInputLocked()
 {
-	return LockedImput;
+	return LockedInput;
 }
 
 

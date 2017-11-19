@@ -283,16 +283,4 @@ int Application::GetGameStart()
 {
 	return gametime.GameStart.Read();
 }
-float Application::GetDeltaTime()
-{
-	return realtime.dt;
-}
-int Application::GetFramesSinceStart()
-{
-	return realtime.performance.Frame_Count;
-}
-int Application::GetlastFrames()
-{
-	return realtime.performance.Framerate;
-}
 

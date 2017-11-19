@@ -130,10 +130,10 @@ void CompTransform::Guizmo(Frustum& Frustum)
 		float4x4 ViewMatrix = Frustum.ViewMatrix();
 		
 		
-		if (ImGuizmo::IsOver())
-			App->editor->LockImput();
+		if (ImGuizmo::IsOver())			//Locking input when using guizmo//
+			App->editor->LockInput();
 		else
-			App->editor->UnlockImput();
+			App->editor->UnlockInput();
 
 		float* GuizmoTransMatrix = TransMatrix.Transposed().ptr();
 		float4x4 identity;

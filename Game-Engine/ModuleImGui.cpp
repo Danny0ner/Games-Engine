@@ -354,7 +354,7 @@ update_status ModuleImGui::PostUpdate(float dt)
 			ImGui::TextWrapped("prev_last_sec_frame_count: %i", App->realtime.prev_last_sec_frame_count);
 			ImGui::TextWrapped("last_sec_frame_count: %i", App->realtime.last_sec_frame_count);
 			ImGui::Separator();
-			ImGui::TextWrapped("GameSecSinceStartUp: %i s", App->GetGameStart() / 1000);
+			ImGui::TextWrapped("GameSecSinceStartUp: %i s", App->gametime.GameStart.Read() / 1000);
 
 		
 			ImGui::End();

@@ -28,7 +28,7 @@ public:
 	bool CleanUp();
 	void ShowModules();
 	void ShowAssetsFolder();
-	void LockImput();
+
 
 	void ShowControls(bool* p_open = NULL);
 	void ShowEditor(bool* p_open = NULL);

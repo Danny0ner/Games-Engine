@@ -37,14 +37,14 @@ public:
 
 	void SerializeScene(const char* filename);
 	void LoadScene(const char * fileTitle);
-	void LockImput();
-	void UnlockImput();
-	bool IsImputLocked();
+	void LockInput();
+	void UnlockInput();
+	bool IsInputLocked();
 
 	void ReCreateQuadtree();
 
 public:
-	bool LockedImput;
+	bool LockedInput;
 	Octree* Quadroot;
 	GameObject* root = nullptr;
 	GameObject* selected = nullptr;
