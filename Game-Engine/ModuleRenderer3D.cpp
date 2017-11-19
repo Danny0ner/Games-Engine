@@ -229,9 +229,6 @@ void ModuleRenderer3D::Gl_State(bool state, GLenum dummy) {
 
 		glDisable(dummy);
 	}
-
-
-
 }
 
 void ModuleRenderer3D::SaveConfig(JSON_Object * root)
@@ -415,10 +412,6 @@ void ModuleRenderer3D::FrustumCulling()
 				}
 			}
 		}
-			//else
-			//{
-				//Render(ObjecttoDraw);
-			//}
 	}
 	glPopMatrix();
 	glUseProgram(0);

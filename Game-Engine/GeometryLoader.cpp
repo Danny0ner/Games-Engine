@@ -105,33 +105,39 @@ void GeometryLoader::ImportFBXNode(aiNode * node, const aiScene * scene)
 	}
 }
 
-void GeometryLoader::ImportImage(aiMaterial * material)
+void GeometryLoader::ImportImageResource(const char * image, std::string& output_file)
 {
-	if (material != nullptr)
+
+	ILuint TextureName;
+	ilGenImages(1, &TextureName);
+	ilBindImage(TextureName);
+
+	ILboolean success = ilLoadImage(image);
+	if (success == IL_TRUE)
 	{
-		uint numTextures = material->GetTextureCount(aiTextureType_DIFFUSE);
-		aiString path;
+		ilEnable(IL_FILE_OVERWRITE);
 
-		material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
+		ILuint size;
+		ILubyte *data;
 
-		uint length = path.length;
+		ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);
+		size = ilSaveL(IL_DDS, NULL, 0);
 
-		std::string namePath = path.C_Str();
-
-		uint i = namePath.find_last_of("\\");
-		length = length - i - 1;
-		char* lastpath = new char[length + 1];
-
-		namePath.copy(lastpath, length, i + 1);
-		lastpath[length] = '\0';
-		std::string fullPath = "Assets/";
-		uint l = fullPath.size();
-		fullPath.append(lastpath);
-
-		App->resources->ImportFile(fullPath.c_str(), Resource_Texture);
-
-		delete[] lastpath;
-		lastpath = nullptr;
+		if (size > 0)
+		{
+			data = new ILubyte[size];
+			if (ilSaveL(IL_DDS, data, size) > 0)
+			{
+				App->filesystem->SaveFile(output_file.c_str(), (char*)data, size, fileMaterial);
+				App->resources->ImportFile(image, Resource_Texture);
+				RELEASE_ARRAY(data);
+			}
+			ilDeleteImages(1, &TextureName);
+		}
+		else
+		{
+			LOG("Cannot load texture from buffer of size %u", size);
+		}
 	}
 }
 

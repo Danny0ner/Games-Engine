@@ -219,13 +219,16 @@ void ModuleEditor::CollectIntersectionsLineDynamicObjects(std::vector<GameObject
 	{
 		CompMesh* tmp = (CompMesh*)(*it)->FindComponent(Component_Mesh);
 		CompTransform* transf = (CompTransform*)(*it)->FindComponent(Component_Transform);
-		AABB Enclosing_Box = tmp->enclosingBox;
-		Enclosing_Box.TransformAsAABB(transf->GetTransMatrix());
-		if (tmp != nullptr)
+		if (tmp != nullptr && transf != nullptr)
 		{
-			if (line.Intersects(Enclosing_Box))
+			AABB Enclosing_Box = tmp->enclosingBox;
+			Enclosing_Box.TransformAsAABB(transf->GetTransMatrix());
+			if (tmp != nullptr)
 			{
-				objects.push_back(*it);
+				if (line.Intersects(Enclosing_Box))
+				{
+					objects.push_back(*it);
+				}
 			}
 		}
 	}
@@ -237,13 +240,16 @@ void ModuleEditor::CollectIntersectionsFrustumDynamicObjects(std::vector<GameObj
 	{
 		CompMesh* tmp = (CompMesh*)(*it)->FindComponent(Component_Mesh);
 		CompTransform* transf = (CompTransform*)(*it)->FindComponent(Component_Transform);
-		AABB Enclosing_Box = tmp->enclosingBox;
-		Enclosing_Box.TransformAsAABB(transf->GetTransMatrix());
-		if (tmp != nullptr)
+		if (tmp != nullptr && transf != nullptr)
 		{
-			if (frustum.Contains(Enclosing_Box) || frustum.Intersects(Enclosing_Box))
+			AABB Enclosing_Box = tmp->enclosingBox;
+			Enclosing_Box.TransformAsAABB(transf->GetTransMatrix());
+			if (tmp != nullptr)
 			{
-				objects.push_back(*it);
+				if (frustum.Contains(Enclosing_Box) || frustum.Intersects(Enclosing_Box))
+				{
+					objects.push_back(*it);
+				}
 			}
 		}
 	}

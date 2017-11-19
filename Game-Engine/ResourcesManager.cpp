@@ -36,7 +36,7 @@ bool ResourcesManager::Start()
 		{
 			std::string AssetsPath = "Assets/";
 			AssetsPath.append(p.path().filename().string().c_str());
-			App->geometryloader->ImportImage(AssetsPath.c_str(), p.path().filename().string());
+			App->geometryloader->ImportImageResource(AssetsPath.c_str(), p.path().filename().string());
 		}
 	}
 
@@ -253,6 +253,30 @@ Resource * ResourcesManager::CreateNewResource(ResourceType type, int UID)
 	}
 
 	return ret;
+}
+
+void ResourcesManager::ShowTextureResources(CompMaterial* material)
+{
+	std::string temp = "Textures";
+
+	ImGui::Begin(temp.c_str(), 0, ImGuiWindowFlags_AlwaysVerticalScrollbar);
+	ImGui::BeginChild("Assets Files", ImVec2(0, 100), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);
+	for (std::experimental::filesystem::recursive_directory_iterator::value_type p : std::experimental::filesystem::recursive_directory_iterator("Assets"))
+	{
+		if (strcmp(p.path().filename().extension().string().c_str(), ".PNG") == 0 || strcmp(p.path().filename().extension().string().c_str(), ".png") == 0)
+		{
+			ImGui::Text(p.path().filename().string().c_str());
+			if (ImGui::IsItemClicked())
+			{
+				{
+					material->AddResourceByName(p.path().filename().string().c_str()); //App->editor->CreateNewGameObject(p.path().string().c_str());
+				}
+			}
+		}
+	}
+	ImGui::EndChild();
+
+	ImGui::End();
 }
 
 void ResourcesManager::ReimportFile(const char* filename)

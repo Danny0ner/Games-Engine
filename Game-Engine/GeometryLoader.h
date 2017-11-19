@@ -24,7 +24,7 @@ public:
 	bool CleanUp();
 	void ImportFBX(const char* fbxName);
 	void ImportFBXNode(aiNode* node, const aiScene* scene);
-	void ImportImage(aiMaterial* material);
+	void ImportImageResource(const char * image, std::string & output_file);
 	GameObject* LoadGameObject(const char* fullPath);
 	GameObject* AddGameObjectChild(aiNode* node, const aiScene* scene, GameObject* addTo);
 	CompMaterial* LoadMaterial(aiMaterial* newMaterial);

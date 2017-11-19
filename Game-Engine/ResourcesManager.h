@@ -4,7 +4,7 @@
 #include <map>
 #include "Globals.h"
 #include "Resource.h"
-
+#include "CompMaterial.h"
 class aiMesh;
 
 class ResourcesManager : public Module
@@ -24,6 +24,7 @@ public:
 	Resource* Get(int UID);
 	Resource* GetResourceByName(const char * fileName);
 	Resource* CreateNewResource(ResourceType type, int UID);
+	void ShowTextureResources(CompMaterial* material);
 	void ReimportFile(const char* filename);
 	void CheckResources();
 	void SaveResources(Configuration & save) const;

@@ -18,4 +18,5 @@ public:
 	int GetTextureID();
 private:
 	ResourceTexture* resourceTex = nullptr;
+	bool changingtexture = false;
 };

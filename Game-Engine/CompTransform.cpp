@@ -71,8 +71,6 @@ void CompTransform::OnEditor()
 
 
 	}
-	
-
 	else if (ImGui::CollapsingHeader(name.c_str(), true))
 	{
 		if (ImGui::DragFloat3("Position", &position.x, 0.5, NULL, NULL,"%.2f"))
