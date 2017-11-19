@@ -59,6 +59,7 @@ public:
 	bool ArrayDraw = false;
 	bool IndexDraw = false;
 	bool drawnormals = false;
+	bool drawdebug = false;
 	PPlane* grid;
 	vec3 BackgroundColor;
 	vec3 ColorOverMaterial;

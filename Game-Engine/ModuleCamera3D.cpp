@@ -18,8 +18,8 @@ ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(ap
 	Y = float3(0.0f, 1.0f, 0.0f);
 	Z = float3(0.0f, 0.0f, 1.0f);
 
-	Position = float3(0.0f, 2.0f, 0.0f);//2.0f to better look on camera
-	Reference = float3(0.0f, 2.0f, 0.0f);//2.0f to better look on camera
+	Position = float3(0.0f, 5.0f, 10.0f);//2.0f to better look on camera
+	Reference = float3(0.0f, 0.0f, 0.0f);//2.0f to better look on camera
 }
 
 ModuleCamera3D::~ModuleCamera3D()

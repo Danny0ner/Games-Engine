@@ -58,7 +58,7 @@ bool ModuleEditor::CleanUp()
 void ModuleEditor::Render()
 {
 	root->Update();
-	Quadroot->DrawDebug(Orange);
+
 
 	if (selected != nullptr)
 	{

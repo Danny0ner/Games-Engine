@@ -18,16 +18,16 @@ public:
 	void OnLoad(Configuration& data);
 	void Guizmo(Frustum& Camera);
 	void UpdateChildsTransMatrix();
-
 	void UpdateChildsTransMatrixNow();
-
 	bool needToUpdate;
 private:
-	float3 movedposition;
+	float3 startposition;
 	float3 position;
 	float3 scale;
 	Quat rotation;
+	
 	float4x4 TransMatrix;
+	float4x4 Transmat;
 	float3 eulerrot;
 	bool showinspector = true;
 };

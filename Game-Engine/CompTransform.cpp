@@ -5,13 +5,14 @@
 #include "Application.h"
 
 
-CompTransform::CompTransform(float3 pos, float3 scale, Quat rot, ComponentType type) : Component(Component_Transform), position(pos), movedposition(pos), scale(scale), rotation(rot)
+CompTransform::CompTransform(float3 pos, float3 scale, Quat rot, ComponentType type) : Component(Component_Transform), position(pos), startposition(pos), scale(scale), rotation(rot)
 {
 	name = "Transform";
 	needToUpdate = false;
 	eulerrot = rot.ToEulerXYZ();
 	eulerrot *= RADTODEG;
 	rotation = rot;
+	
 	TransMatrix = float4x4::FromQuat(rot);
 	TransMatrix = float4x4::Scale(scale, float3(0, 0, 0)) * TransMatrix;
 	TransMatrix.float4x4::SetTranslatePart(pos.x, position.y, position.z);
@@ -51,9 +52,9 @@ void CompTransform::UpdatePositionMatrix()
 	{
 		GameObject* GO = myGO->GetParent();
 		
-		CompTransform* transf = (CompTransform*)(GO->FindComponent(Component_Transform));
+		CompTransform* transf = dynamic_cast<CompTransform*>(GO->FindComponent(Component_Transform));
 		
-		if(transf != nullptr) TransMatrix = transf->GetTransMatrix() * TransMatrix;
+		if(transf != nullptr) TransMatrix =transf->GetTransMatrix() * TransMatrix;
 	}
 	needToUpdate = false;
 	UpdateChildsTransMatrix();
@@ -108,6 +109,7 @@ void CompTransform::OnSave(Configuration & data) const
 
 void CompTransform::OnLoad(Configuration & data)
 {
+	needToUpdate = true;
 	position.x = data.GetFloat("Position", 0);
 	position.y = data.GetFloat("Position", 1);
 	position.z = data.GetFloat("Position", 2);
@@ -120,7 +122,6 @@ void CompTransform::OnLoad(Configuration & data)
 	scale.x = data.GetFloat("Scale", 0);
 	scale.y = data.GetFloat("Scale", 1);
 	scale.z = data.GetFloat("Scale", 2);
-	needToUpdate = true;
 }
 
 void CompTransform::Guizmo(Frustum& Frustum)
@@ -147,7 +148,7 @@ void CompTransform::Guizmo(Frustum& Frustum)
 		if (App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN)				//Changes the operation of guizmos//
 		{
 			mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
-			mCurrentGizmoMode = ImGuizmo::WORLD;
+			mCurrentGizmoMode = ImGuizmo::LOCAL;
 		}
 
 		if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
@@ -175,7 +176,6 @@ void CompTransform::Guizmo(Frustum& Frustum)
 			ImGuizmo::RecomposeMatrixFromComponents((float*)position.ptr(), (float*)eulerrot.ptr(), (float*)scale.ptr(), TransMatrix.ptr());//compose the Transmatrix again
 			TransMatrix.Transpose();
 		}
-
 	}
 }
 

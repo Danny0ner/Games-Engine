@@ -57,11 +57,6 @@ void CompMaterial::OnLoad(Configuration & data)
 	AddResourceByName(resname);
 }
 
-void CompMaterial::OverrideTexture(const char* path)
-{
-	//idTexture = App->textures->ImportImage(path);
-}
-
 void CompMaterial::AddResourceByName(std::string filename)
 {
 	resourceTex = (ResourceTexture*)App->resources->GetResourceByName(filename.c_str());
