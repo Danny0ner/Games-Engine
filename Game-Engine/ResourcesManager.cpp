@@ -325,10 +325,6 @@ Resource * ResourcesManager::CreateNewResource(ResourceType type, int UID)
 
 void ResourcesManager::ShowTextureResources(CompMaterial* material)
 {
-	std::string temp = "Textures";
-
-	ImGui::Begin(temp.c_str(), 0, ImGuiWindowFlags_AlwaysVerticalScrollbar);
-	ImGui::BeginChild("Assets Files", ImVec2(0, 100), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);
 	for (std::experimental::filesystem::recursive_directory_iterator::value_type p : std::experimental::filesystem::recursive_directory_iterator("Assets"))
 	{
 		if (strcmp(p.path().filename().extension().string().c_str(), ".PNG") == 0 || strcmp(p.path().filename().extension().string().c_str(), ".png") == 0)
@@ -341,15 +337,13 @@ void ResourcesManager::ShowTextureResources(CompMaterial* material)
 					{
 						material->GetResourceTex()->UnloadFromComponent();
 					}
-					material->AddResourceByName(p.path().filename().string().c_str()); 
+					material->AddResourceByName(p.path().filename().string().c_str());
 				}
 			}
 		}
 	}
-	ImGui::EndChild();
-
-	ImGui::End();
 }
+
 
 void ResourcesManager::ReimportFile(const char* filename)
 {
