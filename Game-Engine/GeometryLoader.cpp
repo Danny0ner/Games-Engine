@@ -14,6 +14,7 @@
 #include "Devil\include\ilu.h"
 #include "Devil\include\ilut.h"
 #include "mmgr\mmgr.h"
+
 #pragma comment (lib, "Devil/libx86/DevIL.lib" ) /* Loading Devil lib */
 #pragma comment (lib, "Devil/libx86/ILU.lib" ) /* Loading ILU lib */
 #pragma comment (lib, "Devil/libx86/ILUT.lib" ) 

@@ -2,12 +2,7 @@
 #include "Application.h"
 #include <fstream>
 #include "mmgr\mmgr.h"
-#define MESH_DIRECTORY "Library/Mesh"
-#define MESH_EXTENSION ".DarkyHijo"
-#define MATERIAL_DIRECTORY "Library/Material"
-#define MATERIAL_EXTENSION ".dds" 
-#define SCENE_DIRECTORY "Library/Scenes"
-#define SCENE_EXTENSION ".Pochinki"
+
 
 FileSystem::FileSystem(Application * app, bool startEnabled) : Module(app, startEnabled)
 {
@@ -20,6 +15,7 @@ FileSystem::~FileSystem()
 
 bool FileSystem::Init()
 {
+	CreateNewDirectory("Assets");
 	CreateNewDirectory("Library");
 	CreateNewDirectory(MESH_DIRECTORY);
 	CreateNewDirectory(MATERIAL_DIRECTORY);
@@ -42,7 +38,7 @@ bool FileSystem::CreateNewDirectory(const char * name)
 	}
 }
 
-void FileSystem::SaveFile(const char * name, char * buffer, int bufferSize, FileType type)
+void FileSystem::SaveFile(const char * name, char * buffer, int bufferSize, FileType type) const
 {
 	std::string path;
 	if (type == fileMesh)
@@ -72,7 +68,7 @@ void FileSystem::SaveFile(const char * name, char * buffer, int bufferSize, File
 	file.close();
 }
 
-bool FileSystem::LoadFile(const char * name, char ** buffer, int& size, FileType type)
+bool FileSystem::LoadFile(const char * name, char ** buffer, int& size, FileType type) const
 {
 	bool ret = false;
 
@@ -126,32 +122,4 @@ bool FileSystem::LoadFile(const char * name, char ** buffer, int& size, FileType
 		}
 	}
 	return ret;
-}
-
-std::string FileSystem::AddDirectoryToPath(const char * name, FileType type)
-{
-	std::string path;
-	if (type == fileMesh)
-	{
-		path = MESH_DIRECTORY;
-		path += "/";
-		path += name;
-		path += MESH_EXTENSION;
-	}
-	else if (type == fileMaterial)
-	{
-		path = MATERIAL_DIRECTORY;
-		path += "/";
-		path += name;
-		path += MATERIAL_EXTENSION;
-	}
-	else if (type == fileScene)
-	{
-		path += SCENE_DIRECTORY;
-		path += "/";
-		path += name;
-		path += SCENE_EXTENSION;
-	}
-
-	return path;
 }

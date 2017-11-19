@@ -21,7 +21,6 @@ public:
 	int Find(const char* fileName);
 	
 	int ImportFile(const char* fileName, ResourceType type = Resource_Unknown);
-	int ImportFileDropped(const char * fileName, ResourceType type);
 	int ImportFile(const char* meshName, aiMesh* mesh);
 	Resource* Get(int UID);
 	Resource* GetResourceByName(const char * fileName);

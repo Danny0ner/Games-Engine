@@ -284,3 +284,19 @@ int Application::GetGameStart()
 	return gametime.GameStart.Read();
 }
 
+std::string Application::GetFilenameOfString(std::string file)
+{
+	std::string tmpPath = file;
+	int length = tmpPath.length();
+	uint i = tmpPath.find_last_of("/");
+	uint y = tmpPath.find_last_of("\\");
+	if (i > 1000) i = y; //trying to discard undefined number
+	length = length - i - 1;
+	char* tmp = new char[length + 1];
+	tmpPath.copy(tmp, length, i + 1);
+	tmp[length] = '\0';
+	std::string exFile = tmp;
+	delete[] tmp;
+	return exFile;
+}
+

@@ -53,4 +53,10 @@ enum update_status
 #define WIN_BORDERLESS false
 #define WIN_FULLSCREEN_DESKTOP false
 #define VSYNC true
-#define TITLE "3D Physics Playground"
+#define TITLE "Pochinki's Engine"
+#define MESH_DIRECTORY "Library/Mesh"
+#define MESH_EXTENSION ".DarkyHijo"
+#define MATERIAL_DIRECTORY "Library/Material"
+#define MATERIAL_EXTENSION ".dds" 
+#define SCENE_DIRECTORY "Library/Scenes"
+#define SCENE_EXTENSION ".Pochinki"

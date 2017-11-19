@@ -113,7 +113,7 @@ public:
 	int GetFramesSinceStart();
 	int GetlastFrames();
 
-
+	std::string GetFilenameOfString(std::string file);
 private:
 
 	void AddModule(Module* mod);
