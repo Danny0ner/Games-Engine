@@ -269,7 +269,11 @@ void ResourcesManager::ShowTextureResources(CompMaterial* material)
 			if (ImGui::IsItemClicked())
 			{
 				{
-					material->AddResourceByName(p.path().filename().string().c_str()); //App->editor->CreateNewGameObject(p.path().string().c_str());
+					if (material->GetResourceTex() != nullptr)
+					{
+						material->GetResourceTex()->UnloadFromComponent();
+					}
+					material->AddResourceByName(p.path().filename().string().c_str()); 
 				}
 			}
 		}

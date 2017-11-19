@@ -27,11 +27,11 @@ void CompMaterial::OnEditor()
 			ImGui::Text("Resource ID: %i", resourceTex->GetUID());
 			ImGui::Text("Resource reference counting: %i", resourceTex->GetReferenceCount());
 			ImGui::Image((ImTextureID)resourceTex->textureID, ImVec2(124, 124));
-			ImGui::Checkbox("Change Texture", &changingtexture);
-			if (changingtexture)
-			{
-				App->resources->ShowTextureResources(this);
-			}
+		}
+		ImGui::Checkbox("Change Texture", &changingtexture);
+		if (changingtexture)
+		{
+			App->resources->ShowTextureResources(this);
 		}
 
 		ImGui::TreePop();
@@ -83,4 +83,12 @@ int CompMaterial::GetTextureID()
 		return resourceTex->textureID;
 	}
 	else return -1;
+}
+
+ResourceTexture * CompMaterial::GetResourceTex()
+{
+	if (resourceTex != nullptr)
+		return resourceTex;
+	else
+		return nullptr;
 }

@@ -16,6 +16,7 @@ public:
 	void AddResourceByName(std::string filename);
 	void AddResource(int uid);
 	int GetTextureID();
+	ResourceTexture* GetResourceTex();
 private:
 	ResourceTexture* resourceTex = nullptr;
 	bool changingtexture = false;
