@@ -130,7 +130,7 @@ void GeometryLoader::ImportImageResource(const char * image, std::string& output
 			if (ilSaveL(IL_DDS, data, size) > 0)
 			{
 				App->filesystem->SaveFile(output_file.c_str(), (char*)data, size, fileMaterial);
-				App->resources->ImportFile(image, Resource_Texture);
+				App->resources->ImportFileImage(image);
 				RELEASE_ARRAY(data);
 			}
 			ilDeleteImages(1, &TextureName);
@@ -165,7 +165,7 @@ void GeometryLoader::ImportImageResourceFromDragAndDrop(const char * image, std:
 			data = new ILubyte[size];
 			if (ilSaveL(IL_DDS, data, size) > 0)
 			{
-				App->resources->ImportFile(image, Resource_Texture);
+				App->resources->ImportFileImage(image);
 				RELEASE_ARRAY(data);
 			}
 			ilDeleteImages(1, &TextureName);
@@ -591,7 +591,7 @@ CompMaterial* GeometryLoader::LoadMaterial(aiMaterial* newMaterial)
 		uint l = fullPath.size();
 		fullPath.append(lastpath);
 
-		int texUID = App->resources->ImportFile(fullPath.c_str(), Resource_Texture);
+		int texUID = App->resources->ImportFileImage(fullPath.c_str());
 		if (texUID != -1)
 		{
 			m->AddResource(texUID);

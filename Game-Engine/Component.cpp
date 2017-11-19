@@ -53,3 +53,10 @@ void Component::AddResource(int UID)
 void Component::AddResourceByName(std::string filename)
 {
 }
+
+GameObject * Component::getMyGO()
+{
+	if(myGO != nullptr)
+	return myGO;
+	else return nullptr;
+}

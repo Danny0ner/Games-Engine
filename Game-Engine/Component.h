@@ -30,6 +30,7 @@ public:
 	virtual void OnLoad(Configuration& data);
 	virtual void AddResource(int UID);
 	virtual void AddResourceByName(std::string filename);
+	GameObject* getMyGO();
 protected:
 	GameObject* myGO = nullptr;
 	std::string name;

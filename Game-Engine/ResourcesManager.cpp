@@ -121,7 +121,7 @@ Resource* ResourcesManager::GetResourceByName(const char * fileName)
 	return nullptr;
 }
 
-int ResourcesManager::ImportFile(const char * fileName, ResourceType type)
+int ResourcesManager::ImportFileImage(const char * fileName)
 {
 	//Check that the file isn't already loaded
 
@@ -134,16 +134,8 @@ int ResourcesManager::ImportFile(const char * fileName, ResourceType type)
 	{
 		bool imported;
 		UID = App->RandomUIDGen->Int();
-	
 
-		switch (type)
-		{
-			case Resource_Texture:
-			{
-				imported = App->geometryloader->ImportImage(fileName, exFile);
-				break;
-			}
-		}
+		imported = App->geometryloader->ImportImage(fileName, exFile);
 
 		if (imported == true)
 		{
@@ -152,7 +144,7 @@ int ResourcesManager::ImportFile(const char * fileName, ResourceType type)
 			uint r = atname.find_first_of(".");
 			std::string namewithoutextension = atname.substr(0, r);
 
-			Resource* newResource = CreateNewResource(type, UID);
+			Resource* newResource = CreateNewResource(Resource_Texture, UID);
 			newResource->file = exFile;
 			newResource->exportedFile = "Library/Material/";
 			newResource->exportedFile += namewithoutextension;
@@ -287,6 +279,11 @@ void ResourcesManager::ShowMeshResources(CompMesh* mesh)
 						mesh->GetResourceMesh()->UnloadFromComponent();
 					}
 					mesh->AddResourceByName(it->second->GetFile());
+					mesh->CreateEnclosingBox();
+					if (mesh->getMyGO()->Static == true)
+					{
+						App->editor->ReCreateQuadtree();
+					}
 				}
 			}
 		}
