@@ -30,7 +30,9 @@ public:
 
 	void AddResourceByName(std::string filename);
 	void AddResource(int uid);
+	ResourceMesh* GetResourceMesh();
 public:
 	bool drawdebug = false;
+	bool ChangingMesh = false;
 	ResourceMesh* resourceMesh = nullptr;
 };

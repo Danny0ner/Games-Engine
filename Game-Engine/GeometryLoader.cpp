@@ -141,6 +141,41 @@ void GeometryLoader::ImportImageResource(const char * image, std::string& output
 	}
 }
 
+void GeometryLoader::ImportImageResourceFromDragAndDrop(const char * image, std::string& output_file)
+{
+
+	ILuint TextureName;
+	ilGenImages(1, &TextureName);
+	ilBindImage(TextureName);
+
+	ILboolean success = ilLoadImage(image);
+	if (success == IL_TRUE)
+	{
+		ilEnable(IL_FILE_OVERWRITE);
+
+		ILuint size;
+		ILubyte *data;
+
+		ilSetInteger(IL_DXTC_FORMAT, IL_DXT5);
+		size = ilSaveL(IL_DDS, NULL, 0);
+
+		if (size > 0)
+		{
+			data = new ILubyte[size];
+			if (ilSaveL(IL_DDS, data, size) > 0)
+			{
+				App->resources->ImportFile(image, Resource_Texture);
+				RELEASE_ARRAY(data);
+			}
+			ilDeleteImages(1, &TextureName);
+		}
+		else
+		{
+			LOG("Cannot load texture from buffer of size %u", size);
+		}
+	}
+}
+
 
 GameObject* GeometryLoader::LoadGameObject(const char* fullPath)
 {

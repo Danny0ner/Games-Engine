@@ -128,6 +128,20 @@ update_status ModuleInput::PreUpdate(float dt)
 				{
 					App->editor->LoadScene(dropped_filedir);
 				}
+				if (strcmp(&dropped_filedir[length - 4], ".PNG") == 0 || strcmp(&dropped_filedir[length - 4], ".png") == 0)
+				{
+					std::string tmpPath = dropped_filedir;
+					int length = tmpPath.length();
+					uint i = tmpPath.find_last_of("\\");
+					length = length - i - 1;
+					char* tmp = new char[length + 1];
+					tmpPath.copy(tmp, length, i + 1);
+					tmp[length] = '\0';
+					std::string exFile = tmp; 
+					delete[] tmp;
+
+					App->geometryloader->ImportImageResourceFromDragAndDrop(dropped_filedir, exFile);
+				}
 				SDL_ShowSimpleMessageBox(
 					SDL_MESSAGEBOX_INFORMATION,
 					"File dropped on window",

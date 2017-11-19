@@ -129,6 +129,8 @@ int ResourcesManager::ImportFile(const char * fileName, ResourceType type)
 	std::string tmpPath = fileName;
 	int length = tmpPath.length();
 	uint i = tmpPath.find_last_of("/");
+	uint y = tmpPath.find_last_of("\\");
+	if (i > 1000) i = y; //trying to discard undefined number
 	length = length - i - 1;
 	char* tmp = new char[length + 1];
 	tmpPath.copy(tmp, length, i + 1);
@@ -151,6 +153,72 @@ int ResourcesManager::ImportFile(const char * fileName, ResourceType type)
 				imported = App->geometryloader->ImportImage(fileName, exFile);
 				break;
 			}
+		}
+
+		if (imported == true)
+		{
+			Resource* newResource = CreateNewResource(type, UID);
+			newResource->file = exFile;
+			newResource->exportedFile = "Library/Material/";
+			newResource->exportedFile += exFile;
+			newResource->exportedFile += ".dds";
+
+			for (std::experimental::filesystem::recursive_directory_iterator::value_type file_in_path : std::experimental::filesystem::recursive_directory_iterator("Assets"))
+			{
+				if (std::experimental::filesystem::is_regular_file(file_in_path.path()))
+				{
+					if (strcmp(newResource->file.c_str(), file_in_path.path().filename().string().c_str()) == 0)
+					{
+						std::experimental::filesystem::file_time_type ftime = std::experimental::filesystem::last_write_time(file_in_path.path());
+						std::time_t cftime = decltype(ftime)::clock::to_time_t(ftime);
+						newResource->LastWriteTime = std::asctime(std::localtime(&cftime));
+					}
+				}
+			}
+
+			return UID;
+		}
+		else
+		{
+			return -1;
+		}
+	}
+	else
+	{
+		return UID;
+	}
+}
+
+int ResourcesManager::ImportFileDropped(const char * fileName, ResourceType type)
+{
+	//Check that the file isn't already loaded
+
+	std::string assetsfile = fileName;
+	std::string tmpPath = fileName;
+	int length = tmpPath.length();
+	uint i = tmpPath.find_last_of("\\");
+	length = length - i - 1;
+	char* tmp = new char[length + 1];
+	tmpPath.copy(tmp, length, i + 1);
+	tmp[length] = '\0';
+	std::string exFile = tmp;
+	delete[] tmp;
+
+	int UID = Find(exFile.c_str());
+
+	if (UID == 0)
+	{
+		bool imported;
+		UID = App->RandomUIDGen->Int();
+
+
+		switch (type)
+		{
+		case Resource_Texture:
+		{
+			imported = App->geometryloader->ImportImage(fileName, exFile);
+			break;
+		}
 		}
 
 		if (imported == true)

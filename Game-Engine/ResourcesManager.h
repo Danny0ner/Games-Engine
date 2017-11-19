@@ -20,11 +20,13 @@ public:
 	int Find(const char* fileName);
 	
 	int ImportFile(const char* fileName, ResourceType type = Resource_Unknown);
+	int ImportFileDropped(const char * fileName, ResourceType type);
 	int ImportFile(const char* meshName, aiMesh* mesh);
 	Resource* Get(int UID);
 	Resource* GetResourceByName(const char * fileName);
 	Resource* CreateNewResource(ResourceType type, int UID);
 	void ShowTextureResources(CompMaterial* material);
+	//void ShowMeshResources(CompMaterial* material);
 	void ReimportFile(const char* filename);
 	void CheckResources();
 	void SaveResources(Configuration & save) const;

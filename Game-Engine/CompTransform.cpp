@@ -68,10 +68,8 @@ void CompTransform::OnEditor()
 		ImGui::InputFloat3("Position", &position.x, 1, ImGuiInputTextFlags_ReadOnly);
 		ImGui::InputFloat3("Rotation", &eulerrot.x, 1, ImGuiInputTextFlags_ReadOnly);
 		ImGui::InputFloat3("Scale", &scale.x, 1, ImGuiInputTextFlags_ReadOnly);
-
-
 	}
-	else if (ImGui::CollapsingHeader(name.c_str(), true))
+	else if (ImGui::CollapsingHeader(name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		if (ImGui::DragFloat3("Position", &position.x, 0.5, NULL, NULL,"%.2f"))
 		{

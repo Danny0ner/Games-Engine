@@ -92,14 +92,22 @@ void CompMesh::OnEditor()
 {
 	if (ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1},"Vertices ID: %i", resourceMesh->idVertices);
-		ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Num Vertices: %i", resourceMesh->numVertices);
-		ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Indexes ID: %i", resourceMesh->idIndices);
-		ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Num Indexes: %i", resourceMesh->numIndices);
-		ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Normals ID: %i", resourceMesh->idNormals);
-		ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Colors ID: %i", resourceMesh->idColors);
-		ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Texture Coords: %i", resourceMesh->idTexCoords);
-		if (ImGui::Checkbox("Debug Draw", &drawdebug)) {}
+		if (resourceMesh != nullptr)
+		{
+			ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Vertices ID: %i", resourceMesh->idVertices);
+			ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Num Vertices: %i", resourceMesh->numVertices);
+			ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Indexes ID: %i", resourceMesh->idIndices);
+			ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Num Indexes: %i", resourceMesh->numIndices);
+			ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Normals ID: %i", resourceMesh->idNormals);
+			ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Colors ID: %i", resourceMesh->idColors);
+			ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Texture Coords: %i", resourceMesh->idTexCoords);
+			if (ImGui::Checkbox("Debug Draw", &drawdebug)) {}
+		}
+		ImGui::Checkbox("Change Mesh", &ChangingMesh);
+		if (ChangingMesh)
+		{
+			//App->resources->ShowTextureResources(this);
+		}
 		ImGui::TreePop();
 	}
 }
@@ -148,5 +156,13 @@ void CompMesh::AddResource(int uid)
 	resourceMesh = (ResourceMesh*)App->resources->Get(uid);
 	if (resourceMesh != nullptr)
 		resourceMesh->LoadToComponent();
+}
+
+ResourceMesh * CompMesh::GetResourceMesh()
+{
+	if (resourceMesh != nullptr)
+		return resourceMesh;
+	else
+		return nullptr;
 }
 
