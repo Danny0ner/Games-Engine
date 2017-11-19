@@ -145,7 +145,7 @@ void CompTransform::Guizmo(Frustum& Frustum)
 
 		static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
 		static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
-		if (App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN)				//Changes the operation of guizmos//
+		if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)				//Changes the operation of guizmos//
 		{
 			mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
 			mCurrentGizmoMode = ImGuizmo::LOCAL;
@@ -157,7 +157,7 @@ void CompTransform::Guizmo(Frustum& Frustum)
 			mCurrentGizmoMode = ImGuizmo::LOCAL;
 		}
 
-		if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)
+		if (App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN)
 		{
 			mCurrentGizmoOperation = ImGuizmo::SCALE;
 			mCurrentGizmoMode = ImGuizmo::LOCAL;
