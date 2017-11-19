@@ -299,7 +299,12 @@ uint GeometryLoader::ImportImage(const char * image, std::string& output_file)
 			data = new ILubyte[size];
 			if (ilSaveL(IL_DDS, data, size) > 0)
 			{
-				App->filesystem->SaveFile(output_file.c_str(), (char*)data, size, fileMaterial);
+
+				std::string atname = output_file;
+				uint r = atname.find_first_of(".");
+				std::string namewithoutextension = atname.substr(0, r);
+
+				App->filesystem->SaveFile(namewithoutextension.c_str(), (char*)data, size, fileMaterial);
 				RELEASE_ARRAY(data);
 				ret = true;
 			}

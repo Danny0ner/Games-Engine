@@ -157,10 +157,15 @@ int ResourcesManager::ImportFile(const char * fileName, ResourceType type)
 
 		if (imported == true)
 		{
+
+			std::string atname = exFile;
+			uint r = atname.find_first_of(".");
+			std::string namewithoutextension = atname.substr(0, r);
+
 			Resource* newResource = CreateNewResource(type, UID);
 			newResource->file = exFile;
 			newResource->exportedFile = "Library/Material/";
-			newResource->exportedFile += exFile;
+			newResource->exportedFile += namewithoutextension;
 			newResource->exportedFile += ".dds";
 
 			for (std::experimental::filesystem::recursive_directory_iterator::value_type file_in_path : std::experimental::filesystem::recursive_directory_iterator("Assets"))
