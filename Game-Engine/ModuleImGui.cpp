@@ -76,16 +76,16 @@ update_status ModuleImGui::PostUpdate(float dt)
 		{
 			if (ImGui::MenuItem("Documentation"))
 			{
-				ShellExecuteA(NULL, "open", "https://github.com/JaviOrtiz/Game-Engines/wiki", NULL, NULL, SW_SHOWNORMAL);
+				ShellExecuteA(NULL, "open", "https://github.com/Danny0ner/Games-Engine/blob/master/README.md", NULL, NULL, SW_SHOWNORMAL);
 			}
 			if (ImGui::MenuItem("Download Latest"))
 			{
-				ShellExecuteA(NULL, "open", "https://github.com/JaviOrtiz/Game-Engines/releases", NULL, NULL, SW_SHOWNORMAL);
+				ShellExecuteA(NULL, "open", "https://github.com/Danny0ner/Games-Engine/releases", NULL, NULL, SW_SHOWNORMAL);
 
 			}
 			if (ImGui::MenuItem("Report a bug"))
 			{
-				ShellExecuteA(NULL, "open", "https://github.com/JaviOrtiz/Game-Engines/issues", NULL, NULL, SW_SHOWNORMAL);
+				ShellExecuteA(NULL, "open", "https://github.com/Danny0ner/Games-Engine/issues", NULL, NULL, SW_SHOWNORMAL);
 
 			}
 			if (ImGui::MenuItem("Console"))
@@ -136,10 +136,6 @@ update_status ModuleImGui::PostUpdate(float dt)
 		ShowEditor();
 	}
 	
-	if (showControls)
-	{
-		ShowControls();
-	}
 	//End About//
 
 	if (Modules)
