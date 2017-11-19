@@ -27,7 +27,8 @@ private:
 	Quat rotation;
 	
 	float4x4 TransMatrix;
-	float4x4 Transmat;
+	float4x4 LocalTrans;
 	float3 eulerrot;
 	bool showinspector = true;
+	bool gizmosused = false;
 };
