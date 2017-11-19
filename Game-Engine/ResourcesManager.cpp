@@ -330,11 +330,11 @@ Resource * ResourcesManager::CreateNewResource(ResourceType type, int UID)
 
 void ResourcesManager::ShowTextureResources(CompMaterial* material)
 {
-	for (std::experimental::filesystem::recursive_directory_iterator::value_type p : std::experimental::filesystem::recursive_directory_iterator("Assets"))
+	for (std::map<int, Resource*>::iterator it = resources.begin(); it != resources.end(); ++it)
 	{
-		if (strcmp(p.path().filename().extension().string().c_str(), ".PNG") == 0 || strcmp(p.path().filename().extension().string().c_str(), ".png") == 0)
+		if (it->second->GetType() == Resource_Texture)
 		{
-			ImGui::Text(p.path().filename().string().c_str());
+			ImGui::Text(it->second->GetFile());
 			if (ImGui::IsItemClicked())
 			{
 				{
@@ -342,7 +342,28 @@ void ResourcesManager::ShowTextureResources(CompMaterial* material)
 					{
 						material->GetResourceTex()->UnloadFromComponent();
 					}
-					material->AddResourceByName(p.path().filename().string().c_str());
+					material->AddResourceByName(it->second->GetFile());
+				}
+			}
+		}
+	}
+}
+
+void ResourcesManager::ShowMeshResources(CompMesh* mesh)
+{
+	for (std::map<int, Resource*>::iterator it = resources.begin(); it != resources.end(); ++it)
+	{
+		if (it->second->GetType() == Resource_Mesh)
+		{
+			ImGui::Text(it->second->GetFile());
+			if (ImGui::IsItemClicked())
+			{
+				{
+					if (mesh->GetResourceMesh() != nullptr)
+					{
+						mesh->GetResourceMesh()->UnloadFromComponent();
+					}
+					mesh->AddResourceByName(it->second->GetFile());
 				}
 			}
 		}

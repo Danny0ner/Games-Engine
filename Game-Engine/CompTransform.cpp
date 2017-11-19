@@ -64,7 +64,6 @@ void CompTransform::OnEditor()
 	
 	if (myGO->Static)
 	{
-	
 		ImGui::InputFloat3("Position", &position.x, 1, ImGuiInputTextFlags_ReadOnly);
 		ImGui::InputFloat3("Rotation", &eulerrot.x, 1, ImGuiInputTextFlags_ReadOnly);
 		ImGui::InputFloat3("Scale", &scale.x, 1, ImGuiInputTextFlags_ReadOnly);
@@ -82,6 +81,13 @@ void CompTransform::OnEditor()
 
 		if (ImGui::DragFloat3("Scale", &scale.x, 0.5,NULL,NULL,"%.2f"))
 		{
+			needToUpdate = true;
+		}
+		if (ImGui::Button("Reset Transform"))
+		{
+			position = { 0,0,0 };
+			eulerrot = { 0,0,0 };
+			scale =	   { 1,1,1 };
 			needToUpdate = true;
 		}
 	}
