@@ -144,19 +144,19 @@ void CompTransform::Guizmo(Frustum& Frustum)
 
 		static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
 		static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
-		if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+		if (App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN)				//Changes the operation of guizmos//
 		{
 			mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
 			mCurrentGizmoMode = ImGuizmo::WORLD;
 		}
 
-		if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+		if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
 		{
 			mCurrentGizmoOperation = ImGuizmo::ROTATE;
 			mCurrentGizmoMode = ImGuizmo::LOCAL;
 		}
 
-		if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
+		if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)
 		{
 			mCurrentGizmoOperation = ImGuizmo::SCALE;
 			mCurrentGizmoMode = ImGuizmo::LOCAL;
@@ -167,12 +167,12 @@ void CompTransform::Guizmo(Frustum& Frustum)
 
 		ImGuiIO& io = ImGui::GetIO();
 		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-		ImGuizmo::Manipulate(identity.identity.ptr(), GuizmoProjMatrix, mCurrentGizmoOperation, mCurrentGizmoMode, GuizmoTransMatrix);
+		ImGuizmo::Manipulate(identity.identity.ptr(), GuizmoProjMatrix, mCurrentGizmoOperation, mCurrentGizmoMode, GuizmoTransMatrix); //manipulate matrix 
 		if (ImGuizmo::IsUsing())
 		{
-			ImGuizmo::DecomposeMatrixToComponents(GuizmoTransMatrix, (float*)position.ptr(), (float*)eulerrot.ptr(), (float*)scale.ptr());
+			ImGuizmo::DecomposeMatrixToComponents(GuizmoTransMatrix, (float*)position.ptr(), (float*)eulerrot.ptr(), (float*)scale.ptr()); // take the translation,rotation,scale matrix from the Transform Matrix
 			TransMatrix.Transpose();
-			ImGuizmo::RecomposeMatrixFromComponents((float*)position.ptr(), (float*)eulerrot.ptr(), (float*)scale.ptr(), TransMatrix.ptr());
+			ImGuizmo::RecomposeMatrixFromComponents((float*)position.ptr(), (float*)eulerrot.ptr(), (float*)scale.ptr(), TransMatrix.ptr());//compose the Transmatrix again
 			TransMatrix.Transpose();
 		}
 	}

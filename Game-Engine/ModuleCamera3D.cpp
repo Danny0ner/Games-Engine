@@ -5,6 +5,8 @@
 #include "ModulePlayer.h"
 #include "PhysBody3D.h"
 #include "mmgr\mmgr.h"
+#include "CompTransform.h"
+#include "CompMesh.h"
 
 ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -54,7 +56,7 @@ bool ModuleCamera3D::CleanUp()
 // -----------------------------------------------------------------
 update_status ModuleCamera3D::Update(float dt)
 {
-	if (App->editor->IsImputLocked() == true)	
+	if (App->editor->IsInputLocked() == true)	
  	return UPDATE_CONTINUE;
 
 	float3 New_Position(0, 0, 0);
@@ -170,7 +172,7 @@ update_status ModuleCamera3D::Update(float dt)
 
 		Position = Reference + Z * (Position).Length();
 	}
-	//FrustumPick.SetPos(Position);
+
 	FrustumPick.pos = Position;
 	FrustumPick.front = -float3(Z.x, Z.y, Z.z);
 	FrustumPick.up = float3(Y.x, Y.y, Y.z);
@@ -180,6 +182,18 @@ update_status ModuleCamera3D::Update(float dt)
 	
 		GameObject* ObjectPick = MousePicking();
 		App->editor->SelectGameObject(ObjectPick);
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+	{
+		if (App->editor->selected != nullptr)
+		{	
+			CompMesh* tmpMesh = (CompMesh*)App->editor->selected->FindComponent(Component_Mesh);
+			CompTransform* tmpTrans = (CompTransform*)App->editor->selected->FindComponent(Component_Transform);
+			AABB	tempAABB = tmpMesh->enclosingBox;
+			tempAABB.TransformAsAABB(tmpTrans->GetTransMatrix());
+			CenterCameraToGeometry(tempAABB);
+		}
 	}
 	
 	// Recalculate matrix -------------
@@ -244,26 +258,19 @@ void ModuleCamera3D::CalculateViewMatrix()
 
 }
 
-void ModuleCamera3D::CenterCameraToGeometry(const AABB* meshAABB)
+void ModuleCamera3D::CenterCameraToGeometry( AABB meshAABB)
 {
-	if (meshAABB == nullptr)
+	
 		Reference = float3(0.0f, 2.0f, 0.0f);//2.0f to better look on camera
-	else
-	{
-		//vec centre = meshAABB->CenterPoint();
-		//float3 newpos = meshAABB->Size()*0.65;
-		//Position = float3(centre.x + newpos.x, centre.y + newpos.y, centre.z + newpos.z + 5);
-		//Reference = float3(centre.x + newpos.x, centre.y + newpos.y, centre.z + newpos.z);
-		//LookAt(float3(centre.x, centre.y, centre.z));
-		//LastCentreGeometry = meshAABB;
+
+		float3 centre = meshAABB.CenterPoint();
+		float3 newpos = meshAABB.Size()*0.65;
+		Position = float3(centre.x + newpos.x, centre.y + newpos.y, centre.z + newpos.z + 5);
+		Reference = float3(centre.x + newpos.x, centre.y + newpos.y, centre.z + newpos.z);
+		LookAt(float3(centre.x, centre.y, centre.z));
 	}
-}
 
-void ModuleCamera3D::RecentreCameraToGeometry()
-{
-	CenterCameraToGeometry(LastCentreGeometry);
 
-}
 
 GameObject*  ModuleCamera3D::MousePicking(float3* HitPoint)
 {

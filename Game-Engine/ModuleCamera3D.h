@@ -22,8 +22,7 @@ public:
 	void LookAt(const float3 &Spot);
 	void Move(const float3 &Movement);
 	float* GetViewMatrix();
-	void CenterCameraToGeometry(const AABB* meshAABB);
-	void RecentreCameraToGeometry();
+	void CenterCameraToGeometry(AABB meshAABB);
 	GameObject* MousePicking(float3* HitPoint = nullptr);
 	void SetRaypoints(float xx, float xy, float xz, float cx, float cy, float cz);
 	void SetAspectRatio();
@@ -47,6 +46,5 @@ public:
 private:
 
 	float4x4			ViewMatrix, ViewMatrixInverse;
-	const AABB*			LastCentreGeometry = nullptr;
-
+	
 };
