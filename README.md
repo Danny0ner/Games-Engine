@@ -2,7 +2,11 @@
 
 We are a pair of students who are working on a 3d Game Engine c++ based.
 We are using ImGui library, DevIL,OpenGl,mmgr, Assimp, Glew and MathGeoLib.
-+
+
+**
+We started the engine in another repository, but due to some problems we had to change to this one.
+Our last repository was https://github.com/JaviOrtiz/Game-Engines
+**
 
 Controls.
 
@@ -30,7 +34,7 @@ F-> Focus on the object
 
 Inovation:
 
-·ImGuizmo(when using guizmo, load scene does not work propperly,
+·ImGuizmo(when using guizmo, load scene does not work propperly on the moved object)
 ·Adaptative Octree.
 
 ChangeLog
@@ -143,10 +147,9 @@ Daniel Lopez. -> https://github.com/Danny0ner
 
 Javier Ortiz. -> https://github.com/JaviOrtiz
 
-Code.-> https://github.com/JaviOrtiz/Game-Engines
+Past Repository ->  https://github.com/JaviOrtiz/Game-Engines
 
-Releases.->https://github.com/Danny0ner/Games-Engine
-
+Actual Repository -> https://github.com/Danny0ner/Games-Engine
 
 Licenses.
 
