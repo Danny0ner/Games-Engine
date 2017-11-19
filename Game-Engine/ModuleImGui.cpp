@@ -53,6 +53,7 @@ update_status ModuleImGui::PreUpdate(float dt)
 	ImGui_ImplSdlGL3_NewFrame(App->window->window);
 	ImGuizmo::BeginFrame();
 	ShowControls();
+	ShowAssetsFolder();
 	return UPDATE_CONTINUE;
 }
 
@@ -106,23 +107,19 @@ update_status ModuleImGui::PostUpdate(float dt)
 			{
 				showEditor = !showEditor;
 			}
-			if (ImGui::MenuItem("Show Assets Folder"))
-			{
-				showAssetsFolder = !showAssetsFolder;
-			}
-			if (ImGui::MenuItem("Show Time Controls"))
-			{	
-				showControls = !showControls;
-			}
+			
+			
 			ImGui::EndMenu();
 		}
 		if (ImGui::BeginMenu("Exit"))
 		{
+			if (ImGui::MenuItem(" Exit Engine"))
 			return UPDATE_STOP;
+			ImGui::EndMenu();
 		}
-
+		ImGui::EndMainMenuBar();
 	}
-	ImGui::EndMainMenuBar();
+	
 
 
 	//			BEGIN MENU INFORMATION		//
@@ -138,10 +135,7 @@ update_status ModuleImGui::PostUpdate(float dt)
 	{
 		ShowEditor();
 	}
-	if (showAssetsFolder)
-	{
-		ShowAssetsFolder();
-	}
+	
 	if (showControls)
 	{
 		ShowControls();

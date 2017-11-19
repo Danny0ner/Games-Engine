@@ -372,8 +372,8 @@ void ResourcesManager::ShowAssetsFolder()
 {
 	std::string temp = "Assets Folder";
 
-	ImGui::Begin(temp.c_str(), 0, ImGuiWindowFlags_AlwaysVerticalScrollbar);
-	ImGui::BeginChild("Assets Files", ImVec2(0, 200), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);
+	ImGui::Begin(temp.c_str(), 0, ImGuiWindowFlags_NoResize);
+	ImGui::BeginChild("Assets Files", ImVec2(0, 230), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);
 		for (std::experimental::filesystem::recursive_directory_iterator::value_type p : std::experimental::filesystem::recursive_directory_iterator("Assets"))
 		{
 			ImGui::Text(p.path().filename().string().c_str());
