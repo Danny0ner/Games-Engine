@@ -98,9 +98,6 @@ void CompMesh::OnEditor()
 			ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Num Vertices: %i", resourceMesh->numVertices);
 			ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Indexes ID: %i", resourceMesh->idIndices);
 			ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Num Indexes: %i", resourceMesh->numIndices);
-			ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Normals ID: %i", resourceMesh->idNormals);
-			ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Colors ID: %i", resourceMesh->idColors);
-			ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Texture Coords: %i", resourceMesh->idTexCoords);
 			ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Resource reference counting: %i", resourceMesh->GetReferenceCount());
 			if (ImGui::Checkbox("Debug Draw", &drawdebug)) {}
 		}

@@ -51,9 +51,9 @@ void CompTransform::UpdatePositionMatrix()
 	{
 		GameObject* GO = myGO->GetParent();
 		
-		CompTransform* transf = dynamic_cast<CompTransform*>(GO->FindComponent(Component_Transform));
+		CompTransform* transf = (CompTransform*)(GO->FindComponent(Component_Transform));
 		
-		if(transf != nullptr) TransMatrix =transf->GetTransMatrix() * TransMatrix;
+		if(transf != nullptr) TransMatrix = transf->GetTransMatrix() * TransMatrix;
 	}
 	needToUpdate = false;
 	UpdateChildsTransMatrix();
@@ -108,7 +108,6 @@ void CompTransform::OnSave(Configuration & data) const
 
 void CompTransform::OnLoad(Configuration & data)
 {
-	needToUpdate = true;
 	position.x = data.GetFloat("Position", 0);
 	position.y = data.GetFloat("Position", 1);
 	position.z = data.GetFloat("Position", 2);
@@ -121,6 +120,7 @@ void CompTransform::OnLoad(Configuration & data)
 	scale.x = data.GetFloat("Scale", 0);
 	scale.y = data.GetFloat("Scale", 1);
 	scale.z = data.GetFloat("Scale", 2);
+	needToUpdate = true;
 }
 
 void CompTransform::Guizmo(Frustum& Frustum)
@@ -175,6 +175,7 @@ void CompTransform::Guizmo(Frustum& Frustum)
 			ImGuizmo::RecomposeMatrixFromComponents((float*)position.ptr(), (float*)eulerrot.ptr(), (float*)scale.ptr(), TransMatrix.ptr());//compose the Transmatrix again
 			TransMatrix.Transpose();
 		}
+
 	}
 }
 

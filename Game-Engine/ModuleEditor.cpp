@@ -295,8 +295,12 @@ void ModuleEditor::LoadScene(const char * fileTitle)
 	{
 		LOG("Scene file not valid.");
 	}
+
+	for (int i = 0; i < root->childs.size(); ++i)
+	{
+		((CompTransform*)root->childs[i]->FindComponent(Component_Transform))->UpdateChildsTransMatrixNow();
+	}
 	ReCreateQuadtree();
-	if(root->childs.size()>0)((CompTransform*)root->childs[0]->FindComponent(Component_Transform))->UpdateChildsTransMatrixNow();
 }
 
 void ModuleEditor::LockInput()			//Locking input from camera//

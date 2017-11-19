@@ -260,7 +260,6 @@ void GameObject::Deserialize(Configuration & dataToLoad)
 			parent->AddChild(this);
 		}
 	}
-
 	int componentSize = dataToLoad.GetArraySize("Components");
 
 	for (int i = 0; i < componentSize; i++)
@@ -294,7 +293,7 @@ void GameObject::Deserialize(Configuration & dataToLoad)
 		case Component_Material:
 		{
 			CompMaterial* compMat = new CompMaterial();
-			compMat ->OnLoad(componentConfig);
+			compMat->OnLoad(componentConfig);
 			AddComponent(compMat);
 			break;
 		}
