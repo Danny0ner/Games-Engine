@@ -34,11 +34,16 @@ Inovation:
 ·Adaptative Octree.
 
 ChangeLog
+Assignment 2 optional material.
+·All assets are imported on Start.
+·Assets folder can be seen in engine.
+·Meshes and Textures can be changed in engine.
+·
 
 Version 1.0.
 ·Bug Fixing.
 ·Assets Window.
-·Textures and Meshes can be change on engine.
+·Textures and Meshes can be change in engine.
 ·Import when Start.
 
 Version 0.9.5.
