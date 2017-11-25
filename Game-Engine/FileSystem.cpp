@@ -20,6 +20,7 @@ bool FileSystem::Init()
 	CreateNewDirectory(MESH_DIRECTORY);
 	CreateNewDirectory(MATERIAL_DIRECTORY);
 	CreateNewDirectory(SCENE_DIRECTORY);
+	CreateNewDirectory(ANIM_DIRECTORY);
 
 	return true;
 }
@@ -62,7 +63,13 @@ void FileSystem::SaveFile(const char * name, char * buffer, int bufferSize, File
 		path += name;
 		path += SCENE_EXTENSION;
 	}
-
+	else if (type == fileAnimation)
+	{
+		path += ANIM_DIRECTORY;
+		path += "/";
+		path += name;
+		path += ANIM_EXTENSION;
+	}
 	std::ofstream file(path.c_str(), std::ofstream::out | std::ofstream::binary);
 	file.write(buffer, bufferSize);
 	file.close();

@@ -30,7 +30,7 @@ public:
 	GameObject* AddGameObjectChild(aiNode* node, const aiScene* scene, GameObject* addTo);
 	CompMaterial* LoadMaterial(aiMaterial* newMaterial);
 	CompTransform* LoadTransform(aiNode* node);
-
+	void ImportAnimation(const aiAnimation* scene);
 	uint ImportImage(const char* path, std::string& output_file);
 	void UnloadTexture(uint id);
 	bool SaveMeshToOwnFormat(const aiMesh* mesh, const char * outputFile);

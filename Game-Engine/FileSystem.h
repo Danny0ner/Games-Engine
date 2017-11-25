@@ -8,7 +8,8 @@ enum FileType
 {
 	fileMesh,
 	fileMaterial,
-	fileScene
+	fileScene,
+	fileAnimation
 };
 
 class FileSystem : public Module

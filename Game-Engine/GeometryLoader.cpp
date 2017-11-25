@@ -68,7 +68,14 @@ void GeometryLoader::ImportFBX(const char* fbxName)
 			scene->mMeshes[i]->mName = fbxname;
 			scene->mMeshes[i]->mName.Append(std::to_string(i).c_str());
 		}
+		
 
+		for (int i = 0; i < scene->mNumAnimations; i++)
+		{
+			scene->mAnimations[i]->mName = fbxname;
+			scene->mAnimations[i]->mName.Append(std::to_string(i).c_str());
+			ImportAnimation(scene->mAnimations[i]);
+		}
 		LOG("Loading meshes");
 
 		ImportFBXNode(node, scene);
@@ -87,6 +94,43 @@ void GeometryLoader::ImportFBX(const char* fbxName)
 		fbxname = nullptr;
 	}
 }
+
+void GeometryLoader::ImportAnimation(const aiAnimation * animation)
+{
+	Configuration save;
+
+		save.SetString("Name", animation->mName.C_Str());
+		save.SetFloat("Duration", animation->mDuration);
+		save.SetFloat("TicksPerSec", animation->mTicksPerSecond);
+		save.AddArray("Bones");
+		for (int y = 0; y < animation->mNumChannels; y++)
+		{
+			Configuration Bone;
+			Bone.SetString("Name", animation->mChannels[y]->mNodeName.C_Str());
+			Bone.AddArray("PositionKeys");
+			for (int r = 0; r < animation->mChannels[y]->mNumPositionKeys; r++)
+			{
+				Configuration positionKey;
+				positionKey.SetFloat("Time", animation->mChannels[y]->mPositionKeys[r].mTime);
+				positionKey.AddArrayFloat("Position", &animation->mChannels[y]->mPositionKeys[r].mValue.x, 3);
+				Bone.AddArrayEntry(positionKey);
+			}
+			Bone.AddArray("RotationKeys");
+			for (int x = 0; x < animation->mChannels[y]->mNumRotationKeys; x++)
+			{
+				Configuration RotationKey;
+				RotationKey.SetFloat("Time", animation->mChannels[y]->mRotationKeys[x].mTime);
+				RotationKey.AddArrayFloat("Rotation", &animation->mChannels[y]->mRotationKeys[x].mValue.x, 3);
+				Bone.AddArrayEntry(RotationKey);
+			}
+			save.AddArrayEntry(Bone);
+		}
+		char* buffer = nullptr;
+		uint fileSize = save.SaveFile(&buffer, "Animation");
+		App->filesystem->SaveFile(animation->mName.C_Str(), buffer, fileSize, FileType::fileAnimation);
+		RELEASE_ARRAY(buffer);
+}
+
 
 void GeometryLoader::ImportFBXNode(aiNode * node, const aiScene * scene)
 {

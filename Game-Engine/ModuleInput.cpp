@@ -124,6 +124,10 @@ update_status ModuleInput::PreUpdate(float dt)
 				{
 					App->editor->CreateNewGameObject(dropped_filedir);
 				}
+				if (strcmp(&dropped_filedir[length - 4], ".DAE") == 0 || strcmp(&dropped_filedir[length - 4], ".dae") == 0)
+				{
+					App->editor->CreateNewGameObject(dropped_filedir);
+				}
 				if (strcmp(&dropped_filedir[length - 9], ".Pochinki") == 0)
 				{
 					App->editor->LoadScene(dropped_filedir);

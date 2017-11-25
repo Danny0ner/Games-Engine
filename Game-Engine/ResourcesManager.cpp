@@ -28,11 +28,11 @@ bool ResourcesManager::Start()
 	checkingTimer.Start();
 	for (std::experimental::filesystem::recursive_directory_iterator::value_type p : std::experimental::filesystem::recursive_directory_iterator("Assets"))
 	{
-		if (strcmp(p.path().filename().extension().string().c_str(),".FBX") == 0 || strcmp(p.path().filename().extension().string().c_str(),".fbx") == 0)
+		if (strcmp(p.path().filename().extension().string().c_str(),".FBX") == 0 || strcmp(p.path().filename().extension().string().c_str(),".fbx") == 0 || strcmp(p.path().filename().extension().string().c_str(), ".DAE") == 0 || strcmp(p.path().filename().extension().string().c_str(), ".dae") == 0)
 		{
 			App->geometryloader->ImportFBX(p.path().string().c_str());
 		}
-		else if (strcmp(p.path().filename().extension().string().c_str(), ".PNG") == 0 || strcmp(p.path().filename().extension().string().c_str(), ".png") == 0 || strcmp(p.path().filename().extension().string().c_str(), ".tga") == 0 || strcmp(p.path().filename().extension().string().c_str(), ".TGA") == 0)
+		if (strcmp(p.path().filename().extension().string().c_str(), ".PNG") == 0 || strcmp(p.path().filename().extension().string().c_str(), ".png") == 0 || strcmp(p.path().filename().extension().string().c_str(), ".tga") == 0 || strcmp(p.path().filename().extension().string().c_str(), ".TGA") == 0)
 		{
 			std::string AssetsPath = "Assets/";
 			AssetsPath.append(p.path().filename().string().c_str());
@@ -209,6 +209,39 @@ int ResourcesManager::ImportFile(const char* meshName, aiMesh * mesh)
 	}
 }
 
+int ResourcesManager::SaveAnimationResource(const char* animationname)
+{
+	int UID = Find(animationname);
+
+	if (UID == 0)
+	{
+		bool imported;
+		int UID = App->RandomUIDGen->Int();
+
+		//imported = App->geometryloader->SaveMeshToOwnFormat(mesh, meshName);
+
+		if (imported == true)
+		{
+			Resource* newResource = CreateNewResource(Resource_Animation, UID);
+			newResource->file = animationname;
+			newResource->exportedFile = "Library/Animations/";
+			newResource->exportedFile += animationname;
+			newResource->exportedFile += ".DarkyHijo";
+			newResource->LastWriteTime = "nowritetime";
+
+			return UID;
+		}
+		else
+		{
+			return -1;
+		}
+	}
+	else
+	{
+		return UID;
+	}
+}
+
 Resource * ResourcesManager::Get(int UID)
 {
 	std::map<int, Resource*>::iterator it = resources.find(UID);
@@ -320,7 +353,7 @@ void ResourcesManager::ShowAssetsFolder()
 			ImGui::Text(p.path().filename().string().c_str());
 			if (ImGui::IsItemClicked())
 			{
-				if (strcmp(p.path().filename().extension().string().c_str(), ".FBX") == 0 || strcmp(p.path().filename().extension().string().c_str(), ".fbx") == 0)
+				if (strcmp(p.path().filename().extension().string().c_str(), ".FBX") == 0 || strcmp(p.path().filename().extension().string().c_str(), ".fbx") == 0 || strcmp(p.path().filename().extension().string().c_str(), ".DAE") == 0 || strcmp(p.path().filename().extension().string().c_str(), ".dae") == 0)
 				{
 					App->editor->CreateNewGameObject(p.path().string().c_str());
 				}

@@ -60,3 +60,5 @@ enum update_status
 #define MATERIAL_EXTENSION ".dds" 
 #define SCENE_DIRECTORY "Library/Scenes"
 #define SCENE_EXTENSION ".Pochinki"
+#define ANIM_DIRECTORY "Library/Anim"
+#define ANIM_EXTENSION ".Oldur"

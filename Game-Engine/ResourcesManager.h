@@ -21,6 +21,7 @@ public:
 	int Find(const char* fileName);
 	
 	int ImportFile(const char* meshName, aiMesh* mesh);
+	int SaveAnimationResource(const char * animationname);
 	Resource* Get(int UID);
 	Resource* GetResourceByName(const char * fileName);
 	int ImportFileImage(const char * fileName);
