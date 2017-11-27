@@ -102,12 +102,23 @@ void GeometryLoader::ImportAnimation(const aiAnimation * animation)
 		save.SetString("Name", animation->mName.C_Str());
 		save.SetFloat("Duration", animation->mDuration);
 		save.SetFloat("TicksPerSec", animation->mTicksPerSecond);
+		save.AddArray("MeshChannels");
+		for (int h = 0; h < animation->mNumMeshChannels; h++)
+		{
+			Configuration MeshChannel;
+			for (int f = 0; f < animation->mMeshChannels[h]->mNumKeys; f++)
+			{
+				animation->mMeshChannels[h]->mKeys[f].mTime;
+				animation->mMeshChannels[h]->mKeys[f].mValue;
+			}
+		}
 		save.AddArray("Bones");
 		for (int y = 0; y < animation->mNumChannels; y++)
 		{
 			Configuration Bone;
 			Bone.SetString("Name", animation->mChannels[y]->mNodeName.C_Str());
 			Bone.AddArray("PositionKeys");
+			
 			for (int r = 0; r < animation->mChannels[y]->mNumPositionKeys; r++)
 			{
 				Configuration positionKey;
@@ -466,7 +477,21 @@ void GeometryLoader::UnloadTexture(uint id)
 
 bool GeometryLoader::SaveMeshToOwnFormat(const aiMesh* mesh, const char * outputFile)
 {
+	if (mesh->HasBones())
+	{
+		ResourceSkeleton* tmpskeleton = new ResourceSkeleton(0);
+		for (int i = 0; i < mesh->mNumBones; i++)
+		{
+			mesh->mBones[i]->mName;
+			for (int r = 0; r < mesh->mBones[i]->mNumWeights; r++)
+			{
+				mesh->mBones[i]->mWeights[r].mVertexId;
+				mesh->mBones[i]->mWeights[r].mWeight;
+			}
+		}
 
+
+	}
 	ResourceMesh* tmpMesh = new ResourceMesh(0);
 
 	tmpMesh->numVertices = mesh->mNumVertices;

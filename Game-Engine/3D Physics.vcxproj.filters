@@ -465,6 +465,9 @@
     <ClInclude Include="ResourceAnimation.h">
       <Filter>Sources\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="ResourceSkeleton.h">
+      <Filter>Sources\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -672,6 +675,9 @@
       <Filter>Sources\Resources</Filter>
     </ClCompile>
     <ClCompile Include="ResourceAnimation.cpp">
+      <Filter>Sources\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceSkeleton.cpp">
       <Filter>Sources\Resources</Filter>
     </ClCompile>
   </ItemGroup>

@@ -10,6 +10,7 @@ enum ResourceType
 	Resource_Texture,
 	Resource_Mesh,
 	Resource_Animation,
+	Resource_Skeleton,
 	Resource_Unknown
 };
 

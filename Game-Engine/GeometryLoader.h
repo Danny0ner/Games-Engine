@@ -4,6 +4,7 @@
 #include <vector>
 #include "Globals.h"
 #include "ResourceMesh.h"
+#include "ResourceSkeleton.h"
 #include "Assimp\include\cimport.h"
 #include "Assimp\include\scene.h"
 #include "Assimp\include\postprocess.h"

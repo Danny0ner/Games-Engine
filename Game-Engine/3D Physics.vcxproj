@@ -14,7 +14,7 @@
     <ProjectGuid>{746CC4C3-787F-4B0E-AA66-E388FE3FF4F6}</ProjectGuid>
     <RootNamespace>SDLGame</RootNamespace>
     <ProjectName>Pochinki's Engine</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -126,6 +126,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceAnimation.h" />
     <ClInclude Include="ResourceMesh.h" />
+    <ClInclude Include="ResourceSkeleton.h" />
     <ClInclude Include="ResourcesManager.h" />
     <ClInclude Include="imguiconsole.h" />
     <ClInclude Include="ImGui\imconfig.h" />
@@ -280,6 +281,7 @@
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="ResourceAnimation.cpp" />
     <ClCompile Include="ResourceMesh.cpp" />
+    <ClCompile Include="ResourceSkeleton.cpp" />
     <ClCompile Include="ResourcesManager.cpp" />
     <ClCompile Include="ResourceTexture.cpp" />
     <ClCompile Include="SerializeConfig.cpp" />
