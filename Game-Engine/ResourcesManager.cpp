@@ -176,6 +176,40 @@ int ResourcesManager::ImportFileImage(const char * fileName)
 	}
 }
 
+int ResourcesManager::ImportAnimation(aiAnimation * anim)
+{
+	std::string animname = anim->mName.C_Str();
+	int UID = Find(animname.c_str());
+
+	if (UID == 0)
+	{
+		bool imported;
+		int UID = App->RandomUIDGen->Int();
+
+		imported = App->geometryloader->ImportAnimation(anim);
+
+		if (imported == true)
+		{
+			Resource* newResource = CreateNewResource(Resource_Animation, UID);
+			newResource->file = animname;
+			newResource->exportedFile = "Library/Anim/";
+			newResource->exportedFile += animname;
+			newResource->exportedFile += ANIM_EXTENSION;
+			newResource->LastWriteTime = "nowritetime";
+
+			return UID;
+		}
+		else
+		{
+			return -1;
+		}
+	}
+	else
+	{
+		return UID;
+	}
+}
+
 int ResourcesManager::ImportFile(const char* meshName, aiMesh * mesh)
 {
 	int UID = Find(meshName);
@@ -264,6 +298,11 @@ Resource * ResourcesManager::CreateNewResource(ResourceType type, int UID)
 		case Resource_Mesh:
 		{
 			ret = (Resource*) new ResourceMesh(UID);
+			break;
+		}
+		case Resource_Animation:
+		{
+			ret = (Resource*) new ResourceAnimation(UID);
 			break;
 		}
 	}

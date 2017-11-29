@@ -7,7 +7,7 @@
 #include "CompMaterial.h"
 #include "CompMesh.h"
 class aiMesh;
-
+class aiAnimation;
 class ResourcesManager : public Module
 {
 public:
@@ -25,6 +25,7 @@ public:
 	Resource* Get(int UID);
 	Resource* GetResourceByName(const char * fileName);
 	int ImportFileImage(const char * fileName);
+	int ImportAnimation(aiAnimation* anim);
 	Resource* CreateNewResource(ResourceType type, int UID);
 	void ShowTextureResources(CompMaterial* material);
 	void ShowMeshResources(CompMesh * material);

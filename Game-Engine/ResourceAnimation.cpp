@@ -8,6 +8,10 @@ ResourceAnimation::ResourceAnimation(int UID) : Resource(UID, Resource_Texture)
 
 ResourceAnimation::~ResourceAnimation()
 {
+	for (std::vector<Bone*>::iterator temp = bones.begin(); temp != bones.end(); temp++)
+	{
+		RELEASE((*temp));
+	}
 }
 
 void ResourceAnimation::ReimportResource()

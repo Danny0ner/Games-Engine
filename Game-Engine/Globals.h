@@ -62,3 +62,5 @@ enum update_status
 #define SCENE_EXTENSION ".Pochinki"
 #define ANIM_DIRECTORY "Library/Anim"
 #define ANIM_EXTENSION ".Oldur"
+#define SKELETON_DIRECTORY "Library/Skeletons"
+#define SKELETON_EXTENSION ".Jade"

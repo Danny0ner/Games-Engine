@@ -4,6 +4,7 @@
 #include <vector>
 #include "Globals.h"
 #include "ResourceMesh.h"
+#include "ResourceAnimation.h"
 #include "ResourceSkeleton.h"
 #include "Assimp\include\cimport.h"
 #include "Assimp\include\scene.h"
@@ -31,7 +32,7 @@ public:
 	GameObject* AddGameObjectChild(aiNode* node, const aiScene* scene, GameObject* addTo);
 	CompMaterial* LoadMaterial(aiMaterial* newMaterial);
 	CompTransform* LoadTransform(aiNode* node);
-	void ImportAnimation(const aiAnimation* scene);
+	bool ImportAnimation(const aiAnimation* scene);
 	uint ImportImage(const char* path, std::string& output_file);
 	void UnloadTexture(uint id);
 	bool SaveMeshToOwnFormat(const aiMesh* mesh, const char * outputFile);

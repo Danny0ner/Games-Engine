@@ -21,6 +21,7 @@ bool FileSystem::Init()
 	CreateNewDirectory(MATERIAL_DIRECTORY);
 	CreateNewDirectory(SCENE_DIRECTORY);
 	CreateNewDirectory(ANIM_DIRECTORY);
+	CreateNewDirectory(SKELETON_DIRECTORY);
 
 	return true;
 }
@@ -69,6 +70,13 @@ void FileSystem::SaveFile(const char * name, char * buffer, int bufferSize, File
 		path += "/";
 		path += name;
 		path += ANIM_EXTENSION;
+	}
+	else if (type == fileSkeleton)
+	{
+		path += SKELETON_DIRECTORY;
+		path += "/";
+		path += name;
+		path += SKELETON_EXTENSION;
 	}
 	std::ofstream file(path.c_str(), std::ofstream::out | std::ofstream::binary);
 	file.write(buffer, bufferSize);

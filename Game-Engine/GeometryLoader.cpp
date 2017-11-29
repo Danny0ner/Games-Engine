@@ -74,7 +74,7 @@ void GeometryLoader::ImportFBX(const char* fbxName)
 		{
 			scene->mAnimations[i]->mName = fbxname;
 			scene->mAnimations[i]->mName.Append(std::to_string(i).c_str());
-			ImportAnimation(scene->mAnimations[i]);
+			App->resources->ImportAnimation(scene->mAnimations[i]);
 		}
 		LOG("Loading meshes");
 
@@ -95,51 +95,68 @@ void GeometryLoader::ImportFBX(const char* fbxName)
 	}
 }
 
-void GeometryLoader::ImportAnimation(const aiAnimation * animation)
+bool GeometryLoader::ImportAnimation(const aiAnimation * animation)
 {
 	Configuration save;
+	ResourceAnimation* tmpanim = new ResourceAnimation(0);
+		
+	tmpanim->name = animation->mName.C_Str();
+	tmpanim->duration = animation->mDuration;
+	tmpanim->ticksPerSec = animation->mTicksPerSecond;
 
-		save.SetString("Name", animation->mName.C_Str());
-		save.SetFloat("Duration", animation->mDuration);
-		save.SetFloat("TicksPerSec", animation->mTicksPerSecond);
-		save.AddArray("MeshChannels");
-		for (int h = 0; h < animation->mNumMeshChannels; h++)
-		{
-			Configuration MeshChannel;
-			for (int f = 0; f < animation->mMeshChannels[h]->mNumKeys; f++)
-			{
-				animation->mMeshChannels[h]->mKeys[f].mTime;
-				animation->mMeshChannels[h]->mKeys[f].mValue;
-			}
-		}
+	save.SetString("Name", animation->mName.C_Str());
+	save.SetFloat("Duration", animation->mDuration);
+	save.SetFloat("TicksPerSec", animation->mTicksPerSecond);
+	
 		save.AddArray("Bones");
 		for (int y = 0; y < animation->mNumChannels; y++)
 		{
-			Configuration Bone;
-			Bone.SetString("Name", animation->mChannels[y]->mNodeName.C_Str());
-			Bone.AddArray("PositionKeys");
+			Configuration AnimBone;
+			Bone* tempbone = new Bone();
+			tempbone->name = animation->mChannels[y]->mNodeName.C_Str();
+			AnimBone.SetString("Name", animation->mChannels[y]->mNodeName.C_Str());
+			AnimBone.AddArray("PositionKeys");
 			
 			for (int r = 0; r < animation->mChannels[y]->mNumPositionKeys; r++)
 			{
+				PositionKey* tempposkey = new PositionKey();
+				tempposkey->time = animation->mChannels[y]->mPositionKeys[r].mTime;
+				tempposkey->position.x = animation->mChannels[y]->mPositionKeys[r].mValue.x;
+				tempposkey->position.y = animation->mChannels[y]->mPositionKeys[r].mValue.y;
+				tempposkey->position.z = animation->mChannels[y]->mPositionKeys[r].mValue.z;
+				tempbone->positionkeys.push_back(tempposkey);
+
 				Configuration positionKey;
 				positionKey.SetFloat("Time", animation->mChannels[y]->mPositionKeys[r].mTime);
 				positionKey.AddArrayFloat("Position", &animation->mChannels[y]->mPositionKeys[r].mValue.x, 3);
-				Bone.AddArrayEntry(positionKey);
+				AnimBone.AddArrayEntry(positionKey);
 			}
-			Bone.AddArray("RotationKeys");
+			AnimBone.AddArray("RotationKeys");
 			for (int x = 0; x < animation->mChannels[y]->mNumRotationKeys; x++)
 			{
-				Configuration RotationKey;
-				RotationKey.SetFloat("Time", animation->mChannels[y]->mRotationKeys[x].mTime);
-				RotationKey.AddArrayFloat("Rotation", &animation->mChannels[y]->mRotationKeys[x].mValue.x, 3);
-				Bone.AddArrayEntry(RotationKey);
+				RotationKey* temprotkey = new RotationKey();
+				temprotkey->time = animation->mChannels[y]->mRotationKeys[x].mTime;
+				temprotkey->rotation.w = animation->mChannels[y]->mRotationKeys[x].mValue.w;
+				temprotkey->rotation.x = animation->mChannels[y]->mRotationKeys[x].mValue.x;
+				temprotkey->rotation.y = animation->mChannels[y]->mRotationKeys[x].mValue.y;
+				temprotkey->rotation.z = animation->mChannels[y]->mRotationKeys[x].mValue.z;
+				tempbone->rotationkeys.push_back(temprotkey);
+
+				Configuration rotationKey;
+				rotationKey.SetFloat("Time", animation->mChannels[y]->mRotationKeys[x].mTime);
+				rotationKey.AddArrayFloat("Rotation", &animation->mChannels[y]->mRotationKeys[x].mValue.w, 4);
+				AnimBone.AddArrayEntry(rotationKey);
 			}
-			save.AddArrayEntry(Bone);
+			save.AddArrayEntry(AnimBone);
+			tmpanim->bones.push_back(tempbone);
 		}
 		char* buffer = nullptr;
 		uint fileSize = save.SaveFile(&buffer, "Animation");
 		App->filesystem->SaveFile(animation->mName.C_Str(), buffer, fileSize, FileType::fileAnimation);
+		RELEASE(tmpanim);
 		RELEASE_ARRAY(buffer);
+
+		return true;
 }
 
 
@@ -477,21 +494,33 @@ void GeometryLoader::UnloadTexture(uint id)
 
 bool GeometryLoader::SaveMeshToOwnFormat(const aiMesh* mesh, const char * outputFile)
 {
+
 	if (mesh->HasBones())
 	{
-		ResourceSkeleton* tmpskeleton = new ResourceSkeleton(0);
+		Configuration save;
+		//ResourceSkeleton* tmpskeleton = new ResourceSkeleton(0);
+		save.AddArray("SkeletonBones");
 		for (int i = 0; i < mesh->mNumBones; i++)
 		{
-			mesh->mBones[i]->mName;
+			Configuration Bone;
+			Bone.SetString("Name", mesh->mBones[i]->mName.C_Str());
+			Bone.AddArray("Weights");
 			for (int r = 0; r < mesh->mBones[i]->mNumWeights; r++)
 			{
-				mesh->mBones[i]->mWeights[r].mVertexId;
-				mesh->mBones[i]->mWeights[r].mWeight;
+				Configuration VertexWeight;
+				VertexWeight.SetInt("VertexID",mesh->mBones[i]->mWeights[r].mVertexId);
+				VertexWeight.SetFloat("Weight",mesh->mBones[i]->mWeights[r].mWeight);
+				Bone.AddArrayEntry(VertexWeight);
 			}
+			save.AddArrayEntry(Bone);
 		}
-
-
+		char* buffer = nullptr;
+		uint fileSize = save.SaveFile(&buffer, "Animation");
+		App->filesystem->SaveFile(mesh->mName.C_Str(), buffer, fileSize, FileType::fileSkeleton);
+		RELEASE_ARRAY(buffer);
 	}
+
+
 	ResourceMesh* tmpMesh = new ResourceMesh(0);
 
 	tmpMesh->numVertices = mesh->mNumVertices;
@@ -525,6 +554,7 @@ bool GeometryLoader::SaveMeshToOwnFormat(const aiMesh* mesh, const char * output
 		tmpMesh->texCoords = new float[tmpMesh->numVertices * 3];
 		memcpy(tmpMesh->texCoords, mesh->mTextureCoords[0], sizeof(float) * tmpMesh->numVertices * 3);
 	}
+
 	//SAVING MESH TO OWN FORMAT
 int ranges[4] = { tmpMesh->numIndices, tmpMesh->numVertices, tmpMesh->numVertices, tmpMesh->numVertices};
 		float size = sizeof(ranges);
