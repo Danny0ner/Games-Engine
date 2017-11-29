@@ -28,11 +28,15 @@ public:
 	void ImportFBXNode(aiNode* node, const aiScene* scene);
 	void ImportImageResource(const char * image, std::string & output_file);
 	void ImportImageResourceFromDragAndDrop(const char * image, std::string & output_file);
+
 	GameObject* LoadGameObject(const char* fullPath);
 	GameObject* AddGameObjectChild(aiNode* node, const aiScene* scene, GameObject* addTo);
 	CompMaterial* LoadMaterial(aiMaterial* newMaterial);
 	CompTransform* LoadTransform(aiNode* node);
+
 	bool ImportAnimation(const aiAnimation* scene);
+	void LoadAnimation(const char * inputFile, ResourceAnimation* mesh);
+
 	uint ImportImage(const char* path, std::string& output_file);
 	void UnloadTexture(uint id);
 	bool SaveMeshToOwnFormat(const aiMesh* mesh, const char * outputFile);

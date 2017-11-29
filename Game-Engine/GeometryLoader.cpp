@@ -95,6 +95,8 @@ void GeometryLoader::ImportFBX(const char* fbxName)
 	}
 }
 
+
+
 bool GeometryLoader::ImportAnimation(const aiAnimation * animation)
 {
 	Configuration save;
@@ -157,6 +159,47 @@ bool GeometryLoader::ImportAnimation(const aiAnimation * animation)
 		RELEASE_ARRAY(buffer);
 
 		return true;
+}
+
+void GeometryLoader::LoadAnimation(const char * inputFile, ResourceAnimation * anim)
+{
+	Configuration load(inputFile);
+
+	if (load.IsValueValid() == true)
+	{
+		anim->name = load.GetString("Name");
+		anim->duration = load.GetFloat("Duration");
+		anim->ticksPerSec = load.GetFloat("TicksPerSec");
+
+		for (int i = 0; i < load.GetArraySize("Bones"); i++)
+		{
+			Bone* tmpbone = new Bone();
+			Configuration loadbone = load.GetArray("Bones", i);
+			tmpbone->name = loadbone.GetString("Name");
+			for (int x = 0; x < loadbone.GetArraySize("PositionKeys"); x++)
+			{
+				PositionKey* tmpposkey = new PositionKey();
+				Configuration loadposkey = loadbone.GetArray("PositionKeys", i);
+				tmpposkey->time = loadposkey.GetFloat("Time");
+				tmpposkey->position.x = loadposkey.GetFloat("Position", 0);
+				tmpposkey->position.y = loadposkey.GetFloat("Position", 1);
+				tmpposkey->position.z = loadposkey.GetFloat("Position", 2);
+				tmpbone->positionkeys.push_back(tmpposkey);
+			}
+			for (int x = 0; x < loadbone.GetArraySize("RotationKeys"); x++)
+			{
+				RotationKey* tmprotkey = new RotationKey();
+				Configuration loadrotkey = loadbone.GetArray("RotationKeys", i);
+				tmprotkey->time = loadrotkey.GetFloat("Time");
+				tmprotkey->rotation.w = loadrotkey.GetFloat("Position", 0);
+				tmprotkey->rotation.x = loadrotkey.GetFloat("Position", 1);
+				tmprotkey->rotation.y = loadrotkey.GetFloat("Position", 2);
+				tmprotkey->rotation.z = loadrotkey.GetFloat("Position", 3);
+				tmpbone->rotationkeys.push_back(tmprotkey);
+			}
+			anim->bones.push_back(tmpbone);
+		}
+	}
 }
 
 
