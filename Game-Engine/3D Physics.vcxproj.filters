@@ -22,9 +22,6 @@
     <Filter Include="Sources\Extra">
       <UniqueIdentifier>{4d633cb5-d5bf-45bb-9c9b-42e2c636ac80}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Extra\glm">
-      <UniqueIdentifier>{f0aa59f1-4059-4666-9f12-cf71df9a1b94}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Extra\Devil">
       <UniqueIdentifier>{29c04405-0208-486a-886a-b80f6ca296d1}</UniqueIdentifier>
     </Filter>
@@ -76,9 +73,6 @@
       <Filter>Sources\Containers</Filter>
     </ClInclude>
     <ClInclude Include="p2Point.h">
-      <Filter>Sources\Containers</Filter>
-    </ClInclude>
-    <ClInclude Include="glmath.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
     <ClInclude Include="Application.h">
@@ -203,75 +197,6 @@
     </ClInclude>
     <ClInclude Include="CompCamera.h">
       <Filter>Sources\GameObject and Components</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\common.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\exponential.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\ext.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\fwd.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\geometric.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\glm.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\integer.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\mat2x2.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\mat2x3.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\mat2x4.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\mat3x2.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\mat3x3.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\mat3x4.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\mat4x2.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\mat4x3.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\mat4x4.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\matrix.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\packing.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\trigonometric.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\vec2.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\vec3.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\vec4.hpp">
-      <Filter>Sources\Extra\glm</Filter>
-    </ClInclude>
-    <ClInclude Include="glm\vector_relational.hpp">
-      <Filter>Sources\Extra\glm</Filter>
     </ClInclude>
     <ClInclude Include="SerializeConfig.h">
       <Filter>Sources\Modules</Filter>
@@ -496,9 +421,6 @@
     </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="glmath.cpp">
-      <Filter>Sources\Containers</Filter>
     </ClCompile>
     <ClCompile Include="Primitive.cpp">
       <Filter>Sources\Helpers</Filter>

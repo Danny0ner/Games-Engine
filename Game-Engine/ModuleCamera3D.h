@@ -1,7 +1,6 @@
 #pragma once
 #include "Module.h"
 #include "Globals.h"
-#include "glmath.h"
 #include "CompCamera.h"
 #include "Bullet/include/btBulletDynamicsCommon.h"
 #include "MathGeo\MathGeoLib.h"
@@ -34,11 +33,11 @@ public:
 	math::LineSegment				mouse_picking;
 	float3			X, Y, Z, Position, Reference;
 	btVector3		temp;
-	vec3			playerpos;
-	vec3			CameraLocation;
-	vec3			ViewVector;
+	float3			playerpos;
+	float3			CameraLocation;
+	float3			ViewVector;
 	int				camera_dist;
-	vec3			VehicleLocation;
+	float3			VehicleLocation;
 	uint			camera_fx;
 	float			FOV;
 	bool			FPS;

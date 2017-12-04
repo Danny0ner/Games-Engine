@@ -60,9 +60,9 @@ public:
 
 
 
-	vec3 Temp = { 0,0,0 };
-	vec3 Temp1 = { 1,0,0 };
-	vec3 Temp2 = { 3,0,0 };
+	float3 Temp = { 0,0,0 };
+	float3 Temp1 = { 1,0,0 };
+	float3 Temp2 = { 3,0,0 };
 	bool SphereTest = false;
 	std::vector<float> Fps_Plot_Data;
 	std::vector<float> Ms_Plot_Data;

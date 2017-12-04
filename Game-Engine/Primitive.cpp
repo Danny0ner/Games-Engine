@@ -4,8 +4,11 @@
 #include "Primitive.h"
 
 // ------------------------------------------------------------
-Primitive::Primitive() : transform(IdentityMatrix), color(White), wire(false), axis(false), type(PrimitiveTypes::Primitive_Point)
-{}
+Primitive::Primitive() : color(White), wire(false), axis(false), type(PrimitiveTypes::Primitive_Point)
+{
+	float4x4 identity;
+	transform = identity.identity;
+}
 
 // ------------------------------------------------------------
 PrimitiveTypes Primitive::GetType() const
@@ -17,7 +20,7 @@ PrimitiveTypes Primitive::GetType() const
 void Primitive::Render() const
 {
 	glPushMatrix();
-	glMultMatrixf(transform.M);
+	glMultMatrixf(transform.ptr());
 
 	if (axis == true)
 	{
@@ -80,19 +83,19 @@ void Primitive::InnerRender() const
 // ------------------------------------------------------------
 void Primitive::SetPos(float x, float y, float z)
 {
-	transform.translate(x, y, z);
+	transform.SetTranslatePart(x, y, z);
 }
 
 // ------------------------------------------------------------
-void Primitive::SetRotation(float angle, const vec3 &u)
+void Primitive::SetRotation(float angle, const float3 &u)
 {
-	transform.rotate(angle, u);
+	transform.SetRotatePart(u, angle);
 }
 
 // ------------------------------------------------------------
 void Primitive::Scale(float x, float y, float z)
 {
-	transform.scale(x, y, z);
+	transform.Scale(x, y, z);
 }
 
 // CUBE ============================================
@@ -181,41 +184,6 @@ PCylinder::PCylinder(float radius, float height) : Primitive(), radius(radius), 
 	type = PrimitiveTypes::Primitive_Cylinder;
 }
 
-void PCylinder::InnerRender() const
-{
-	int n = 30;
-
-	// Cylinder Bottom
-	glBegin(GL_QUADS);
-
-	for (int i = 360; i >= 0; i -= (360 / n))
-	{
-		float a = i * M_PI / 180; // degrees to radians
-		glVertex3f(-height*0.5f, radius * cos(a), radius * sin(a));
-	}
-	glEnd();
-
-	// Cylinder Top
-	glBegin(GL_QUADS);
-	glNormal3f(0.0f, 0.0f, 1.0f);
-	for (int i = 0; i <= 360; i += (360 / n))
-	{
-		float a = i * M_PI / 180; // degrees to radians
-		glVertex3f(height * 0.5f, radius * cos(a), radius * sin(a));
-	}
-	glEnd();
-
-	// Cylinder "Cover"
-	glBegin(GL_QUAD_STRIP);
-	for (int i = 0; i < 480; i += (360 / n))
-	{
-		float a = i * M_PI / 180; // degrees to radians
-
-		glVertex3f(height*0.5f, radius * cos(a), radius * sin(a));
-		glVertex3f(-height*0.5f, radius * cos(a), radius * sin(a));
-	}
-	glEnd();
-}
 
 // LINE ==================================================
 pLine::pLine() : Primitive(), origin(0, 0, 0), destination(1, 1, 1)

@@ -1,7 +1,7 @@
 #pragma once
 #include "Module.h"
 #include "Globals.h"
-#include "glmath.h"
+#include "MathGeo\MathGeoLib.h"
 #include "Light.h"
 #include "Glew\include\glew.h"
 #include "ImGui\imgui.h"
@@ -46,8 +46,8 @@ public:
 	float red = 1.0f, green = 1.0f, blue = 1.0f, bred = 0.14f, bgreen = 0.41f, bblue = 0.75f;
 	Light lights[MAX_LIGHTS];
 	SDL_GLContext context;
-	mat3x3 NormalMatrix;
-	mat4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
+	float3x3 NormalMatrix;
+	float4x4 ModelMatrix, ViewMatrix, ProjectionMatrix;
 	bool	DeepTest;
 	bool	CullFace;
 	bool	GlLighting;
@@ -61,7 +61,7 @@ public:
 	bool drawnormals = false;
 	bool drawdebug = false;
 	PPlane* grid;
-	vec3 BackgroundColor;
-	vec3 ColorOverMaterial;
+	float3 BackgroundColor;
+	float3 ColorOverMaterial;
 
 };
