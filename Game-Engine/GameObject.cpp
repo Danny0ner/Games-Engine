@@ -5,6 +5,7 @@
 #include "CompTransform.h"
 #include "CompCamera.h"
 #include "CompMaterial.h"
+#include "CompAnimation.h"
 
 GameObject::GameObject(GameObject* parent): parent(parent)
 {
@@ -182,8 +183,11 @@ void GameObject::ShowInspector()
 		DeleteChilds();
 		deletingchilds = false;
 	}
-	if (ImGui::Checkbox("Delete Me", &deletingmyself))
-	{}
+	if (ImGui::Button("Create Anim Component"))
+	{
+		CompAnimation* newanimcomp = new CompAnimation();
+		this->AddComponent(newanimcomp);
+	}
 	ImGui::PushItemWidth(-140);
 	for (int i = 0; i < components.size(); i++)
 	{

@@ -126,10 +126,7 @@ void ModuleEditor::ReCreateQuadtree()
 	Quadroot = new Octree(Enclosing_Box);
 	for (std::vector<GameObject*>::const_iterator tmp = Static_Vector.begin(); tmp != Static_Vector.end(); tmp++)
 	{
-
 		Quadroot->Insert((*tmp));
-
-
 	}
 }
 

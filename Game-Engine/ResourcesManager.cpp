@@ -196,7 +196,6 @@ int ResourcesManager::ImportAnimation(aiAnimation * anim)
 			newResource->exportedFile += animname;
 			newResource->exportedFile += ANIM_EXTENSION;
 			newResource->LastWriteTime = "nowritetime";
-
 			return UID;
 		}
 		else

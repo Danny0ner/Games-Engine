@@ -21,11 +21,7 @@ void ResourceAnimation::ReimportResource()
 
 bool ResourceAnimation::LoadInMemory()
 {
-	/*textureID = App->geometryloader->LoadMaterial(exportedFile.c_str());
-	if (textureID == 0)
-	{
-		return false;
-	}*/
+	App->geometryloader->LoadAnimation(exportedFile.c_str(), this);
 	return true;
 }
 

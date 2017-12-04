@@ -179,7 +179,7 @@ void GeometryLoader::LoadAnimation(const char * inputFile, ResourceAnimation * a
 			for (int x = 0; x < loadbone.GetArraySize("PositionKeys"); x++)
 			{
 				PositionKey* tmpposkey = new PositionKey();
-				Configuration loadposkey = loadbone.GetArray("PositionKeys", i);
+				Configuration loadposkey = loadbone.GetArray("PositionKeys", x);
 				tmpposkey->time = loadposkey.GetFloat("Time");
 				tmpposkey->position.x = loadposkey.GetFloat("Position", 0);
 				tmpposkey->position.y = loadposkey.GetFloat("Position", 1);
@@ -189,7 +189,7 @@ void GeometryLoader::LoadAnimation(const char * inputFile, ResourceAnimation * a
 			for (int x = 0; x < loadbone.GetArraySize("RotationKeys"); x++)
 			{
 				RotationKey* tmprotkey = new RotationKey();
-				Configuration loadrotkey = loadbone.GetArray("RotationKeys", i);
+				Configuration loadrotkey = loadbone.GetArray("RotationKeys", x);
 				tmprotkey->time = loadrotkey.GetFloat("Time");
 				tmprotkey->rotation.w = loadrotkey.GetFloat("Position", 0);
 				tmprotkey->rotation.x = loadrotkey.GetFloat("Position", 1);
@@ -760,6 +760,7 @@ CompTransform* GeometryLoader::LoadTransform(aiNode* node)
 
 	float3 pos(translation.x, translation.y, translation.z);
 	float3 sca(scale.x, scale.y, scale.z);
+
 
 	Quat rot(q1.x, q1.y, q1.z, q1.w);
 
