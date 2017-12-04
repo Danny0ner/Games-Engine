@@ -73,6 +73,7 @@ void GeometryLoader::ImportFBX(const char* fbxName)
 		for (int i = 0; i < scene->mNumAnimations; i++)
 		{
 			scene->mAnimations[i]->mName = fbxname;
+			scene->mAnimations[i]->mName.Append("Animation");
 			scene->mAnimations[i]->mName.Append(std::to_string(i).c_str());
 			App->resources->ImportAnimation(scene->mAnimations[i]);
 		}

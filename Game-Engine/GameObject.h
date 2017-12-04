@@ -33,6 +33,7 @@ public:
 	std::vector<GameObject*> childs;
 	void DeleteChild(GameObject* todelete);
 	int GetUID();
+	float3 GetPosition();
 protected:
 	int uid;
 	GameObject* parent;

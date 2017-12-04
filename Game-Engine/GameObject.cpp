@@ -139,6 +139,16 @@ int GameObject::GetUID()
 	return uid;
 }
 
+float3 GameObject::GetPosition()
+{
+	CompTransform* trans = (CompTransform*)FindComponent(Component_Transform);
+	float3 pos;
+	Quat rot;
+	float3 scal;
+	trans->GetTransMatrix().Decompose(pos, rot, scal);
+	return pos;
+}
+
 void GameObject::OnEditor()
 {
 	ImGuiTreeNodeFlags flags = 0;

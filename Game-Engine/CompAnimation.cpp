@@ -25,7 +25,18 @@ void CompAnimation::Update()
 
 void CompAnimation::DrawDebug() const
 {
-	
+	for (int i = 0; i < myGO->childs.size(); i++)
+	{
+		pLine vLine(myGO->GetPosition().x, myGO->GetPosition().y, myGO->GetPosition().z, myGO->childs[i]->GetPosition().x, myGO->childs[i]->GetPosition().y, myGO->childs[i]->GetPosition().z);
+		vLine.color = { 1.0f, 0.85f, 0.0f };
+		vLine.Render();
+			for (int x = 0; x < myGO->childs[i]->childs.size(); x++)
+			{
+				pLine VlineChild(myGO->childs[i]->GetPosition().x, myGO->childs[i]->GetPosition().y, myGO->childs[i]->GetPosition().z, myGO->childs[i]->childs[x]->GetPosition().x, myGO->childs[i]->childs[x]->GetPosition().y, myGO->childs[i]->childs[x]->GetPosition().z);
+				VlineChild.color = { 1.0f, 0.85f, 0.0f };
+				VlineChild.Render();
+			}
+	}
 }
 
 void CompAnimation::OnEditor()
