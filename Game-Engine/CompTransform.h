@@ -10,7 +10,7 @@ public:
 	CompTransform(float3 pos = { 0,0,0 }, float3 scale = { 1,1,1 }, Quat rot = { 0, 0, 0, 1 }, ComponentType type = Component_Transform);
 	~CompTransform();
 
-	void Update();
+	void Update(float dt);
 	void UpdatePositionMatrix();
 	void OnEditor() override;
 	float4x4 GetTransMatrix();

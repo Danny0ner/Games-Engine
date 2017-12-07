@@ -11,7 +11,7 @@ public:
 	GameObject(GameObject* parent = nullptr);
 	~GameObject();
 
-	void Update();
+	void Update(float dt);
 	void AddChild(GameObject* child);
 	void DeleteChilds();
 	void AddComponent(Component* component);
@@ -43,7 +43,7 @@ protected:
 	std::string name;
 public:
 	bool selected = false;
-	bool Static = true;
+	bool Static = false;
 	bool deletingchilds = false;
 	bool deletingmyself = false;
 };

@@ -43,6 +43,10 @@ update_status ModuleEditor::Update(float dt)
 	if (StaticVecSize != Static_Vector.size())
 		ReCreateQuadtree();
 	StaticVecSize = Static_Vector.size();
+
+
+	root->Update(dt);
+
 	if (App->input->GetKey(SDL_SCANCODE_H) == KEY_DOWN) 
 		SerializeScene("Scene test");
 	return UPDATE_CONTINUE;
@@ -57,7 +61,7 @@ bool ModuleEditor::CleanUp()
 
 void ModuleEditor::Render()
 {
-	root->Update();
+
 
 
 	if (selected != nullptr)

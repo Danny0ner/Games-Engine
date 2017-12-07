@@ -23,7 +23,7 @@ CompTransform::~CompTransform()
 	
 }
 
-void CompTransform::Update()
+void CompTransform::Update(float dt)
 {
 	if (needToUpdate) {
 		UpdatePositionMatrix();

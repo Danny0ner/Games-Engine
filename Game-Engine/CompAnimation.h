@@ -13,7 +13,7 @@ public:
 
 	~CompAnimation();
 
-	void Update();
+	void Update(float dt);
 
 	void DrawDebug() const;
 	void OnEditor()override;

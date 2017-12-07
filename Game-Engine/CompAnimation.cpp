@@ -20,11 +20,15 @@ CompAnimation::~CompAnimation()
 
 }
 
-void CompAnimation::Update()
+void CompAnimation::Update(float dt)
 {
+	
+
 	GameObject* test = nullptr;
 	if (resourceAnim != nullptr)
 	{
+		animetime += dt;
+		if (animetime >= resourceAnim->duration) animetime = resourceAnim->duration;
 
 		for (int i = 0; i < resourceAnim->bones.size(); i++)
 		{
@@ -60,6 +64,7 @@ void CompAnimation::Update()
 			CompTransform* trans = (CompTransform*)test->FindComponent(Component_Transform);
 			trans->SetPosition(actualposkey->position);
 			trans->SetRotation(actualrotkey->rotation);
+			if (animetime >= resourceAnim->duration) animetime = 0;
 		}
 	}
 	if (drawdebug)

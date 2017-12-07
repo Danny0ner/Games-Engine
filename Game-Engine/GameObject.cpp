@@ -40,7 +40,7 @@ GameObject::~GameObject()
 	components.clear();
 }
 
-void GameObject::Update()
+void GameObject::Update(float dt)
 {
 	for (int i = 0; i < childs.size(); i++)
 	{
@@ -50,12 +50,12 @@ void GameObject::Update()
 			delete childs[i];
 			App->editor->SelectGameObject(nullptr);
 		}*/
-		childs[i]->Update();
+		childs[i]->Update(dt);
 	}
 
 	for (int i = 0; i < components.size(); i++)
 	{
-		components[i]->Update();
+		components[i]->Update(dt);
 	}
 }
 

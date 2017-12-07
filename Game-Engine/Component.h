@@ -20,7 +20,7 @@ public:
 	virtual ~Component();
 
 	virtual void Enable();
-	virtual void Update();
+	virtual void Update(float dt);
 	virtual void Disable();
 	virtual void OnEditor();
 

@@ -14,7 +14,7 @@ public:
 
 	AABB enclosingBox;
 
-	void Update();
+	void Update(float dt);
 
 	//Returns the center point of the mesh's enclosing box.
 	float3 GetCenter() const;

@@ -28,7 +28,7 @@ CompCamera::CompCamera(float3 pos, float3 front, float3 up, float nearPlaneDista
 CompCamera::~CompCamera()
 {}
 
-void CompCamera::Update()
+void CompCamera::Update(float dt)
 {
 	DrawDebug();
 }

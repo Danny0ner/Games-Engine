@@ -13,7 +13,7 @@ public:
 
 	~CompCamera();
 
-	void Update();
+	void Update(float dt);
 
 	void SetPos(float3 newPos);
 	void OnEditor() override;

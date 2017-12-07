@@ -19,7 +19,7 @@ CompMesh::~CompMesh()
 
 }
 
-void CompMesh::Update()
+void CompMesh::Update(float dt)
 {
 }
 
