@@ -32,6 +32,9 @@ public:
 	std::vector<Component*> components;
 	std::vector<GameObject*> childs;
 	void DeleteChild(GameObject* todelete);
+    void FindSiblingOrChildGameObjectWithName(const char * name, GameObject * &gameobj);
+	void FindChildGameObjectWithName(const char * name, GameObject * &gameobj);
+	void DrawSkeletonDebug();
 	int GetUID();
 	float3 GetPosition();
 protected:

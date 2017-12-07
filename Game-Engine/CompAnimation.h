@@ -16,7 +16,6 @@ public:
 	void Update();
 
 	void DrawDebug() const;
-
 	void OnEditor()override;
 
 	void OnSave(Configuration& data) const;
@@ -26,6 +25,7 @@ public:
 	void AddResource(int uid);
 	ResourceAnimation * GetResourceAnim();
 public:
+	float animetime = 0.0f;
 	bool drawdebug = false;
 	bool ChangingAnimation = false;
 	ResourceAnimation* resourceAnim = nullptr;

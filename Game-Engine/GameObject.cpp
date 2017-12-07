@@ -134,6 +134,50 @@ void GameObject::DeleteChild(GameObject * todelete)
 	App->editor->GetRoot()->childs.erase(std::remove(App->editor->GetRoot()->childs.begin(), App->editor->GetRoot()->childs.end(), todelete), App->editor->GetRoot()->childs.end());
 }
 
+void GameObject::FindSiblingOrChildGameObjectWithName(const char * name, GameObject* &gameobj)
+{
+
+	if (parent != nullptr)
+	{
+		for (int i = 0; i < parent->childs.size(); i++)
+		{
+			if (strcmp(name, parent->childs[i]->Getname().c_str()) == 0)
+			{
+				gameobj = parent->childs[i];
+				return;
+			}
+		}
+	}
+	FindChildGameObjectWithName(name, gameobj);
+}
+
+void GameObject::FindChildGameObjectWithName(const char * name, GameObject* &gameobj)
+{
+	for (int i = 0; i < childs.size(); i++)
+	{
+		if (strcmp(name, childs[i]->Getname().c_str()) == 0)
+		{
+			gameobj = childs[i];
+			return;
+		}
+		childs[i]->FindChildGameObjectWithName(name, gameobj);
+	}
+}
+
+void GameObject::DrawSkeletonDebug()
+{
+	for (int i = 0; i < childs.size(); i++)
+	{
+		pLine vLine(GetPosition().x, GetPosition().y, GetPosition().z, childs[i]->GetPosition().x, childs[i]->GetPosition().y, childs[i]->GetPosition().z);
+		vLine.color = { 1.0f, 0.85f, 0.0f };
+		vLine.Render();
+		for (int x = 0; x < childs[i]->childs.size(); x++)
+		{
+			childs[i]->DrawSkeletonDebug();
+		}
+	}
+}
+
 int GameObject::GetUID()
 {
 	return uid;

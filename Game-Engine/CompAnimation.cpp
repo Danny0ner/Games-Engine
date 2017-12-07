@@ -7,6 +7,7 @@
 #include "Glew\include\glew.h"
 #include "MathGeo\Geometry\Triangle.h"
 #include "MathGeo\Math\float4x4.h"
+#include "CompTransform.h"
 
 #include <vector>
 CompAnimation::CompAnimation() : Component(Component_Animation)
@@ -21,30 +22,55 @@ CompAnimation::~CompAnimation()
 
 void CompAnimation::Update()
 {
+	GameObject* test = nullptr;
 	if (resourceAnim != nullptr)
 	{
-		CompTransform* trans = (CompTransform*)myGO->FindComponent(Component_Transform);
+
 		for (int i = 0; i < resourceAnim->bones.size(); i++)
 		{
+			myGO->FindSiblingOrChildGameObjectWithName(resourceAnim->bones[i]->name.c_str(), test);
 
+			PositionKey* actualposkey = nullptr;
+			for (int p = 0; p < resourceAnim->bones[i]->positionkeys.size(); p++)
+			{
+				if (animetime == 0)
+				{
+					actualposkey = resourceAnim->bones[i]->positionkeys[0];
+					break;
+				}
+				if (resourceAnim->bones[i]->positionkeys[p]->time <= animetime)
+				{
+					actualposkey = resourceAnim->bones[i]->positionkeys[p];
+				}
+			}
+			RotationKey* actualrotkey = nullptr;
+			for (int p = 0; p < resourceAnim->bones[i]->rotationkeys.size(); p++)
+			{
+				if (animetime == 0)
+				{
+					actualrotkey = resourceAnim->bones[i]->rotationkeys[0];
+					break;
+				}
+				if (resourceAnim->bones[i]->rotationkeys[p]->time <= animetime)
+				{
+					actualrotkey = resourceAnim->bones[i]->rotationkeys[p];
+				}
+			}
+
+			CompTransform* trans = (CompTransform*)test->FindComponent(Component_Transform);
+			trans->SetPosition(actualposkey->position);
+			trans->SetRotation(actualrotkey->rotation);
 		}
+	}
+	if (drawdebug)
+	{
+		DrawDebug();
 	}
 }
 
 void CompAnimation::DrawDebug() const
 {
-	for (int i = 0; i < myGO->childs.size(); i++)
-	{
-		pLine vLine(myGO->GetPosition().x, myGO->GetPosition().y, myGO->GetPosition().z, myGO->childs[i]->GetPosition().x, myGO->childs[i]->GetPosition().y, myGO->childs[i]->GetPosition().z);
-		vLine.color = { 1.0f, 0.85f, 0.0f };
-		vLine.Render();
-			for (int x = 0; x < myGO->childs[i]->childs.size(); x++)
-			{
-				pLine VlineChild(myGO->childs[i]->GetPosition().x, myGO->childs[i]->GetPosition().y, myGO->childs[i]->GetPosition().z, myGO->childs[i]->childs[x]->GetPosition().x, myGO->childs[i]->childs[x]->GetPosition().y, myGO->childs[i]->childs[x]->GetPosition().z);
-				VlineChild.color = { 1.0f, 0.85f, 0.0f };
-				VlineChild.Render();
-			}
-	}
+	myGO->DrawSkeletonDebug();
 }
 
 void CompAnimation::OnEditor()
@@ -57,6 +83,11 @@ void CompAnimation::OnEditor()
 			ImGui::Text("Duration: %f", resourceAnim->duration);
 			ImGui::Text("TicksPerSec: %f", resourceAnim->ticksPerSec);
 			ImGui::Text("Number of Bones: %i", resourceAnim->bones.size());
+			ImGui::DragFloat("AnimTime", &animetime,0.01,0,resourceAnim->duration);
+		}
+		if (ImGui::Checkbox("drawdebug", &drawdebug))
+		{
+
 		}
 		if (ImGui::BeginMenu("Change Animation", &ChangingAnimation))
 		{

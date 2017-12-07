@@ -20,6 +20,8 @@ public:
 	void UpdateChildsTransMatrix();
 	void UpdateChildsTransMatrixNow();
 	bool needToUpdate;
+	void SetPosition(float3 pos);
+	void SetRotation(float4 rot);
 private:
 	float3 startposition;
 	float3 position;

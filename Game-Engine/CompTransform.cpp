@@ -208,3 +208,18 @@ void CompTransform::UpdateChildsTransMatrixNow()
 		}
 	}
 }
+
+void CompTransform::SetPosition(float3 pos)
+{
+	position = pos;
+}
+
+void CompTransform::SetRotation(float4 rot)
+{
+	rotation.w = rot.w;
+	rotation.x = rot.x;
+	rotation.y = rot.y;
+	rotation.z = rot.z;
+	eulerrot = rotation.ToEulerXYZ();
+	eulerrot *= RADTODEG;
+}

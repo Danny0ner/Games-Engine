@@ -192,10 +192,10 @@ void GeometryLoader::LoadAnimation(const char * inputFile, ResourceAnimation * a
 				RotationKey* tmprotkey = new RotationKey();
 				Configuration loadrotkey = loadbone.GetArray("RotationKeys", x);
 				tmprotkey->time = loadrotkey.GetFloat("Time");
-				tmprotkey->rotation.w = loadrotkey.GetFloat("Position", 0);
-				tmprotkey->rotation.x = loadrotkey.GetFloat("Position", 1);
-				tmprotkey->rotation.y = loadrotkey.GetFloat("Position", 2);
-				tmprotkey->rotation.z = loadrotkey.GetFloat("Position", 3);
+				tmprotkey->rotation.w = loadrotkey.GetFloat("Rotation", 0);
+				tmprotkey->rotation.x = loadrotkey.GetFloat("Rotation", 1);
+				tmprotkey->rotation.y = loadrotkey.GetFloat("Rotation", 2);
+				tmprotkey->rotation.z = loadrotkey.GetFloat("Rotation", 3);
 				tmpbone->rotationkeys.push_back(tmprotkey);
 			}
 			anim->bones.push_back(tmpbone);
