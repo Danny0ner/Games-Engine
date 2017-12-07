@@ -335,6 +335,27 @@ void ResourcesManager::ShowTextureResources(CompMaterial* material)
 	}
 }
 
+void ResourcesManager::ShowAnimationResources(CompAnimation* material)
+{
+	for (std::map<int, Resource*>::iterator it = resources.begin(); it != resources.end(); ++it)
+	{
+		if (it->second->GetType() == Resource_Animation)
+		{
+			ImGui::Text(it->second->GetFile());
+			if (ImGui::IsItemClicked())
+			{
+				{
+					if (material->GetResourceAnim() != nullptr)
+					{
+						material->GetResourceAnim()->UnloadFromComponent();
+					}
+					material->AddResourceByName(it->second->GetFile());
+				}
+			}
+		}
+	}
+}
+
 void ResourcesManager::ShowMeshResources(CompMesh* mesh)
 {
 	for (std::map<int, Resource*>::iterator it = resources.begin(); it != resources.end(); ++it)

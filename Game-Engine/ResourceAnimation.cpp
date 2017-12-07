@@ -2,7 +2,7 @@
 #include "Application.h"
 #include "GeometryLoader.h"
 #include "mmgr\mmgr.h"
-ResourceAnimation::ResourceAnimation(int UID) : Resource(UID, Resource_Texture)
+ResourceAnimation::ResourceAnimation(int UID) : Resource(UID, Resource_Animation)
 {
 }
 
@@ -27,8 +27,10 @@ bool ResourceAnimation::LoadInMemory()
 
 bool ResourceAnimation::UnloadFromMemory()
 {
-	//App->geometryloader->UnloadTexture(textureID);
-	//textureID = 0;
+	for (std::vector<Bone*>::iterator temp = bones.begin(); temp != bones.end(); temp++)
+	{
+		RELEASE((*temp));
+	}
 	return true;
 }
 

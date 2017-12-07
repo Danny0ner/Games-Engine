@@ -2,6 +2,7 @@
 
 #include "Resource.h"
 #include "MathGeo\MathGeoLib.h"
+
 struct PositionKey 
 {
 	float time;

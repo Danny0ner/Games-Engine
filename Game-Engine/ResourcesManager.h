@@ -6,6 +6,8 @@
 #include "Resource.h"
 #include "CompMaterial.h"
 #include "CompMesh.h"
+#include "CompAnimation.h"
+
 class aiMesh;
 class aiAnimation;
 class ResourcesManager : public Module
@@ -28,6 +30,7 @@ public:
 	int ImportAnimation(aiAnimation* anim);
 	Resource* CreateNewResource(ResourceType type, int UID);
 	void ShowTextureResources(CompMaterial* material);
+	void ShowAnimationResources(CompAnimation * material);
 	void ShowMeshResources(CompMesh * material);
 	//void ShowMeshResources(CompMaterial* material);
 	void ReimportFile(const char* filename);

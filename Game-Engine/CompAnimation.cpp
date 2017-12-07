@@ -21,6 +21,14 @@ CompAnimation::~CompAnimation()
 
 void CompAnimation::Update()
 {
+	if (resourceAnim != nullptr)
+	{
+		CompTransform* trans = (CompTransform*)myGO->FindComponent(Component_Transform);
+		for (int i = 0; i < resourceAnim->bones.size(); i++)
+		{
+
+		}
+	}
 }
 
 void CompAnimation::DrawDebug() const
@@ -43,6 +51,18 @@ void CompAnimation::OnEditor()
 {
 	if (ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 	{
+		if (resourceAnim != nullptr)
+		{
+			ImGui::Text("Name: %s", resourceAnim->name.c_str());
+			ImGui::Text("Duration: %f", resourceAnim->duration);
+			ImGui::Text("TicksPerSec: %f", resourceAnim->ticksPerSec);
+			ImGui::Text("Number of Bones: %i", resourceAnim->bones.size());
+		}
+		if (ImGui::BeginMenu("Change Animation", &ChangingAnimation))
+		{
+			App->resources->ShowAnimationResources(this);
+			ImGui::EndMenu();
+		}
 		ImGui::TreePop();
 	}
 }

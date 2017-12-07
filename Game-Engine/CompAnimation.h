@@ -27,7 +27,7 @@ public:
 	ResourceAnimation * GetResourceAnim();
 public:
 	bool drawdebug = false;
-	bool ChangingMesh = false;
+	bool ChangingAnimation = false;
 	ResourceAnimation* resourceAnim = nullptr;
 };
 #endif
