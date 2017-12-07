@@ -61,9 +61,6 @@ bool ModuleEditor::CleanUp()
 
 void ModuleEditor::Render()
 {
-
-
-
 	if (selected != nullptr)
 	{
 		selected->ShowInspector();

@@ -22,8 +22,6 @@ CompAnimation::~CompAnimation()
 
 void CompAnimation::Update(float dt)
 {
-	
-
 	GameObject* test = nullptr;
 	if (resourceAnim != nullptr)
 	{
@@ -50,6 +48,7 @@ void CompAnimation::Update(float dt)
 			RotationKey* actualrotkey = nullptr;
 			for (int p = 0; p < resourceAnim->bones[i]->rotationkeys.size(); p++)
 			{
+
 				if (animetime == 0)
 				{
 					actualrotkey = resourceAnim->bones[i]->rotationkeys[0];
@@ -60,17 +59,17 @@ void CompAnimation::Update(float dt)
 					actualrotkey = resourceAnim->bones[i]->rotationkeys[p];
 				}
 			}
-
-			CompTransform* trans = (CompTransform*)test->FindComponent(Component_Transform);
-			trans->SetPosition(actualposkey->position);
-			trans->SetRotation(actualrotkey->rotation);
+			if (test != nullptr)
+			{
+				CompTransform* trans = (CompTransform*)test->FindComponent(Component_Transform);
+				if(actualposkey != nullptr)		trans->SetPosition(actualposkey->position);
+				if(actualrotkey != nullptr)		trans->SetRotation(actualrotkey->rotation);
+			}
 			if (animetime >= resourceAnim->duration) animetime = 0;
 		}
 	}
-	if (drawdebug)
-	{
-		DrawDebug();
-	}
+
+	DrawDebug();
 }
 
 void CompAnimation::DrawDebug() const
