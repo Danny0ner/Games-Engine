@@ -29,6 +29,7 @@ public:
 	bool drawdebug = false;
 	bool ChangingAnimation = false;
 	bool Interpolation = true;
+	float TicksPerSecond = 0;
 	ResourceAnimation* resourceAnim = nullptr;
 };
 #endif

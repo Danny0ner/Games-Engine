@@ -26,7 +26,7 @@ void CompAnimation::Update(float dt)
 	if (resourceAnim != nullptr)
 	{
 		animetime += dt;
-		animetime += resourceAnim->ticksPerSec / resourceAnim->duration;
+		animetime += TicksPerSecond / resourceAnim->duration;
 		if (animetime >= resourceAnim->duration) animetime = resourceAnim->duration;
 		for (int i = 0; i < resourceAnim->bones.size(); i++)
 		{
@@ -163,6 +163,7 @@ void CompAnimation::OnEditor()
 			ImGui::Text("TicksPerSec: %f", resourceAnim->ticksPerSec);
 			ImGui::Text("Number of Bones: %i", resourceAnim->bones.size());
 			ImGui::DragFloat("AnimTime", &animetime,0.01,0,resourceAnim->duration);
+			ImGui::DragFloat("AnimTime", &TicksPerSecond, 0.01, 0, 60);
 			ImGui::Checkbox("Interpolation", &Interpolation);
 		}
 		if (ImGui::Checkbox("drawdebug", &drawdebug))
@@ -201,6 +202,8 @@ void CompAnimation::AddResourceByName(std::string filename)
 	resourceAnim = (ResourceAnimation*)App->resources->GetResourceByName(filename.c_str());
 	if (resourceAnim != nullptr)
 		resourceAnim->LoadToComponent();
+
+	TicksPerSecond = resourceAnim->ticksPerSec;
 }
 
 void CompAnimation::AddResource(int uid)
@@ -208,6 +211,8 @@ void CompAnimation::AddResource(int uid)
 	resourceAnim = (ResourceAnimation*)App->resources->Get(uid);
 	if (resourceAnim != nullptr)
 		resourceAnim->LoadToComponent();
+
+	TicksPerSecond = resourceAnim->ticksPerSec;
 }
 
 ResourceAnimation * CompAnimation::GetResourceAnim()
