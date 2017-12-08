@@ -27,73 +27,123 @@ void CompAnimation::Update(float dt)
 	{
 		animetime += dt;
 		if (animetime >= resourceAnim->duration) animetime = resourceAnim->duration;
-
 		for (int i = 0; i < resourceAnim->bones.size(); i++)
 		{
 			myGO->FindSiblingOrChildGameObjectWithName(resourceAnim->bones[i]->name.c_str(), test);
-
 			PositionKey* actualposkey = nullptr;
 			PositionKey* nextposkey = nullptr;
-			for (int p = 0; p < resourceAnim->bones[i]->positionkeys.size(); p++)
+			for (int p = 0, a = 1; p < resourceAnim->bones[i]->positionkeys.size(); p++, a++)
 			{
 				if (animetime == 0)
 				{
 					actualposkey = resourceAnim->bones[i]->positionkeys[0];
-					nextposkey = resourceAnim->bones[i]->positionkeys[1];
+					if (resourceAnim->bones[i]->positionkeys.size() > 1)
+					{
+						nextposkey = resourceAnim->bones[i]->positionkeys[1];
+					}
+					else
+					{
+						nextposkey = actualposkey;
+					}
 					break;
 				}
-				if (resourceAnim->bones[i]->positionkeys[p]->time <= animetime)
+				if (resourceAnim->bones[i]->positionkeys[p]->time < animetime)
 				{
 					actualposkey = resourceAnim->bones[i]->positionkeys[p];
-					p++;
-					nextposkey = resourceAnim->bones[i]->positionkeys[p];
-					p--;
+					if (resourceAnim->bones[i]->positionkeys.size() > 1)
+					{
+						nextposkey = resourceAnim->bones[i]->positionkeys[a];
+					}
+					else if (resourceAnim->bones[i]->positionkeys.size() == 1)
+					{
+						nextposkey = resourceAnim->bones[i]->positionkeys[p];
+					}
 				}
 			}
 			RotationKey* actualrotkey = nullptr;
 			RotationKey* nextrotkey = nullptr;
-			for (int p = 0; p < resourceAnim->bones[i]->rotationkeys.size(); p++)
+			for (int p = 0, a = 1; p < resourceAnim->bones[i]->rotationkeys.size(); p++, a++)
 			{
-
 				if (animetime == 0)
 				{
 					actualrotkey = resourceAnim->bones[i]->rotationkeys[0];
-					nextrotkey = resourceAnim->bones[i]->rotationkeys[1];
+					if (resourceAnim->bones[i]->rotationkeys.size() > 1)
+					{
+						nextrotkey = resourceAnim->bones[i]->rotationkeys[1];
+					}
+					else
+					{
+						nextrotkey = actualrotkey;
+					}
 					break;
 				}
-				if (resourceAnim->bones[i]->rotationkeys[p]->time <= animetime)
+				if (resourceAnim->bones[i]->rotationkeys[p]->time < animetime)
 				{
 					actualrotkey = resourceAnim->bones[i]->rotationkeys[p];
-					p++;
-					nextrotkey = resourceAnim->bones[i]->rotationkeys[p];
-					p--;
+					if (resourceAnim->bones[i]->rotationkeys.size() > 1)
+					{
+						nextrotkey = resourceAnim->bones[i]->rotationkeys[a];
+					}
+					else if (resourceAnim->bones[i]->rotationkeys.size() == 1)
+					{
+						nextrotkey = actualrotkey;
+					}
 				}
 			}
 			if (test != nullptr)
 			{
 				float time = 0;
 				CompTransform* trans = (CompTransform*)test->FindComponent(Component_Transform);
-				if (actualposkey != nullptr && nextposkey!= nullptr)
+				if (Interpolation == true) 
 				{
-					time = (animetime - actualposkey->time) / (nextposkey->time - actualposkey->time);
-					float3 position = float3::Lerp(actualposkey->position, nextposkey->position, time);
-					trans->SetPosition(position);
+					if (actualposkey != nullptr && nextposkey != nullptr)
+					{
+						if (actualposkey == nextposkey)
+						{
+							trans->SetPosition(actualposkey->position);
+						}
+						else
+						{
+							time = (animetime - actualposkey->time) / (nextposkey->time - actualposkey->time);
+							float3 position = float3::Lerp(actualposkey->position, nextposkey->position, time);
+							trans->SetPosition(position);
+						}
+					}
+					if (actualrotkey != nullptr && nextrotkey != nullptr)
+					{
+						if (actualrotkey == nextrotkey)
+						{
+							trans->SetRotation(actualrotkey->rotation);
+						}
+						else
+						{
+							Quat ActualQuat = Quat(actualrotkey->rotation.x, actualrotkey->rotation.y, actualrotkey->rotation.z, actualrotkey->rotation.w);
+							Quat NextQuat = Quat(nextrotkey->rotation.x, nextrotkey->rotation.y, nextrotkey->rotation.z, nextrotkey->rotation.w);
+							
+							time = (animetime - actualrotkey->time) / (nextrotkey->time - actualrotkey->time);
+							Quat rotation = ActualQuat.Slerp(NextQuat,time);
+							trans->SetRotation(rotation);
+						}
+					}
 				}
+				else
+				{
+					if (actualposkey != nullptr)
+					{				
+						trans->SetPosition(actualposkey->position);
+					}
 
-				if (actualrotkey != nullptr && nextrotkey!= nullptr)
-				{
-					time = (animetime - actualrotkey->time) / (actualrotkey->time - actualrotkey->time);
-					float4 rotation = float4::Lerp(actualrotkey->rotation, nextrotkey->rotation, time);
-					trans->SetRotation(rotation);
+					if (actualrotkey != nullptr)
+					{
+							trans->SetRotation(actualrotkey->rotation);
+					}
 				}
-					
-				
 			}
-			if (animetime >= resourceAnim->duration) animetime = 0;
+				if (animetime >= resourceAnim->duration) animetime = 0;
 		}
-
-		DrawDebug();
 	}
+	DrawDebug();
+
 }
 
 void CompAnimation::DrawDebug() const
@@ -112,6 +162,7 @@ void CompAnimation::OnEditor()
 			ImGui::Text("TicksPerSec: %f", resourceAnim->ticksPerSec);
 			ImGui::Text("Number of Bones: %i", resourceAnim->bones.size());
 			ImGui::DragFloat("AnimTime", &animetime,0.01,0,resourceAnim->duration);
+			ImGui::Checkbox("Interpolation", &Interpolation);
 		}
 		if (ImGui::Checkbox("drawdebug", &drawdebug))
 		{

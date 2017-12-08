@@ -28,6 +28,7 @@ public:
 	float animetime = 0.0f;
 	bool drawdebug = false;
 	bool ChangingAnimation = false;
+	bool Interpolation = true;
 	ResourceAnimation* resourceAnim = nullptr;
 };
 #endif

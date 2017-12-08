@@ -22,6 +22,7 @@ public:
 	bool needToUpdate;
 	void SetPosition(float3 pos);
 	void SetRotation(float4 rot);
+	void SetRotation(Quat rot);
 	float3 GetPosition();
 	float3 GetRotation();
 private:
