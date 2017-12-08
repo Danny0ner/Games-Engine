@@ -238,22 +238,23 @@ void Application::StatusSwitch()
 		}
 
 	}
-	if (gamestatus == PAUSE)
+	else if (gamestatus == PAUSE)
 	{
 		
 		gametime.TimeScale = 0.0f;
 		gametime.GameStart.Pause();
 	}
-	if (gamestatus == STOP)
+	else if (gamestatus == STOP)
 	{
 		
 		gametime.TimeScale = 0.0f;
 		RestartGame();
-		gametime.GameStart.Stop();
 		gametime.GameStart.actual_ms = 0;
+		gametime.GameStart.Stop();
+		
 
 	}
-	if (gamestatus == NEXTFRAME)
+	else if (gamestatus == NEXTFRAME)
 	{
 		
 		gametime.TimeScale = 0.0f;

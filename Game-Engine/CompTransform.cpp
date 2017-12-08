@@ -223,3 +223,14 @@ void CompTransform::SetRotation(float4 rot)
 	eulerrot = rotation.ToEulerXYZ();
 	eulerrot *= RADTODEG;
 }
+
+float3 CompTransform::GetPosition()
+{
+	return position;
+}
+
+float3 CompTransform::GetRotation()
+{
+
+	return eulerrot;
+}

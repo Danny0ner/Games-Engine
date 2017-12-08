@@ -33,43 +33,67 @@ void CompAnimation::Update(float dt)
 			myGO->FindSiblingOrChildGameObjectWithName(resourceAnim->bones[i]->name.c_str(), test);
 
 			PositionKey* actualposkey = nullptr;
+			PositionKey* nextposkey = nullptr;
 			for (int p = 0; p < resourceAnim->bones[i]->positionkeys.size(); p++)
 			{
 				if (animetime == 0)
 				{
 					actualposkey = resourceAnim->bones[i]->positionkeys[0];
+					nextposkey = resourceAnim->bones[i]->positionkeys[1];
 					break;
 				}
 				if (resourceAnim->bones[i]->positionkeys[p]->time <= animetime)
 				{
 					actualposkey = resourceAnim->bones[i]->positionkeys[p];
+					p++;
+					nextposkey = resourceAnim->bones[i]->positionkeys[p];
+					p--;
 				}
 			}
 			RotationKey* actualrotkey = nullptr;
+			RotationKey* nextrotkey = nullptr;
 			for (int p = 0; p < resourceAnim->bones[i]->rotationkeys.size(); p++)
 			{
 
 				if (animetime == 0)
 				{
 					actualrotkey = resourceAnim->bones[i]->rotationkeys[0];
+					nextrotkey = resourceAnim->bones[i]->rotationkeys[1];
 					break;
 				}
 				if (resourceAnim->bones[i]->rotationkeys[p]->time <= animetime)
 				{
 					actualrotkey = resourceAnim->bones[i]->rotationkeys[p];
+					p++;
+					nextrotkey = resourceAnim->bones[i]->rotationkeys[p];
+					p--;
 				}
 			}
 			if (test != nullptr)
 			{
+				float time = 0;
 				CompTransform* trans = (CompTransform*)test->FindComponent(Component_Transform);
-				if(actualposkey != nullptr)		trans->SetPosition(actualposkey->position);
-				if(actualrotkey != nullptr)		trans->SetRotation(actualrotkey->rotation);
+				if (actualposkey != nullptr && nextposkey!= nullptr)
+				{
+					time = (animetime - actualposkey->time) / (nextposkey->time - actualposkey->time);
+					float3 position = float3::Lerp(actualposkey->position, nextposkey->position, time);
+					trans->SetPosition(position);
+				}
+
+				if (actualrotkey != nullptr && nextrotkey!= nullptr)
+				{
+					time = (animetime - actualrotkey->time) / (actualrotkey->time - actualrotkey->time);
+					float4 rotation = float4::Lerp(actualrotkey->rotation, nextrotkey->rotation, time);
+					trans->SetRotation(rotation);
+				}
+					
+				
 			}
 			if (animetime >= resourceAnim->duration) animetime = 0;
 		}
-	}
 
-	DrawDebug();
+		DrawDebug();
+	}
 }
 
 void CompAnimation::DrawDebug() const
