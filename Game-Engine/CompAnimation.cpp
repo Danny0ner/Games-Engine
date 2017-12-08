@@ -26,6 +26,7 @@ void CompAnimation::Update(float dt)
 	if (resourceAnim != nullptr)
 	{
 		animetime += dt;
+		animetime += resourceAnim->ticksPerSec / resourceAnim->duration;
 		if (animetime >= resourceAnim->duration) animetime = resourceAnim->duration;
 		for (int i = 0; i < resourceAnim->bones.size(); i++)
 		{
@@ -50,11 +51,11 @@ void CompAnimation::Update(float dt)
 				if (resourceAnim->bones[i]->positionkeys[p]->time < animetime)
 				{
 					actualposkey = resourceAnim->bones[i]->positionkeys[p];
-					if (resourceAnim->bones[i]->positionkeys.size() > 1)
+					if (resourceAnim->bones[i]->positionkeys.size() > 1 && a < resourceAnim->bones[i]->positionkeys.size())
 					{
 						nextposkey = resourceAnim->bones[i]->positionkeys[a];
 					}
-					else if (resourceAnim->bones[i]->positionkeys.size() == 1)
+					else
 					{
 						nextposkey = resourceAnim->bones[i]->positionkeys[p];
 					}
@@ -80,11 +81,11 @@ void CompAnimation::Update(float dt)
 				if (resourceAnim->bones[i]->rotationkeys[p]->time < animetime)
 				{
 					actualrotkey = resourceAnim->bones[i]->rotationkeys[p];
-					if (resourceAnim->bones[i]->rotationkeys.size() > 1)
+					if (resourceAnim->bones[i]->rotationkeys.size() > 1 && a < resourceAnim->bones[i]->rotationkeys.size())
 					{
 						nextrotkey = resourceAnim->bones[i]->rotationkeys[a];
 					}
-					else if (resourceAnim->bones[i]->rotationkeys.size() == 1)
+					else
 					{
 						nextrotkey = actualrotkey;
 					}
