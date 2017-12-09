@@ -2,7 +2,7 @@
 
 #include "Resource.h"
 #include <vector>
-
+#include "MathGeo\MathGeoLib.h"
 
 struct VertexWeight
 {
@@ -15,7 +15,7 @@ struct MeshBone
 {
 	std::string name;
 	std::vector<VertexWeight*> VertexWeights;
-
+	float4x4 offsetmatrix;
 	~MeshBone()
 	{
 		for (std::vector<VertexWeight*>::iterator temp = VertexWeights.begin(); temp != VertexWeights.end(); temp++)

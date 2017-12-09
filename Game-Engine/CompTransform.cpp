@@ -16,6 +16,8 @@ CompTransform::CompTransform(float3 pos, float3 scale, Quat rot, ComponentType t
 	TransMatrix = float4x4::FromQuat(rot);
 	TransMatrix = float4x4::Scale(scale, float3(0, 0, 0)) * TransMatrix;
 	TransMatrix.float4x4::SetTranslatePart(pos.x, position.y, position.z);
+	localmatrix = TransMatrix;
+
 }
 
 CompTransform::~CompTransform()
@@ -48,6 +50,8 @@ void CompTransform::UpdatePositionMatrix()
 	eulerrot.y *= RADTODEG;
 	eulerrot.z *= RADTODEG;
 	
+	localmatrix = TransMatrix;
+
 	if (myGO != nullptr)
 	{
 		GameObject* GO = myGO->GetParent();
@@ -242,4 +246,9 @@ float3 CompTransform::GetRotation()
 {
 
 	return eulerrot;
+}
+
+float4x4 CompTransform::GetLocalMatrix()
+{
+	return localmatrix;
 }

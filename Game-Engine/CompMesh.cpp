@@ -2,6 +2,7 @@
 #include "Primitive.h"
 #include "Application.h"
 #include "GeometryLoader.h"
+#include "CompTransform.h"
 #include "GameObject.h"
 #include "ImGui\imgui.h"
 #include "Glew\include\glew.h"
@@ -21,6 +22,37 @@ CompMesh::~CompMesh()
 
 void CompMesh::Update(float dt)
 {
+	GameObject* bone = nullptr;
+	ResetDeformableMesh();
+	for (int i = 0; i < resourceskeleton->MeshBones.size(); i++)
+	{
+		myGO->GetParent()->FindSiblingOrChildGameObjectWithName(resourceskeleton->MeshBones[i]->name.c_str(), bone);
+		//coger matriz global bone, multiplicar por local invertida mesh, multiplicar por offset bone.
+		CompTransform* trans = (CompTransform*)bone->FindComponent(Component_Transform);
+		CompTransform* thistransform = (CompTransform*)myGO->FindComponent(Component_Transform);
+
+		float4x4 bonematrix = trans->GetTransMatrix();
+		bonematrix = bonematrix * thistransform->GetLocalMatrix().Inverted();
+		bonematrix = bonematrix * resourceskeleton->MeshBones[i]->offsetmatrix;
+
+		float3 scale, bonepos;
+		Quat rot;
+		bonematrix.Decompose(bonepos, rot, scale);
+		//float3 original = { 0,0,0 };
+		//float3 bonepos = bonematrix.TransformPos(original);
+		for (int x = 0; x < resourceskeleton->MeshBones[i]->VertexWeights.size(); x++)
+		{
+			int actualvertexpos = (resourceskeleton->MeshBones[i]->VertexWeights[x]->VertexID * 3);
+
+			deformableMesh->vertices[actualvertexpos] += bonepos.x * resourceskeleton->MeshBones[i]->VertexWeights[x]->Weight;
+			deformableMesh->vertices[actualvertexpos + 1] += -bonepos.y * resourceskeleton->MeshBones[i]->VertexWeights[x]->Weight;
+			deformableMesh->vertices[actualvertexpos + 2] += -bonepos.z * resourceskeleton->MeshBones[i]->VertexWeights[x]->Weight;
+		}
+	}
+	glBindBuffer(GL_ARRAY_BUFFER, deformableMesh->idVertices);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * deformableMesh->numVertices * 3, deformableMesh->vertices, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, deformableMesh->idNormals);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * deformableMesh->numVertices * 3, deformableMesh->normals, GL_DYNAMIC_DRAW);
 }
 
 float3 CompMesh::GetCenter() const
@@ -156,11 +188,50 @@ void CompMesh::AddResource(int uid)
 		resourceMesh->LoadToComponent();
 }
 
+void CompMesh::AddResourceSkeletonByName(std::string filename)
+{
+	resourceskeleton = (ResourceSkeleton*)App->resources->GetResourceByName(filename.c_str());
+	if (resourceskeleton != nullptr)
+		resourceskeleton->LoadToComponent();
+}
+
+void CompMesh::AddResourceSkeleton(int uid)
+{
+	resourceskeleton = (ResourceSkeleton*)App->resources->Get(uid);
+	if (resourceskeleton != nullptr)
+		resourceskeleton->LoadToComponent();
+}
+
 ResourceMesh * CompMesh::GetResourceMesh()
 {
 	if (resourceMesh != nullptr)
 		return resourceMesh;
 	else
 		return nullptr;
+}
+
+void CompMesh::CreateDeformableMesh()
+{
+	deformableMesh = new DeformableMesh();
+	deformableMesh->vertices = new float[resourceMesh->numVertices * 3 * sizeof(float)];
+	memcpy(deformableMesh->vertices, resourceMesh->vertices, resourceMesh->numVertices * 3 * sizeof(float));
+	deformableMesh->numVertices = resourceMesh->numVertices;
+	deformableMesh->normals = new float[resourceMesh->numVertices * 3 * sizeof(float)];
+	memcpy(deformableMesh->normals, resourceMesh->normals, resourceMesh->numVertices * 3 * sizeof(float));
+	
+	glGenBuffers(1, (GLuint*)&deformableMesh->idVertices);
+	glBindBuffer(GL_ARRAY_BUFFER, deformableMesh->idVertices);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * deformableMesh->numVertices * 3, deformableMesh->vertices, GL_DYNAMIC_DRAW);
+	
+	glGenBuffers(1, (GLuint*)&deformableMesh->idNormals);
+	glBindBuffer(GL_ARRAY_BUFFER, deformableMesh->idNormals);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * deformableMesh->numVertices * 3, deformableMesh->normals, GL_DYNAMIC_DRAW);
+}
+
+void CompMesh::ResetDeformableMesh()
+{
+	memcpy(deformableMesh->vertices, resourceMesh->vertices, resourceMesh->numVertices * 3 * sizeof(float));
+
+	memcpy(deformableMesh->normals, resourceMesh->normals, resourceMesh->numVertices * 3 * sizeof(float));
 }
 

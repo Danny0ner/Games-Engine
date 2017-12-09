@@ -25,12 +25,13 @@ public:
 	void SetRotation(Quat rot);
 	float3 GetPosition();
 	float3 GetRotation();
+	float4x4 GetLocalMatrix();
 private:
 	float3 startposition;
 	float3 position;
 	float3 scale;
 	Quat rotation;
-	
+	float4x4 localmatrix;
 	float4x4 TransMatrix;
 	float4x4 Transmat;
 	float3 eulerrot;

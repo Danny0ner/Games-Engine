@@ -440,13 +440,23 @@ void ModuleRenderer3D::Render(GameObject * toDraw)
 				{
 					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 				}
-				if (CMesh->resourceMesh->idNormals > 0)
-				{
-					glEnable(GL_LIGHTING);
-					glEnableClientState(GL_NORMAL_ARRAY);
-					glBindBuffer(GL_ARRAY_BUFFER, CMesh->resourceMesh->idNormals);
-					glNormalPointer(GL_FLOAT, 0, NULL);
-				}
+			
+					if (CMesh->resourceMesh->idNormals > 0)
+					{
+						glEnable(GL_LIGHTING);
+						glEnableClientState(GL_NORMAL_ARRAY);
+						if (CMesh->deformableMesh == nullptr)
+						{
+							glBindBuffer(GL_ARRAY_BUFFER, CMesh->resourceMesh->idNormals);
+						}
+						else
+						{
+							glBindBuffer(GL_ARRAY_BUFFER, CMesh->deformableMesh->idNormals);
+						}
+						glNormalPointer(GL_FLOAT, 0, NULL);
+					}
+			
+
 				if (CMesh->resourceMesh->idTexCoords > 0)
 				{
 					CompMaterial* mat = (CompMaterial*)(toDraw->FindComponent(Component_Material));
@@ -461,7 +471,14 @@ void ModuleRenderer3D::Render(GameObject * toDraw)
 				}
 				if (CMesh->resourceMesh->idVertices != 0) {
 				glEnableClientState(GL_VERTEX_ARRAY);
-				glBindBuffer(GL_ARRAY_BUFFER, CMesh->resourceMesh->idVertices);
+				if (CMesh->deformableMesh == nullptr)
+				{
+					glBindBuffer(GL_ARRAY_BUFFER, CMesh->resourceMesh->idVertices);
+				}
+				else
+				{
+					glBindBuffer(GL_ARRAY_BUFFER, CMesh->deformableMesh->idVertices);
+				}
 				glVertexPointer(3, GL_FLOAT, 0, NULL);
 			}
 			if (CMesh->resourceMesh->idIndices != 0)				{

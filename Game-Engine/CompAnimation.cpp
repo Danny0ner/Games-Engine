@@ -163,7 +163,7 @@ void CompAnimation::OnEditor()
 			ImGui::Text("TicksPerSec: %f", resourceAnim->ticksPerSec);
 			ImGui::Text("Number of Bones: %i", resourceAnim->bones.size());
 			ImGui::DragFloat("AnimTime", &animetime,0.01,0,resourceAnim->duration);
-			ImGui::DragFloat("AnimTime", &TicksPerSecond, 0.01, 0, 60);
+			ImGui::DragFloat("TicksPerSec", &TicksPerSecond, 0.01, 0, 60);
 			ImGui::Checkbox("Interpolation", &Interpolation);
 		}
 		if (ImGui::Checkbox("drawdebug", &drawdebug))
@@ -213,6 +213,8 @@ void CompAnimation::AddResource(int uid)
 		resourceAnim->LoadToComponent();
 
 	TicksPerSecond = resourceAnim->ticksPerSec;
+	if (resourceAnim->duration / TicksPerSecond <= 1)
+		TicksPerSecond = 0;
 }
 
 ResourceAnimation * CompAnimation::GetResourceAnim()

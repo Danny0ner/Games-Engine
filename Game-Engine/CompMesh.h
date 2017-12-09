@@ -4,6 +4,33 @@
 #include "Component.h"
 #include "MathGeo\Geometry\AABB.h"
 #include "ResourceMesh.h"
+#include "ResourceSkeleton.h"
+
+struct DeformableMesh
+{
+	DeformableMesh(){}
+		
+	~DeformableMesh()
+	{
+	if (vertices != nullptr)
+	{
+		delete vertices;
+	}
+	if (normals != nullptr)
+	{
+		delete normals;
+	}
+	}
+		
+	uint idVertices = 0; // id in VRAM 
+	uint numVertices = 0;
+	float* vertices = nullptr;
+		
+	uint idNormals = 0; // id in VRAM
+	float* normals = nullptr;
+
+};
+
 
 class CompMesh : public Component
 {
@@ -30,9 +57,19 @@ public:
 
 	void AddResourceByName(std::string filename);
 	void AddResource(int uid);
+
+	void AddResourceSkeletonByName(std::string filename);
+	void AddResourceSkeleton(int uid);
+
 	ResourceMesh* GetResourceMesh();
+
+	void CreateDeformableMesh();
+	void ResetDeformableMesh();
+
 public:
+	DeformableMesh* deformableMesh = nullptr;
 	bool drawdebug = false;
 	bool ChangingMesh = false;
 	ResourceMesh* resourceMesh = nullptr;
+	ResourceSkeleton* resourceskeleton = nullptr;
 };

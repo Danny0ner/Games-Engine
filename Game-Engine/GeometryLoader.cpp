@@ -171,6 +171,16 @@ bool GeometryLoader::ImportSkeleton(const aiMesh * mesh, const char * outputfile
 		{
 			Configuration Bone;
 			Bone.SetString("Name", mesh->mBones[i]->mName.C_Str());
+			
+			aiVector3D pos, scale;
+			aiQuaternion rot;
+			aiMatrix4x4 offsetmat = mesh->mBones[i]->mOffsetMatrix;
+
+			offsetmat.Decompose(scale,rot,pos);
+			Bone.AddArrayFloat("OffsetPos", &pos.x, 3);
+			Bone.AddArrayFloat("OffsetRot", &rot.x, 4);
+			Bone.AddArrayFloat("OffsetScale", &scale.x, 3);
+
 			Bone.AddArray("Weights");
 			for (int r = 0; r < mesh->mBones[i]->mNumWeights; r++)
 			{
@@ -204,6 +214,7 @@ void GeometryLoader::LoadAnimation(const char * inputFile, ResourceAnimation * a
 			Bone* tmpbone = new Bone();
 			Configuration loadbone = load.GetArray("Bones", i);
 			tmpbone->name = loadbone.GetString("Name");
+
 			for (int x = 0; x < loadbone.GetArraySize("PositionKeys"); x++)
 			{
 				PositionKey* tmpposkey = new PositionKey();
@@ -241,6 +252,25 @@ void GeometryLoader::LoadSkeleton(const char * inputFile, ResourceSkeleton * ske
 			MeshBone* tempbone = new MeshBone();
 			Configuration loadbone = load.GetArray("SkeletonBones", i);
 			tempbone->name = loadbone.GetString("Name");
+
+			float3 pos, scale;
+			Quat rot;
+
+			pos.x = loadbone.GetFloat("OffsetPos", 0);
+			pos.y = loadbone.GetFloat("OffsetPos", 1);
+			pos.z = loadbone.GetFloat("OffsetPos", 2);
+			rot.x = loadbone.GetFloat("OffsetRot", 0);
+			rot.y = loadbone.GetFloat("OffsetRot", 1);
+			rot.z = loadbone.GetFloat("OffsetRot", 2);
+			rot.w = loadbone.GetFloat("OffsetRot", 3);
+			scale.x = loadbone.GetFloat("OffsetScale", 0);
+			scale.y = loadbone.GetFloat("OffsetScale", 1);
+			scale.z = loadbone.GetFloat("OffsetScale", 2);
+
+			tempbone->offsetmatrix = float4x4::FromQuat(rot);
+			tempbone->offsetmatrix = float4x4::Scale(scale, float3(0, 0, 0)) * tempbone->offsetmatrix;
+			tempbone->offsetmatrix.float4x4::SetTranslatePart(pos.x, pos.y, pos.z);
+
 			for (int x = 0; x < loadbone.GetArraySize("Weights"); x++)
 			{
 				VertexWeight* tempweight = new VertexWeight();
@@ -432,6 +462,7 @@ GameObject * GeometryLoader::AddGameObjectChild(aiNode * node, const aiScene * s
 			if (meshUID != -1)
 			{
 				m->AddResource(meshUID);
+
 			}
 
 			if (mesh->HasBones())
@@ -442,7 +473,8 @@ GameObject * GeometryLoader::AddGameObjectChild(aiNode * node, const aiScene * s
 				int SkeletonUID = App->resources->ImportSkeleton(skeletonname.c_str(), mesh);
 				if (SkeletonUID != -1)
 				{
-					//m->AddResourceSkeleton(SkeletonUID);
+					m->AddResourceSkeleton(SkeletonUID);
+					m->CreateDeformableMesh();
 				}
 			}
 
@@ -810,9 +842,6 @@ CompTransform* GeometryLoader::LoadTransform(aiNode* node)
 
 	return new CompTransform(pos, sca, rot);
 }
-
-
-
 
 bool GeometryLoader::CleanUp()
 {
