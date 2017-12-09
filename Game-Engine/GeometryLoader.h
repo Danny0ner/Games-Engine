@@ -35,7 +35,9 @@ public:
 	CompTransform* LoadTransform(aiNode* node);
 
 	bool ImportAnimation(const aiAnimation* scene);
+	bool ImportSkeleton(const aiMesh* mesh, const char* outputfile);
 	void LoadAnimation(const char * inputFile, ResourceAnimation* mesh);
+	void LoadSkeleton(const char* inputFile, ResourceSkeleton* skeleton);
 
 	uint ImportImage(const char* path, std::string& output_file);
 	void UnloadTexture(uint id);

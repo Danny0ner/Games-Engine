@@ -28,6 +28,9 @@ public:
 	Resource* GetResourceByName(const char * fileName);
 	int ImportFileImage(const char * fileName);
 	int ImportAnimation(aiAnimation* anim);
+	int ImportSkeleton(const char* meshName, aiMesh* mesh);
+
+
 	Resource* CreateNewResource(ResourceType type, int UID);
 	void ShowTextureResources(CompMaterial* material);
 	void ShowAnimationResources(CompAnimation * material);

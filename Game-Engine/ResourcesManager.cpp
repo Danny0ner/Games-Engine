@@ -209,6 +209,40 @@ int ResourcesManager::ImportAnimation(aiAnimation * anim)
 	}
 }
 
+int ResourcesManager::ImportSkeleton(const char * skelName, aiMesh * mesh)
+{
+
+	int UID = Find(skelName);
+
+	if (UID == 0)
+	{
+		bool imported;
+		int UID = App->RandomUIDGen->Int();
+
+		imported = App->geometryloader->ImportSkeleton(mesh, skelName);
+
+		if (imported == true)
+		{
+			Resource* newResource = CreateNewResource(Resource_Skeleton, UID);
+			newResource->file = skelName;
+			newResource->exportedFile = "Library/Skeletons/";
+			newResource->exportedFile += skelName;
+			newResource->exportedFile += ".Jade";
+			newResource->LastWriteTime = "nowritetime";
+
+			return UID;
+		}
+		else
+		{
+			return -1;
+		}
+	}
+	else
+	{
+		return UID;
+	}
+}
+
 int ResourcesManager::ImportFile(const char* meshName, aiMesh * mesh)
 {
 	int UID = Find(meshName);
@@ -302,6 +336,11 @@ Resource * ResourcesManager::CreateNewResource(ResourceType type, int UID)
 		case Resource_Animation:
 		{
 			ret = (Resource*) new ResourceAnimation(UID);
+			break;
+		}
+		case Resource_Skeleton:
+		{
+			ret = (Resource*) new ResourceSkeleton(UID);
 			break;
 		}
 	}

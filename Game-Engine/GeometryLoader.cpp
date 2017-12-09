@@ -162,6 +162,33 @@ bool GeometryLoader::ImportAnimation(const aiAnimation * animation)
 		return true;
 }
 
+bool GeometryLoader::ImportSkeleton(const aiMesh * mesh, const char * outputfile)
+{
+		Configuration save;
+		//ResourceSkeleton* tmpskeleton = new ResourceSkeleton(0);
+		save.AddArray("SkeletonBones");
+		for (int i = 0; i < mesh->mNumBones; i++)
+		{
+			Configuration Bone;
+			Bone.SetString("Name", mesh->mBones[i]->mName.C_Str());
+			Bone.AddArray("Weights");
+			for (int r = 0; r < mesh->mBones[i]->mNumWeights; r++)
+			{
+				Configuration VertexWeight;
+				VertexWeight.SetInt("VertexID", mesh->mBones[i]->mWeights[r].mVertexId);
+				VertexWeight.SetFloat("Weight", mesh->mBones[i]->mWeights[r].mWeight);
+				Bone.AddArrayEntry(VertexWeight);
+			}
+			save.AddArrayEntry(Bone);
+		}
+		char* buffer = nullptr;
+		uint fileSize = save.SaveFile(&buffer, "Animation");
+
+		App->filesystem->SaveFile(outputfile, buffer, fileSize, FileType::fileSkeleton);
+		RELEASE_ARRAY(buffer);
+		return true;
+}
+
 void GeometryLoader::LoadAnimation(const char * inputFile, ResourceAnimation * anim)
 {
 	Configuration load(inputFile);
@@ -203,6 +230,30 @@ void GeometryLoader::LoadAnimation(const char * inputFile, ResourceAnimation * a
 	}
 }
 
+void GeometryLoader::LoadSkeleton(const char * inputFile, ResourceSkeleton * skeleton)
+{
+	Configuration load(inputFile);
+
+	if (load.IsValueValid() == true)
+	{
+		for (int i = 0; i < load.GetArraySize("SkeletonBones"); i++)
+		{
+			MeshBone* tempbone = new MeshBone();
+			Configuration loadbone = load.GetArray("SkeletonBones", i);
+			tempbone->name = loadbone.GetString("Name");
+			for (int x = 0; x < loadbone.GetArraySize("Weights"); x++)
+			{
+				VertexWeight* tempweight = new VertexWeight();
+				Configuration loadvertex = loadbone.GetArray("Weights", x);
+				tempweight->VertexID = loadvertex.GetInt("VertexID");
+				tempweight->Weight = loadvertex.GetFloat("Weight");
+				tempbone->VertexWeights.push_back(tempweight);
+			}
+			skeleton->MeshBones.push_back(tempbone);
+		}
+	}
+}
+
 
 void GeometryLoader::ImportFBXNode(aiNode * node, const aiScene * scene)
 {
@@ -214,6 +265,12 @@ void GeometryLoader::ImportFBXNode(aiNode * node, const aiScene * scene)
 
 			App->resources->ImportFile(mesh->mName.C_Str(), mesh);
 
+			if (mesh->HasBones())
+			{
+				std::string skeletonname = mesh->mName.C_Str();
+				skeletonname.insert(1, "Skeleton");
+				App->resources->ImportSkeleton(skeletonname.c_str() , mesh);
+			}
 		}
 	}
 	for (uint i = 0; i < node->mNumChildren; i++)
@@ -368,7 +425,7 @@ GameObject * GeometryLoader::AddGameObjectChild(aiNode * node, const aiScene * s
 			newObject->AddComponent(LoadTransform(node));
 			newObject->SetName(node->mName.C_Str());
 			parent->AddChild(newObject);
-			aiMesh* mesh= scene->mMeshes[node->mMeshes[i]];
+			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 			CompMesh* m = new CompMesh();
 
 			int meshUID = App->resources->ImportFile(mesh->mName.C_Str(), mesh);
@@ -376,6 +433,19 @@ GameObject * GeometryLoader::AddGameObjectChild(aiNode * node, const aiScene * s
 			{
 				m->AddResource(meshUID);
 			}
+
+			if (mesh->HasBones())
+			{
+				std::string skeletonname = mesh->mName.C_Str();
+				skeletonname.insert(1, "Skeleton");
+
+				int SkeletonUID = App->resources->ImportSkeleton(skeletonname.c_str(), mesh);
+				if (SkeletonUID != -1)
+				{
+					//m->AddResourceSkeleton(SkeletonUID);
+				}
+			}
+
 			m->SetName("Mesh");
 			m->CreateEnclosingBox();
 			newObject->AddComponent(m);
@@ -538,33 +608,6 @@ void GeometryLoader::UnloadTexture(uint id)
 
 bool GeometryLoader::SaveMeshToOwnFormat(const aiMesh* mesh, const char * outputFile)
 {
-
-	if (mesh->HasBones())
-	{
-		Configuration save;
-		//ResourceSkeleton* tmpskeleton = new ResourceSkeleton(0);
-		save.AddArray("SkeletonBones");
-		for (int i = 0; i < mesh->mNumBones; i++)
-		{
-			Configuration Bone;
-			Bone.SetString("Name", mesh->mBones[i]->mName.C_Str());
-			Bone.AddArray("Weights");
-			for (int r = 0; r < mesh->mBones[i]->mNumWeights; r++)
-			{
-				Configuration VertexWeight;
-				VertexWeight.SetInt("VertexID",mesh->mBones[i]->mWeights[r].mVertexId);
-				VertexWeight.SetFloat("Weight",mesh->mBones[i]->mWeights[r].mWeight);
-				Bone.AddArrayEntry(VertexWeight);
-			}
-			save.AddArrayEntry(Bone);
-		}
-		char* buffer = nullptr;
-		uint fileSize = save.SaveFile(&buffer, "Animation");
-		App->filesystem->SaveFile(mesh->mName.C_Str(), buffer, fileSize, FileType::fileSkeleton);
-		RELEASE_ARRAY(buffer);
-	}
-
-
 	ResourceMesh* tmpMesh = new ResourceMesh(0);
 
 	tmpMesh->numVertices = mesh->mNumVertices;
