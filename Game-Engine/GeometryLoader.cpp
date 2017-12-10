@@ -263,9 +263,9 @@ void GeometryLoader::LoadSkeleton(const char * inputFile, ResourceSkeleton * ske
 			rot.y = loadbone.GetFloat("OffsetRot", 1);
 			rot.z = loadbone.GetFloat("OffsetRot", 2);
 			rot.w = loadbone.GetFloat("OffsetRot", 3);
-			scale.x = loadbone.GetFloat("OffsetScale", 0);
-			scale.y = loadbone.GetFloat("OffsetScale", 1);
-			scale.z = loadbone.GetFloat("OffsetScale", 2);
+			scale.x = 1.0f;
+			scale.y = 1.0f;
+			scale.z = 1.0f;
 
 			tempbone->offsetmatrix = float4x4::FromQuat(rot);
 			tempbone->offsetmatrix = float4x4::Scale(scale, float3(0, 0, 0)) * tempbone->offsetmatrix;

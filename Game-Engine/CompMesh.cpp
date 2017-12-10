@@ -22,37 +22,43 @@ CompMesh::~CompMesh()
 
 void CompMesh::Update(float dt)
 {
-	GameObject* bone = nullptr;
-	ResetDeformableMesh();
-	for (int i = 0; i < resourceskeleton->MeshBones.size(); i++)
+	if (deformableMesh != nullptr)
 	{
-		myGO->GetParent()->FindSiblingOrChildGameObjectWithName(resourceskeleton->MeshBones[i]->name.c_str(), bone);
-		//coger matriz global bone, multiplicar por local invertida mesh, multiplicar por offset bone.
-		CompTransform* trans = (CompTransform*)bone->FindComponent(Component_Transform);
-		CompTransform* thistransform = (CompTransform*)myGO->FindComponent(Component_Transform);
-
-		float4x4 bonematrix = trans->GetTransMatrix();
-		bonematrix = bonematrix * thistransform->GetLocalMatrix().Inverted();
-		bonematrix = bonematrix * resourceskeleton->MeshBones[i]->offsetmatrix;
-
-		float3 scale, bonepos;
-		Quat rot;
-		bonematrix.Decompose(bonepos, rot, scale);
-		//float3 original = { 0,0,0 };
-		//float3 bonepos = bonematrix.TransformPos(original);
-		for (int x = 0; x < resourceskeleton->MeshBones[i]->VertexWeights.size(); x++)
+		GameObject* bone = nullptr;
+		ResetDeformableMesh();
+		for (int i = 0; i < resourceskeleton->MeshBones.size(); i++)
 		{
-			int actualvertexpos = (resourceskeleton->MeshBones[i]->VertexWeights[x]->VertexID * 3);
+			myGO->GetParent()->FindSiblingOrChildGameObjectWithName(resourceskeleton->MeshBones[i]->name.c_str(), bone);
+			//coger matriz global bone, multiplicar por local invertida mesh, multiplicar por offset bone.
+			CompTransform* trans = (CompTransform*)bone->FindComponent(Component_Transform);
+			CompTransform* thistransform = (CompTransform*)myGO->FindComponent(Component_Transform);
 
-			deformableMesh->vertices[actualvertexpos] += bonepos.x * resourceskeleton->MeshBones[i]->VertexWeights[x]->Weight;
-			deformableMesh->vertices[actualvertexpos + 1] += -bonepos.y * resourceskeleton->MeshBones[i]->VertexWeights[x]->Weight;
-			deformableMesh->vertices[actualvertexpos + 2] += -bonepos.z * resourceskeleton->MeshBones[i]->VertexWeights[x]->Weight;
+			trans->UpdatePositionMatrix();
+			float4x4 bonematrix = trans->GetTransMatrix();
+			bonematrix = bonematrix * thistransform->GetLocalMatrix().Inverted();
+			bonematrix = bonematrix * resourceskeleton->MeshBones[i]->offsetmatrix;
+
+			float3 scale, bonepos;
+			Quat rot;
+			bonematrix.Decompose(bonepos, rot, scale);
+
+			for (int x = 0; x < resourceskeleton->MeshBones[i]->VertexWeights.size(); x++)
+			{
+				int actualvertexpos = (resourceskeleton->MeshBones[i]->VertexWeights[x]->VertexID * 3);
+
+				float3 originalV(&resourceMesh->vertices[actualvertexpos]);
+				float3 toAdd = bonematrix.TransformPos(originalV);
+
+				deformableMesh->vertices[actualvertexpos] += (bonepos.x * resourceskeleton->MeshBones[i]->VertexWeights[x]->Weight);
+				deformableMesh->vertices[actualvertexpos + 1] += (-bonepos.y * resourceskeleton->MeshBones[i]->VertexWeights[x]->Weight);
+				deformableMesh->vertices[actualvertexpos + 2] += (-bonepos.z * resourceskeleton->MeshBones[i]->VertexWeights[x]->Weight);
+			}
 		}
+		glBindBuffer(GL_ARRAY_BUFFER, deformableMesh->idVertices);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * deformableMesh->numVertices * 3, deformableMesh->vertices, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, deformableMesh->idNormals);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * deformableMesh->numVertices * 3, deformableMesh->normals, GL_DYNAMIC_DRAW);
 	}
-	glBindBuffer(GL_ARRAY_BUFFER, deformableMesh->idVertices);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * deformableMesh->numVertices * 3, deformableMesh->vertices, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, deformableMesh->idNormals);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * deformableMesh->numVertices * 3, deformableMesh->normals, GL_DYNAMIC_DRAW);
 }
 
 float3 CompMesh::GetCenter() const
