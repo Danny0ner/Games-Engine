@@ -23,11 +23,11 @@ CompAnimation::~CompAnimation()
 void CompAnimation::Update(float dt)
 {
 	GameObject* test = nullptr;
-	if (resourceAnim != nullptr)
+	if (ActualClip != nullptr)
 	{
 		animetime += dt;
 		animetime += TicksPerSecond / resourceAnim->duration;
-		if (animetime >= resourceAnim->duration) animetime = resourceAnim->duration;
+		if (animetime >= ActualClip->EndFrameTime) animetime = ActualClip->EndFrameTime;
 		for (int i = 0; i < resourceAnim->bones.size(); i++)
 		{
 			myGO->FindSiblingOrChildGameObjectWithName(resourceAnim->bones[i]->name.c_str(), test);
@@ -95,7 +95,7 @@ void CompAnimation::Update(float dt)
 			{
 				float time = 0;
 				CompTransform* trans = (CompTransform*)test->FindComponent(Component_Transform);
-				if (Interpolation == true) 
+				if (Interpolation == true)
 				{
 					if (actualposkey != nullptr && nextposkey != nullptr)
 					{
@@ -120,9 +120,9 @@ void CompAnimation::Update(float dt)
 						{
 							Quat ActualQuat = Quat(actualrotkey->rotation.x, actualrotkey->rotation.y, actualrotkey->rotation.z, actualrotkey->rotation.w);
 							Quat NextQuat = Quat(nextrotkey->rotation.x, nextrotkey->rotation.y, nextrotkey->rotation.z, nextrotkey->rotation.w);
-							
+
 							time = (animetime - actualrotkey->time) / (nextrotkey->time - actualrotkey->time);
-							Quat rotation = ActualQuat.Slerp(NextQuat,time);
+							Quat rotation = ActualQuat.Slerp(NextQuat, time);
 							trans->SetRotation(rotation);
 						}
 					}
@@ -130,21 +130,23 @@ void CompAnimation::Update(float dt)
 				else
 				{
 					if (actualposkey != nullptr)
-					{				
+					{
 						trans->SetPosition(actualposkey->position);
 					}
 
 					if (actualrotkey != nullptr)
 					{
-							trans->SetRotation(actualrotkey->rotation);
+						trans->SetRotation(actualrotkey->rotation);
 					}
 				}
 			}
-				if (animetime >= resourceAnim->duration) animetime = 0;
+			if (ActualClip->Loop == true)
+			{
+				if (animetime >= ActualClip->EndFrameTime) animetime = ActualClip->StartFrameTime;
+			}
 		}
 	}
-	DrawDebug();
-
+	if (drawdebug)	DrawDebug();
 }
 
 void CompAnimation::DrawDebug() const
@@ -162,14 +164,47 @@ void CompAnimation::OnEditor()
 			ImGui::Text("Duration: %f", resourceAnim->duration);
 			ImGui::Text("TicksPerSec: %f", resourceAnim->ticksPerSec);
 			ImGui::Text("Number of Bones: %i", resourceAnim->bones.size());
-			ImGui::DragFloat("AnimTime", &animetime,0.01,0,resourceAnim->duration);
+			ImGui::DragFloat("AnimTime", &animetime, 0.01, 0, resourceAnim->duration);
 			ImGui::DragFloat("TicksPerSec", &TicksPerSecond, 0.01, 0, 60);
 			ImGui::Checkbox("Interpolation", &Interpolation);
-		}
-		if (ImGui::Checkbox("drawdebug", &drawdebug))
-		{
+			if(ImGui::Button("Create Animation Clip",ImVec2(40, 25)))
+			{
+				AnimationClip* tempanimclip = new AnimationClip();
+				tempanimclip->name += std::to_string(animationclips.size()).c_str();
+				tempanimclip->EndFrameTime = resourceAnim->duration;
+				if (animationclips.size() == 0)
+				{
+					ActualClip = tempanimclip;
+					tempanimclip->ActuallyRunning = true;
+				}
+				animationclips.push_back(tempanimclip);
+			}
+			if (animationclips.size() > 0)
+			{
+				ImGui::Separator();
+				for (int i = 0; i < animationclips.size(); i++)
+				{
+					ImGui::Text(animationclips[i]->name.c_str());
+					if (ImGui::Checkbox("Loop", &animationclips[i]->Loop)) {}
+					if (ImGui::Checkbox("Actually Running", &animationclips[i]->ActuallyRunning)) 
+					{
+						if (ActualClip == animationclips[i])
+						{
+							ActualClip = nullptr;
+						}
+						else
+						{
+							ActualClip = animationclips[i];
+						}
+					}
+					ImGui::DragFloat("Start Frame", &animationclips[i]->StartFrameTime, 0.01, 0, resourceAnim->duration);
+					ImGui::DragFloat("End Frame", &animationclips[i]->EndFrameTime, 0.01, 0, 60);
+					ImGui::Separator();
+				}
+			}
 
 		}
+		if (ImGui::Checkbox("drawdebug", &drawdebug)){}
 		if (ImGui::BeginMenu("Change Animation", &ChangingAnimation))
 		{
 			App->resources->ShowAnimationResources(this);

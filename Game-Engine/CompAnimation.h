@@ -6,6 +6,15 @@
 #include "MathGeo\Geometry\AABB.h"
 #include "ResourceAnimation.h"
 
+struct AnimationClip
+{
+	std::string name = "Animation Clip";
+	bool Loop = true;
+	float StartFrameTime = 0.0f;
+	float EndFrameTime = 0.0f;
+	bool ActuallyRunning = false;
+};
+
 class CompAnimation : public Component
 {
 public:
@@ -31,5 +40,7 @@ public:
 	bool Interpolation = true;
 	float TicksPerSecond = 0;
 	ResourceAnimation* resourceAnim = nullptr;
+	std::vector<AnimationClip*> animationclips;
+	AnimationClip* ActualClip = nullptr;
 };
 #endif

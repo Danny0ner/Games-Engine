@@ -17,7 +17,6 @@ CompTransform::CompTransform(float3 pos, float3 scale, Quat rot, ComponentType t
 	TransMatrix = float4x4::Scale(scale, float3(0, 0, 0)) * TransMatrix;
 	TransMatrix.float4x4::SetTranslatePart(pos.x, position.y, position.z);
 	localmatrix = TransMatrix;
-
 }
 
 CompTransform::~CompTransform()
@@ -226,6 +225,7 @@ void CompTransform::SetRotation(float4 rot)
 	rotation.z = rot.z;
 	eulerrot = rotation.ToEulerXYZ();
 	eulerrot *= RADTODEG;
+
 }
 void CompTransform::SetRotation(Quat rot)
 {
@@ -235,6 +235,7 @@ void CompTransform::SetRotation(Quat rot)
 	rotation.z = rot.z;
 	eulerrot = rotation.ToEulerXYZ();
 	eulerrot *= RADTODEG;
+
 }
 
 float3 CompTransform::GetPosition()
