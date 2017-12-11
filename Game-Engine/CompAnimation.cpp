@@ -185,6 +185,8 @@ void CompAnimation::OnEditor()
 				for (int i = 0; i < animationclips.size(); i++)
 				{
 					ImGui::Text(animationclips[i]->name.c_str());
+				
+					ImGui::PushID(i);
 					if (ImGui::Checkbox("Loop", &animationclips[i]->Loop)) {}
 					if (ImGui::Checkbox("Actually Running", &animationclips[i]->ActuallyRunning)) 
 					{
@@ -199,6 +201,7 @@ void CompAnimation::OnEditor()
 					}
 					ImGui::DragFloat("Start Frame", &animationclips[i]->StartFrameTime, 0.01, 0, resourceAnim->duration);
 					ImGui::DragFloat("End Frame", &animationclips[i]->EndFrameTime, 0.01, 0, 60);
+					ImGui::PopID();
 					ImGui::Separator();
 				}
 			}
