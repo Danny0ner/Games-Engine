@@ -178,8 +178,10 @@ bool GeometryLoader::ImportSkeleton(const aiMesh * mesh, const char * outputfile
 
 			offsetmat.Decompose(scale,rot,pos);
 
+			Quat tmpRot(rot.x, rot.y, rot.z, rot.w);
+
 			Bone.AddArrayFloat("OffsetPos", &pos.x, 3);
-			Bone.AddArrayFloat("OffsetRot", &rot.x, 4);
+			Bone.AddArrayFloat("OffsetRot", &tmpRot.x, 4);
 			Bone.AddArrayFloat("OffsetScale", &scale.x, 3);
 
 			Bone.AddArray("Weights");
@@ -268,7 +270,9 @@ void GeometryLoader::LoadSkeleton(const char * inputFile, ResourceSkeleton * ske
 			scale.y = loadbone.GetFloat("OffsetScale", 1);
 			scale.z = loadbone.GetFloat("OffsetScale", 2);
 
-			tempbone->offsetmatrix = float4x4::FromTRS(pos, rot, scale);
+			tempbone->offsetmatrix = float4x4::FromQuat(rot);
+			tempbone->offsetmatrix = float4x4::Scale(scale, float3(0, 0, 0)) * tempbone->offsetmatrix;
+			tempbone->offsetmatrix.float4x4::SetTranslatePart(pos.x, pos.y, pos.z);
 			
 			for (int x = 0; x < loadbone.GetArraySize("Weights"); x++)
 			{

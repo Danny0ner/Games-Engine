@@ -5,6 +5,7 @@
 #include "MathGeo\Geometry\AABB.h"
 #include "ResourceMesh.h"
 #include "ResourceSkeleton.h"
+#include "Timer.h"
 
 struct DeformableMesh
 {
@@ -65,11 +66,15 @@ public:
 
 	void CreateDeformableMesh();
 	void ResetDeformableMesh();
-
+	void PlaceBones();
 public:
 	DeformableMesh* deformableMesh = nullptr;
 	bool drawdebug = false;
 	bool ChangingMesh = false;
 	ResourceMesh* resourceMesh = nullptr;
 	ResourceSkeleton* resourceskeleton = nullptr;
+	bool bonesplaceds = false;
+	Timer meshtimer;
+	bool meshtimerstart = false;
+	int frame = 0;
 };

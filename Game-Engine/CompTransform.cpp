@@ -16,7 +16,6 @@ CompTransform::CompTransform(float3 pos, float3 scale, Quat rot, ComponentType t
 	TransMatrix = float4x4::FromQuat(rot);
 	TransMatrix = float4x4::Scale(scale, float3(0, 0, 0)) * TransMatrix;
 	TransMatrix.float4x4::SetTranslatePart(pos.x, position.y, position.z);
-	TransMatrix = float4x4::FromTRS(pos, rot, scale);
 	localmatrix = TransMatrix;
 }
 

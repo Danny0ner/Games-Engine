@@ -42,21 +42,16 @@ GameObject::~GameObject()
 
 void GameObject::Update(float dt)
 {
-	for (int i = 0; i < childs.size(); i++)
-	{
-		/*if (childs[i]->deletingmyself == true)
-		{
-			DeleteChild(childs[i]);
-			delete childs[i];
-			App->editor->SelectGameObject(nullptr);
-		}*/
-		childs[i]->Update(dt);
-	}
-
 	for (int i = 0; i < components.size(); i++)
 	{
 		components[i]->Update(dt);
 	}
+
+	for (int i = 0; i < childs.size(); i++)
+	{
+		childs[i]->Update(dt);
+	}
+
 }
 
 void GameObject::AddChild(GameObject* child)

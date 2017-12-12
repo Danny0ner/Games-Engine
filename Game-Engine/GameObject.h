@@ -46,4 +46,5 @@ public:
 	bool Static = false;
 	bool deletingchilds = false;
 	bool deletingmyself = false;
+	bool FinishedCreated = false;
 };

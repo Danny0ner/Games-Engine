@@ -393,6 +393,9 @@
     <ClInclude Include="CompAnimation.h">
       <Filter>Sources\GameObject and Components</Filter>
     </ClInclude>
+    <ClInclude Include="CompBone.h">
+      <Filter>Sources\GameObject and Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleAudio.cpp">
@@ -600,6 +603,9 @@
       <Filter>Sources\Resources</Filter>
     </ClCompile>
     <ClCompile Include="CompAnimation.cpp">
+      <Filter>Sources\GameObject and Components</Filter>
+    </ClCompile>
+    <ClCompile Include="CompBone.cpp">
       <Filter>Sources\GameObject and Components</Filter>
     </ClCompile>
   </ItemGroup>

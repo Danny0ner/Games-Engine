@@ -8,6 +8,7 @@
 #include "Glew\include\glew.h"
 #include "MathGeo\Geometry\Triangle.h"
 #include "MathGeo\Math\float4x4.h"
+#include "CompBone.h"
 
 #include <vector>
 CompMesh::CompMesh() : Component(Component_Mesh)
@@ -22,70 +23,19 @@ CompMesh::~CompMesh()
 
 void CompMesh::Update(float dt)
 {
-	//for (uint i = 0; i < bones.size(); i++)
-	//{
 
-	//	float4x4 matrix = bones[i]->GetSystemTransform();
-	//	matrix = gameObject->GetComponent<C_Transform>()->GetTransform().Inverted() * matrix;
-	//	matrix = matrix * rBone->offset;
+	if (bonesplaceds == false)
+	{
+		if (resourceskeleton != nullptr)
+		{
+			PlaceBones();
+			bonesplaceds = true;
+		}
+	}
 
-	//	for (uint i = 0; i < rBone->numWeights; i++)
-	//	{
-	//		uint index = rBone->weightsIndex[i];
-	//		float3 originalV(&rMesh->vertices[index * 3]);
-
-	//		float3 toAdd = matrix.TransformPos(originalV);
-
-	//		animMesh->vertices[index * 3] += toAdd.x  * rBone->weights[i];
-	//		animMesh->vertices[index * 3 + 1] += toAdd.y * rBone->weights[i];
-	//		animMesh->vertices[index * 3 + 2] += toAdd.z * rBone->weights[i];
-
-	//		if (rMesh->buffersSize[R_Mesh::b_normals] > 0)
-	//		{
-	//			toAdd = matrix.TransformPos(float3(&rMesh->normals[index * 3]));
-	//			animMesh->normals[index * 3] += toAdd.x * rBone->weights[i];
-	//			animMesh->normals[index * 3 + 1] += toAdd.y * rBone->weights[i];
-	//			animMesh->normals[index * 3 + 2] += toAdd.z * rBone->weights[i];
-	//		}
-	//	}
-	//}
 	if (deformableMesh != nullptr)
 	{
-		GameObject* bone = nullptr;
 		ResetDeformableMesh();
-		for (int i = 0; i < resourceskeleton->MeshBones.size(); i++)
-		{
-			myGO->GetParent()->FindSiblingOrChildGameObjectWithName(resourceskeleton->MeshBones[i]->name.c_str(), bone);
-			
-			CompTransform* trans = (CompTransform*)bone->FindComponent(Component_Transform);
-			CompTransform* thistransform = (CompTransform*)myGO->FindComponent(Component_Transform);
-
-			float4x4 bonematrix =trans->GetTransMatrix();
-			bonematrix = thistransform->GetLocalMatrix().Inverted() * bonematrix;
-			bonematrix = bonematrix * resourceskeleton->MeshBones[i]->offsetmatrix;
-
-			for (int x = 0; x < resourceskeleton->MeshBones[i]->VertexWeights.size(); x++)
-			{
-				int actualvertexpos = (resourceskeleton->MeshBones[i]->VertexWeights[x]->VertexID);
-
-				float3 originalV(&resourceMesh->vertices[actualvertexpos*3]);
-				float3 toAdd = bonematrix.TransformPos(originalV);
-
-				deformableMesh->vertices[actualvertexpos*3] += toAdd.x * resourceskeleton->MeshBones[i]->VertexWeights[x]->Weight;
-				deformableMesh->vertices[actualvertexpos*3 + 1] += toAdd.y * resourceskeleton->MeshBones[i]->VertexWeights[x]->Weight;
-				deformableMesh->vertices[actualvertexpos*3 + 2] += toAdd.z * resourceskeleton->MeshBones[i]->VertexWeights[x]->Weight;
-
-				/*float3 originalN(&resourceMesh->normals[actualvertexpos]);
-				float3 toAddd = bonematrix.TransformPos(originalN);
-				deformableMesh->normals[actualvertexpos] += toAddd.x * resourceskeleton->MeshBones[i]->VertexWeights[x]->Weight;;
-				deformableMesh->normals[actualvertexpos+ 1] += toAddd.y * resourceskeleton->MeshBones[i]->VertexWeights[x]->Weight;;
-				deformableMesh->normals[actualvertexpos+ 2] += toAddd.z *  resourceskeleton->MeshBones[i]->VertexWeights[x]->Weight;*/
-			}
-		}
-		glBindBuffer(GL_ARRAY_BUFFER, deformableMesh->idVertices);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * deformableMesh->numVertices * 3, deformableMesh->vertices, GL_DYNAMIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, deformableMesh->idNormals);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * deformableMesh->numVertices * 3, deformableMesh->normals, GL_DYNAMIC_DRAW);
 	}
 }
 
@@ -267,5 +217,16 @@ void CompMesh::ResetDeformableMesh()
 	memcpy(deformableMesh->vertices, resourceMesh->vertices, deformableMesh->numVertices * 3 * sizeof(float));
 
 	memcpy(deformableMesh->normals, resourceMesh->normals, deformableMesh->numVertices * 3 * sizeof(float));
+}
+
+void CompMesh::PlaceBones()
+{
+	GameObject* bone = nullptr;
+	for (int i = 0; i < resourceskeleton->MeshBones.size(); i++)
+	{
+		myGO->GetParent()->FindSiblingOrChildGameObjectWithName(resourceskeleton->MeshBones[i]->name.c_str(), bone);
+		CompBone* tempbone = new CompBone(resourceskeleton->MeshBones[i], this);
+		bone->AddComponent(tempbone);
+	}
 }
 
