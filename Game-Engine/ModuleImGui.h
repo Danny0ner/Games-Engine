@@ -59,7 +59,8 @@ public:
 
 
 
-
+	ImVec2 AssetsWindow;
+	ImVec2 PlayButton;
 	float3 Temp = { 0,0,0 };
 	float3 Temp1 = { 1,0,0 };
 	float3 Temp2 = { 3,0,0 };

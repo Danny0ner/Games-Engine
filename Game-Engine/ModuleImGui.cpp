@@ -325,8 +325,9 @@ update_status ModuleImGui::PostUpdate(float dt)
 	void ModuleImGui::ShowControls(bool* p_open)
 	{
 		std::string temp = "TimerControls";
-
-		ImGui::Begin(temp.c_str(),0,ImGuiWindowFlags_AlwaysAutoResize);
+		ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+		ImGui::SetNextWindowPos(PlayButton);
+		ImGui::Begin(temp.c_str(),0,flags);
 			if (ImGui::Button("Play", ImVec2(40, 25)))
 			{
 				App->Play();

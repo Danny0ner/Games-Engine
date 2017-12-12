@@ -1,7 +1,6 @@
 #pragma once
 
 class Application;
-struct PhysBody3D;
 #include "JConfig.h"
 class Module
 {
@@ -76,7 +75,5 @@ public:
 	virtual void StopTimer() {
 		this->module_timer->Stop();
 	}
-	virtual void OnCollision(PhysBody3D* body1, PhysBody3D* body2)
-	{}
-
+	
 };

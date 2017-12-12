@@ -5128,7 +5128,7 @@ void ImGui::SetNextWindowPos(const ImVec2& pos, ImGuiCond cond)
 {
     ImGuiContext& g = *GImGui;
     g.SetNextWindowPosVal = pos;
-    g.SetNextWindowPosCond = cond ? cond : ImGuiCond_Always;
+    g.SetNextWindowPosCond = cond ? cond : ImGuiSetCond_Always;
 }
 
 void ImGui::SetNextWindowPosCenter(ImGuiCond cond)
