@@ -167,7 +167,7 @@ bool GeometryLoader::ImportSkeleton(const aiMesh * mesh, const char * outputfile
 		Configuration save;
 		//ResourceSkeleton* tmpskeleton = new ResourceSkeleton(0);
 		save.AddArray("SkeletonBones");
-		for (int i = 0; i < mesh->mNumBones; i++)
+		for (int i = 0; i < mesh->mNumBones; ++i)
 		{
 			Configuration Bone;
 			Bone.SetString("Name", mesh->mBones[i]->mName.C_Str());
@@ -177,12 +177,13 @@ bool GeometryLoader::ImportSkeleton(const aiMesh * mesh, const char * outputfile
 			aiMatrix4x4 offsetmat = mesh->mBones[i]->mOffsetMatrix;
 
 			offsetmat.Decompose(scale,rot,pos);
+
 			Bone.AddArrayFloat("OffsetPos", &pos.x, 3);
 			Bone.AddArrayFloat("OffsetRot", &rot.x, 4);
 			Bone.AddArrayFloat("OffsetScale", &scale.x, 3);
 
 			Bone.AddArray("Weights");
-			for (int r = 0; r < mesh->mBones[i]->mNumWeights; r++)
+			for (int r = 0; r < mesh->mBones[i]->mNumWeights; ++r)
 			{
 				Configuration VertexWeight;
 				VertexWeight.SetInt("VertexID", mesh->mBones[i]->mWeights[r].mVertexId);
@@ -263,14 +264,12 @@ void GeometryLoader::LoadSkeleton(const char * inputFile, ResourceSkeleton * ske
 			rot.y = loadbone.GetFloat("OffsetRot", 1);
 			rot.z = loadbone.GetFloat("OffsetRot", 2);
 			rot.w = loadbone.GetFloat("OffsetRot", 3);
-			scale.x = 1.0f;
-			scale.y = 1.0f;
-			scale.z = 1.0f;
+			scale.x = loadbone.GetFloat("OffsetScale", 0);
+			scale.y = loadbone.GetFloat("OffsetScale", 1);
+			scale.z = loadbone.GetFloat("OffsetScale", 2);
 
-			tempbone->offsetmatrix = float4x4::FromQuat(rot);
-			tempbone->offsetmatrix = float4x4::Scale(scale, float3(0, 0, 0)) * tempbone->offsetmatrix;
-			tempbone->offsetmatrix.float4x4::SetTranslatePart(pos.x, pos.y, pos.z);
-
+			tempbone->offsetmatrix = float4x4::FromTRS(pos, rot, scale);
+			
 			for (int x = 0; x < loadbone.GetArraySize("Weights"); x++)
 			{
 				VertexWeight* tempweight = new VertexWeight();
