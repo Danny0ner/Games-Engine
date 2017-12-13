@@ -23,132 +23,62 @@ CompAnimation::~CompAnimation()
 
 void CompAnimation::Update(float dt)
 {
+	PositionKey* actualposkey = nullptr;
+	PositionKey* nextposkey = nullptr;
+	RotationKey* actualrotkey = nullptr;
+	RotationKey* nextrotkey = nullptr;
+
 	GameObject* test = nullptr;
-	if (ActualClip != nullptr)
+
+	switch (AnimState)
 	{
-		animetime += dt;
-		animetime += TicksPerSecond / resourceAnim->duration;
-		if (animetime >= ActualClip->EndFrameTime) animetime = ActualClip->EndFrameTime;
-		for (int i = 0; i < resourceAnim->bones.size(); i++)
+	case A_PLAY:
+
+		if (ActualClip != nullptr)
 		{
-			myGO->FindSiblingOrChildGameObjectWithName(resourceAnim->bones[i]->name.c_str(), test);
-			PositionKey* actualposkey = nullptr;
-			PositionKey* nextposkey = nullptr;
-			for (int p = 0, a = 1; p < resourceAnim->bones[i]->positionkeys.size(); p++, a++)
+			animetime += dt;
+			animetime += TicksPerSecond / resourceAnim->duration;
+			if (animetime >= ActualClip->EndFrameTime) animetime = ActualClip->EndFrameTime;
+			for (int i = 0; i < resourceAnim->bones.size(); i++)
 			{
-				if (animetime == 0)
-				{
-					actualposkey = resourceAnim->bones[i]->positionkeys[0];
-					if (resourceAnim->bones[i]->positionkeys.size() > 1)
-					{
-						nextposkey = resourceAnim->bones[i]->positionkeys[1];
-					}
-					else
-					{
-						nextposkey = actualposkey;
-					}
-					break;
-				}
-				if (resourceAnim->bones[i]->positionkeys[p]->time < animetime)
-				{
-					actualposkey = resourceAnim->bones[i]->positionkeys[p];
-					if (resourceAnim->bones[i]->positionkeys.size() > 1 && a < resourceAnim->bones[i]->positionkeys.size())
-					{
-						nextposkey = resourceAnim->bones[i]->positionkeys[a];
-					}
-					else
-					{
-						nextposkey = resourceAnim->bones[i]->positionkeys[p];
-					}
-				}
-			}
-			RotationKey* actualrotkey = nullptr;
-			RotationKey* nextrotkey = nullptr;
-			for (int p = 0, a = 1; p < resourceAnim->bones[i]->rotationkeys.size(); p++, a++)
-			{
-				if (animetime == 0)
-				{
-					actualrotkey = resourceAnim->bones[i]->rotationkeys[0];
-					if (resourceAnim->bones[i]->rotationkeys.size() > 1)
-					{
-						nextrotkey = resourceAnim->bones[i]->rotationkeys[1];
-					}
-					else
-					{
-						nextrotkey = actualrotkey;
-					}
-					break;
-				}
-				if (resourceAnim->bones[i]->rotationkeys[p]->time < animetime)
-				{
-					actualrotkey = resourceAnim->bones[i]->rotationkeys[p];
-					if (resourceAnim->bones[i]->rotationkeys.size() > 1 && a < resourceAnim->bones[i]->rotationkeys.size())
-					{
-						nextrotkey = resourceAnim->bones[i]->rotationkeys[a];
-					}
-					else
-					{
-						nextrotkey = actualrotkey;
-					}
-				}
-			}
-			if (test != nullptr)
-			{
-				float time = 0;
-				CompTransform* trans = (CompTransform*)test->FindComponent(Component_Transform);
-				if (Interpolation == true)
-				{
-					if (actualposkey != nullptr && nextposkey != nullptr)
-					{
-						if (actualposkey == nextposkey)
-						{
-							trans->SetPosition(actualposkey->position);
-						}
-						else
-						{
-							time = (animetime - actualposkey->time) / (nextposkey->time - actualposkey->time);
-							float3 position = float3::Lerp(actualposkey->position, nextposkey->position, time);
-							trans->SetPosition(position);
-						}
-					}
-					if (actualrotkey != nullptr && nextrotkey != nullptr)
-					{
-						if (actualrotkey == nextrotkey)
-						{
-							trans->SetRotation(actualrotkey->rotation);
-						}
-						else
-						{
-							Quat ActualQuat = Quat(actualrotkey->rotation.x, actualrotkey->rotation.y, actualrotkey->rotation.z, actualrotkey->rotation.w);
-							Quat NextQuat = Quat(nextrotkey->rotation.x, nextrotkey->rotation.y, nextrotkey->rotation.z, nextrotkey->rotation.w);
+				myGO->FindSiblingOrChildGameObjectWithName(resourceAnim->bones[i]->name.c_str(), test);
 
-							time = (animetime - actualrotkey->time) / (nextrotkey->time - actualrotkey->time);
-							Quat rotation = ActualQuat.Slerp(NextQuat, time);
-							trans->SetRotation(rotation);
-						}
-					}
-				}
-				else
+				for (int p = 0, a = 1; p < resourceAnim->bones[i]->positionkeys.size(); p++, a++)
 				{
-					if (actualposkey != nullptr)
-					{
-						trans->SetPosition(actualposkey->position);
-					}
-
-					if (actualrotkey != nullptr)
-					{
-						trans->SetRotation(actualrotkey->rotation);
-					}
+					SetActualPositionKey(actualposkey, nextposkey, resourceAnim->bones[i], p);
+					
 				}
+				for (int p = 0, a = 1; p < resourceAnim->bones[i]->rotationkeys.size(); p++, a++)
+				{
+					SetActualRotationKey(actualrotkey, nextrotkey, resourceAnim->bones[i],p);
+				}
+				SetBone(test, actualposkey, nextposkey, actualrotkey, nextrotkey);
 			}
 			if (ActualClip->Loop == true)
 			{
 				if (animetime >= ActualClip->EndFrameTime) animetime = ActualClip->StartFrameTime;
 			}
 		}
+		
+
+		break;
+
+	case A_STOP:
+
+		animetime = 0.0f;
+
+		break;
+
+	case A_BLENDING:
+
+
+		break;
 	}
+
+	
 	if (drawdebug)	DrawDebug();
 }
+
 
 void CompAnimation::DrawDebug() const
 {
@@ -194,10 +124,21 @@ void CompAnimation::OnEditor()
 						if (ActualClip == animationclips[i])
 						{
 							ActualClip = nullptr;
+							
 						}
 						else
 						{
+							for (uint j = 0; j < animationclips.size(); j++)
+							{
+								if (j != i)
+								{
+									animationclips[j]->ActuallyRunning = false;
+
+								}
+							}
+							LastClip = ActualClip;
 							ActualClip = animationclips[i];
+
 						}
 					}
 					ImGui::DragFloat("Start Frame", &animationclips[i]->StartFrameTime, 0.01, 0, resourceAnim->duration);
@@ -254,6 +195,121 @@ void CompAnimation::AddResource(int uid)
 	TicksPerSecond = resourceAnim->ticksPerSec;
 	if (resourceAnim->duration / TicksPerSecond <= 1)
 		TicksPerSecond = 0;
+}
+
+void CompAnimation::SetBone(GameObject * Bone, PositionKey * ActualPos, PositionKey * NextPos, RotationKey * ActualRot, RotationKey * NextRot)
+{
+	if (Bone != nullptr)
+	{
+		float time = 0;
+		CompTransform* trans = (CompTransform*)Bone->FindComponent(Component_Transform);
+		if (Interpolation == true)
+		{
+			if (ActualPos != nullptr && NextPos != nullptr)
+			{
+				if (ActualPos == NextPos)
+				{
+					trans->SetPosition(ActualPos->position);
+				}
+				else
+				{
+					time = (animetime - ActualPos->time) / (NextPos->time - ActualPos->time);
+					float3 position = float3::Lerp(ActualPos->position, NextPos->position, time);
+					trans->SetPosition(position);
+				}
+			}
+			if (ActualRot != nullptr && NextRot != nullptr)
+			{
+				if (ActualRot == NextRot)
+				{
+					trans->SetRotation(ActualRot->rotation);
+				}
+				else
+				{
+
+					Quat ActualQuat = Quat(ActualRot->rotation.x, ActualRot->rotation.y, ActualRot->rotation.z, ActualRot->rotation.w);
+					Quat NextQuat = Quat(NextRot->rotation.x, NextRot->rotation.y, NextRot->rotation.z, NextRot->rotation.w);
+
+					time = (animetime - ActualRot->time) / (NextRot->time - ActualRot->time);
+					Quat rotation = ActualQuat.Slerp(NextQuat, time);
+					trans->SetRotation(rotation);
+				}
+			}
+		}
+		else
+		{
+			if (ActualPos != nullptr)
+			{
+				trans->SetPosition(ActualPos->position);
+			}
+
+			if (ActualRot != nullptr)
+			{
+				trans->SetRotation(ActualRot->rotation);
+			}
+		}
+	}
+
+
+}
+
+void CompAnimation::SetActualRotationKey(RotationKey * &Actual, RotationKey * &Next, Bone* bone, int p)
+{
+	if (animetime == 0)
+	{
+		Actual = bone->rotationkeys[0];
+		if (bone->rotationkeys.size() > 1)
+		{
+			Next = bone->rotationkeys[1];
+		}
+		else
+		{
+			Next = Actual;
+		}
+		
+	}
+	if (bone->rotationkeys[p]->time < animetime)
+	{
+		Actual = bone->rotationkeys[p];
+		if (bone->rotationkeys.size() > 1 && p+1 < bone->rotationkeys.size())
+		{
+			Next = bone->rotationkeys[p+1];
+		}
+		else
+		{
+			Next = bone->rotationkeys[p];
+		}
+	}
+
+}
+
+void CompAnimation::SetActualPositionKey(PositionKey * &Actual, PositionKey * &Next,Bone* bone, int p)
+{
+	if (animetime == 0)
+	{
+		Actual = bone->positionkeys[0];
+		if (bone->positionkeys.size() > 1)
+		{
+			Next = bone->positionkeys[1];
+		}
+		else
+		{
+			Next = Actual;
+		}
+		
+	}
+	if (bone->positionkeys[p]->time < animetime)
+	{
+		Actual = bone->positionkeys[p];
+		if (bone->positionkeys.size() > 1 && p+1 < bone->positionkeys.size())
+		{
+			Next = bone->positionkeys[p+1];
+		}
+		else
+		{
+			Next = bone->positionkeys[p];
+		}
+	}
 }
 
 ResourceAnimation * CompAnimation::GetResourceAnim()
