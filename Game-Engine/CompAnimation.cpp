@@ -8,6 +8,7 @@
 #include "MathGeo\Geometry\Triangle.h"
 #include "MathGeo\Math\float4x4.h"
 #include "CompTransform.h"
+#include "mmgr\mmgr.h"
 
 #include <vector>
 CompAnimation::CompAnimation() : Component(Component_Animation)

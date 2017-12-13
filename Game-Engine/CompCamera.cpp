@@ -4,7 +4,9 @@
 #include "ImGui\imgui.h"
 #include "Glew\include\glew.h"
 #include "MathGeo\Math\MathAll.h"
+#include "mmgr\mmgr.h"
 #include "Color.h"
+
 CompCamera::CompCamera(float3 pos, float3 front, float3 up, float nearPlaneDistance, float farPlaneDistance, float verticalFov, float aspectRatio, FrustumType type) : Component(Component_Camera)
 {
 	name = "Camera";

@@ -7,7 +7,7 @@
 #include "Assimp\include\scene.h" 
 #include "Assimp\include\postprocess.h" 
 #include "Assimp\include\cfileio.h"
-
+#include "mmgr\mmgr.h"
 #pragma comment (lib, "Assimp/libx86/assimp.lib")
 
 ResourcesManager::ResourcesManager(Application* app, bool startEnabled) : Module(app, startEnabled)

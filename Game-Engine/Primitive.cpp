@@ -2,6 +2,7 @@
 #include "Globals.h"
 #include "Glew\include\glew.h"
 #include "Primitive.h"
+#include "mmgr\mmgr.h"
 
 // ------------------------------------------------------------
 Primitive::Primitive() : color(White), wire(false), axis(false), type(PrimitiveTypes::Primitive_Point)

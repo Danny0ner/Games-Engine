@@ -6,6 +6,7 @@
 #include "MathGeo\Geometry\AABB.h"
 #include "ResourceAnimation.h"
 
+
 struct AnimationClip
 {
 	std::string name = "Animation Clip";
