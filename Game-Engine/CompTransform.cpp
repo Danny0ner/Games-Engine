@@ -41,11 +41,15 @@ void CompTransform::UpdatePositionMatrix()
 	eulerrot.x *= DEGTORAD;
 	eulerrot.y *= DEGTORAD;
 	eulerrot.z *= DEGTORAD;
+
 	rotation = Quat::FromEulerXYZ(eulerrot.x, eulerrot.y, eulerrot.z);
-	//TransMatrix = float4x4::FromQuat(rotation);
-	TransMatrix = float4x4::FromTRS(position, rotation, scale);
-	//TransMatrix = float4x4::Scale(scale, float3(0, 0, 0))* TransMatrix;
-	//TransMatrix.float4x4::SetTranslatePart(position.x, position.y, position.z);
+
+	TransMatrix = float4x4::FromQuat(rotation);
+	//TransMatrix = float4x4::FromTRS(position, rotation, scale);
+	TransMatrix = float4x4::Scale(scale, float3(0, 0, 0))* TransMatrix;
+
+	TransMatrix.float4x4::SetTranslatePart(position.x, position.y, position.z);
+	
 	eulerrot.x *= RADTODEG;
 	eulerrot.y *= RADTODEG;
 	eulerrot.z *= RADTODEG;
