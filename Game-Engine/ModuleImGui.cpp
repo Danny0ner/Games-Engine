@@ -280,6 +280,14 @@ update_status ModuleImGui::PostUpdate(float dt)
 			//Miliseconds PlotHistogram
 			sprintf_s(title, title_size, "Frame Miliseconds: %i", PerformanceData->Miliseconds_Per_Frame);
 			ImGui::PlotHistogram("##Frame Miliseconds", &Ms_Plot_Data[0], Ms_Plot_Data.size(), 0, title, 0.0f, 50.0f, ImVec2(310, 100));
+			ImGui::TextWrapped("ms_timer: %i", App->realtime.ms_timer.Read());
+			ImGui::TextWrapped("startup_timer: %.3fs", App->realtime.startup_timer.Read() / 1000.0f);
+			ImGui::TextWrapped("last_sec_frame_time: %i", App->realtime.last_sec_frame_time.Read());
+			ImGui::TextWrapped("dt: %.3f", App->realtime.dt);
+			ImGui::TextWrapped("prev_last_sec_frame_count: %i", App->realtime.prev_last_sec_frame_count);
+			ImGui::TextWrapped("last_sec_frame_count: %i", App->realtime.last_sec_frame_count);
+			ImGui::Separator();
+			ImGui::TextWrapped("GameSecSinceStartUp: %i s", App->gametime.GameStart.Read() / 1000);
 		}
 
 
@@ -327,6 +335,7 @@ update_status ModuleImGui::PostUpdate(float dt)
 		std::string temp = "TimerControls";
 		ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 		ImGui::SetNextWindowPos(PlayButton);
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
 		ImGui::Begin(temp.c_str(),0,flags);
 			if (ImGui::Button("Play", ImVec2(40, 25)))
 			{
@@ -348,16 +357,10 @@ update_status ModuleImGui::PostUpdate(float dt)
 				App->NextFrame();
 			}
 
-			ImGui::TextWrapped("ms_timer: %i", App->realtime.ms_timer.Read());
-			ImGui::TextWrapped("startup_timer: %.3fs", App->realtime.startup_timer.Read() / 1000.0f);
-			ImGui::TextWrapped("last_sec_frame_time: %i", App->realtime.last_sec_frame_time.Read());
-			ImGui::TextWrapped("dt: %.3f", App->realtime.dt);
-			ImGui::TextWrapped("prev_last_sec_frame_count: %i", App->realtime.prev_last_sec_frame_count);
-			ImGui::TextWrapped("last_sec_frame_count: %i", App->realtime.last_sec_frame_count);
-			ImGui::Separator();
-			ImGui::TextWrapped("GameSecSinceStartUp: %i s", App->gametime.GameStart.Read() / 1000);
+			
 
-		
+			
 			ImGui::End();
+			ImGui::PopStyleColor();
 	}
 

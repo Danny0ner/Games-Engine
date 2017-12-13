@@ -218,8 +218,8 @@ void ModuleRenderer3D::OnResize(int width, int height)
 	glViewport(0, 0, width, height);
 	App->window->SetWindowWidhtHeight(width, height);
 	App->camera->SetAspectRatio();
-	App->imgui->PlayButton.x = width / 2 - 90;
-	App->imgui->PlayButton.y = height / 20;
+	App->imgui->PlayButton.x = width / 2 - 115;
+	App->imgui->PlayButton.y = 20;
 	App->imgui->AssetsWindow.x = 0;
 	App->imgui->AssetsWindow.y = height - 260;
 }
