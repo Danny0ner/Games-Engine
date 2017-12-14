@@ -40,11 +40,14 @@ public:
 	void AddResource(int uid);
 
 	void SetBone(GameObject* Bone, PositionKey* ActualPos, PositionKey* NextPos, RotationKey* ActualRot, RotationKey* NextRot);
+	void SetBlendingBone(GameObject* Bone, PositionKey* ActualPos, PositionKey* NextPos, RotationKey* ActualRot, RotationKey* NextRot, float time);
 
-	void SetActualRotationKey(RotationKey* &Actual, RotationKey* &Next,Bone* bone, int p);
-	void SetActualPositionKey(PositionKey* &Actual, PositionKey* &Next, Bone* bone, int p);
+	void SetActualRotationKey(RotationKey* &Actual, RotationKey* &Next,Bone* bone, int p, float time);
+	void SetActualPositionKey(PositionKey* &Actual, PositionKey* &Next, Bone* bone, int p, float time);
 	ResourceAnimation * GetResourceAnim();
 public:
+	float blendingtime = 1.0f;
+	float blendtime = 0.0f;
 	float animetime = 0.0f;
 	bool drawdebug = false;
 	bool ChangingAnimation = false;
