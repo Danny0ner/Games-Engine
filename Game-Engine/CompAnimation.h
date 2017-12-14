@@ -46,7 +46,7 @@ public:
 	void SetActualPositionKey(PositionKey* &Actual, PositionKey* &Next, Bone* bone, int p, float time);
 	ResourceAnimation * GetResourceAnim();
 public:
-	float blendingtime = 1.0f;
+	float blendingtime = 0.5f;
 	float blendtime = 0.0f;
 	float animetime = 0.0f;
 	bool drawdebug = false;

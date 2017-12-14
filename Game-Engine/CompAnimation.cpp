@@ -136,6 +136,7 @@ void CompAnimation::OnEditor()
 			ImGui::DragFloat("AnimTime", &animetime, 0.01, 0, resourceAnim->duration);
 			ImGui::DragFloat("TicksPerSec", &TicksPerSecond, 0.01, 0, 60);
 			ImGui::Checkbox("Interpolation", &Interpolation);
+			ImGui::DragFloat("Blending Time", &blendingtime, 0.10, 0.1, 10);
 			if(ImGui::Button("Create Animation Clip",ImVec2(40, 25)))
 			{
 				AnimationClip* tempanimclip = new AnimationClip();
@@ -294,6 +295,7 @@ void CompAnimation::SetBone(GameObject * Bone, PositionKey * ActualPos, Position
 
 void CompAnimation::SetBlendingBone(GameObject * Bone, PositionKey * ActualPos, PositionKey * NextPos, RotationKey * ActualRot, RotationKey * NextRot, float time)
 {
+	time = time / blendingtime;
 	if (Bone != nullptr)
 	{
 		CompTransform* trans = (CompTransform*)Bone->FindComponent(Component_Transform);
