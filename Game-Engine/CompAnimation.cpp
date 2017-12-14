@@ -31,11 +31,12 @@ void CompAnimation::Update(float dt)
 	PositionKey* BLnextposkey = nullptr;
 	RotationKey* BLactualrotkey = nullptr;
 	RotationKey* BLnextrotkey = nullptr;
-
-
-
-
 	GameObject* test = nullptr;
+	Quat		actualRotation;
+	Quat		nextRotation;
+	float3		actualPosition;
+	float3		nextPosition;
+	CompTransform*	BoneTransform;
 
 	switch (AnimState)
 	{
@@ -60,7 +61,8 @@ void CompAnimation::Update(float dt)
 					SetActualRotationKey(actualrotkey, nextrotkey, resourceAnim->bones[i],p,animetime);
 				}
 
-				SetBone(test, actualposkey, nextposkey, actualrotkey, nextrotkey);
+				SetBonePosition(test, actualposkey, nextposkey);
+				SetBoneRotation(test, actualrotkey, nextrotkey);
 			}
 			if (ActualClip->Loop == true)
 			{
@@ -81,6 +83,8 @@ void CompAnimation::Update(float dt)
 	case A_BLENDING:
 
 		blendtime += dt;
+		animetime += dt;
+		animetime += TicksPerSecond / resourceAnim->duration;
 
 		for (int i = 0; i < resourceAnim->bones.size(); i++)
 		{
@@ -98,7 +102,19 @@ void CompAnimation::Update(float dt)
 				SetActualRotationKey(BLactualrotkey, BLnextrotkey, resourceAnim->bones[i], p, ActualClip->StartFrameTime);
 			}
 
-			SetBlendingBone(test, actualposkey, BLactualposkey, actualrotkey, BLactualrotkey,blendtime);
+			actualPosition = GetBonePosition(test, actualposkey, nextposkey);
+			actualRotation = GetBoneRotation(test, actualrotkey, nextrotkey);
+
+			nextPosition=GetBonePosition(test, BLactualposkey, BLnextposkey);
+			nextRotation=GetBoneRotation(test, BLactualrotkey, BLnextrotkey);
+
+			float3 position = float3::Lerp(actualPosition, nextPosition, blendtime/blendingtime);
+			Quat rotation = actualRotation.Slerp(nextRotation, blendtime/blendingtime);
+
+			BoneTransform = (CompTransform*)(test->FindComponent(Component_Transform));
+			BoneTransform->SetPosition(position);
+			BoneTransform->SetRotation(rotation);
+				
 		}
 
 		if (blendtime >= blendingtime)
@@ -237,61 +253,6 @@ void CompAnimation::AddResource(int uid)
 		TicksPerSecond = 0;
 }
 
-void CompAnimation::SetBone(GameObject * Bone, PositionKey * ActualPos, PositionKey * NextPos, RotationKey * ActualRot, RotationKey * NextRot)
-{
-	if (Bone != nullptr)
-	{
-		float time = 0;
-		CompTransform* trans = (CompTransform*)Bone->FindComponent(Component_Transform);
-		if (Interpolation == true)
-		{
-			if (ActualPos != nullptr && NextPos != nullptr)
-			{
-				if (ActualPos == NextPos)
-				{
-					trans->SetPosition(ActualPos->position);
-				}
-				else
-				{
-					time = (animetime - ActualPos->time) / (NextPos->time - ActualPos->time);
-					float3 position = float3::Lerp(ActualPos->position, NextPos->position, time);
-					trans->SetPosition(position);
-				}
-			}
-			if (ActualRot != nullptr && NextRot != nullptr)
-			{
-				if (ActualRot == NextRot)
-				{
-					trans->SetRotation(ActualRot->rotation);
-				}
-				else
-				{
-
-					Quat ActualQuat = Quat(ActualRot->rotation.x, ActualRot->rotation.y, ActualRot->rotation.z, ActualRot->rotation.w);
-					Quat NextQuat = Quat(NextRot->rotation.x, NextRot->rotation.y, NextRot->rotation.z, NextRot->rotation.w);
-
-					time = (animetime - ActualRot->time) / (NextRot->time - ActualRot->time);
-					Quat rotation = ActualQuat.Slerp(NextQuat, time);
-					trans->SetRotation(rotation);
-				}
-			}
-		}
-		else
-		{
-			if (ActualPos != nullptr)
-			{
-				trans->SetPosition(ActualPos->position);
-			}
-
-			if (ActualRot != nullptr)
-			{
-				trans->SetRotation(ActualRot->rotation);
-			}
-		}
-	}
-
-
-}
 
 void CompAnimation::SetBlendingBone(GameObject * Bone, PositionKey * ActualPos, PositionKey * NextPos, RotationKey * ActualRot, RotationKey * NextRot, float time)
 {
@@ -385,6 +346,150 @@ void CompAnimation::SetActualPositionKey(PositionKey * &Actual, PositionKey * &N
 		else
 		{
 			Next = bone->positionkeys[p];
+		}
+	}
+}
+
+void CompAnimation::SetBonePosition(GameObject * Bone, PositionKey * ActualPos, PositionKey * NextPos)
+{
+	if (Bone != nullptr)
+	{
+		float time = 0;
+		CompTransform* trans = (CompTransform*)Bone->FindComponent(Component_Transform);
+		if (Interpolation == true)
+		{
+			if (ActualPos != nullptr && NextPos != nullptr)
+			{
+				if (ActualPos == NextPos)
+				{
+					trans->SetPosition(ActualPos->position);
+				}
+				else
+				{
+					time = (animetime - ActualPos->time) / (NextPos->time - ActualPos->time);
+					float3 position = float3::Lerp(ActualPos->position, NextPos->position, time);
+					trans->SetPosition(position);
+				}
+			}
+		}
+		else
+		{
+			if (ActualPos != nullptr)
+			{
+				trans->SetPosition(ActualPos->position);
+			}
+		}
+	}
+
+}
+
+void CompAnimation::SetBoneRotation(GameObject * Bone, RotationKey * ActualRot, RotationKey * NextRot)
+{
+	if (Bone != nullptr)
+	{
+		float time = 0;
+		CompTransform* trans = (CompTransform*)Bone->FindComponent(Component_Transform);
+		if (Interpolation == true)
+		{
+			if (ActualRot != nullptr && NextRot != nullptr)
+			{
+				if (ActualRot == NextRot)
+				{
+					trans->SetRotation(ActualRot->rotation);
+				}
+				else
+				{
+
+					Quat ActualQuat = Quat(ActualRot->rotation.x, ActualRot->rotation.y, ActualRot->rotation.z, ActualRot->rotation.w);
+					Quat NextQuat = Quat(NextRot->rotation.x, NextRot->rotation.y, NextRot->rotation.z, NextRot->rotation.w);
+
+					time = (animetime - ActualRot->time) / (NextRot->time - ActualRot->time);
+					Quat rotation = ActualQuat.Slerp(NextQuat, time);
+					trans->SetRotation(rotation);
+				}
+			}
+		}
+		else
+		{
+
+			if (ActualRot != nullptr)
+			{
+				trans->SetRotation(ActualRot->rotation);
+			}
+		}
+	}
+
+}
+
+float3 CompAnimation::GetBonePosition(GameObject * Bone, PositionKey * ActualPos, PositionKey * NextPos)
+{
+	if (Bone != nullptr)
+	{
+		float time = 0;
+		CompTransform* trans = (CompTransform*)Bone->FindComponent(Component_Transform);
+		if (Interpolation == true)
+		{
+			if (ActualPos != nullptr && NextPos != nullptr)
+			{
+				if (ActualPos == NextPos)
+				{
+					return ActualPos->position;
+				}
+				else
+				{
+					time = (animetime - ActualPos->time) / (NextPos->time - ActualPos->time);
+					float3 position = float3::Lerp(ActualPos->position, NextPos->position, time);
+					return position;
+				}
+			}
+		}
+		else
+		{
+			if (ActualPos != nullptr)
+			{
+				return ActualPos->position;
+			}
+		}
+	}
+}
+
+
+Quat CompAnimation::GetBoneRotation(GameObject * Bone, RotationKey * ActualRot, RotationKey * NextRot)
+{
+	if (Bone != nullptr)
+	{
+		float time = 0;
+		CompTransform* trans = (CompTransform*)Bone->FindComponent(Component_Transform);
+		if (Interpolation == true)
+		{
+			if (ActualRot != nullptr && NextRot != nullptr)
+			{
+				if (ActualRot == NextRot)
+				{
+					Quat finalQuat = Quat(ActualRot->rotation.x, ActualRot->rotation.y, ActualRot->rotation.z, ActualRot->rotation.w);
+					return  finalQuat;
+				}
+				else
+				{
+
+					Quat ActualQuat = Quat(ActualRot->rotation.x, ActualRot->rotation.y, ActualRot->rotation.z, ActualRot->rotation.w);
+					Quat NextQuat = Quat(NextRot->rotation.x, NextRot->rotation.y, NextRot->rotation.z, NextRot->rotation.w);
+
+					time = (animetime - ActualRot->time) / (NextRot->time - ActualRot->time);
+					Quat rotation = ActualQuat.Slerp(NextQuat, time);
+					return rotation;
+					
+				}
+			}
+		}
+		else
+		{
+
+			if (ActualRot != nullptr)
+			{
+				Quat finalQuat = Quat(ActualRot->rotation.x, ActualRot->rotation.y, ActualRot->rotation.z, ActualRot->rotation.w);
+				return  finalQuat;
+			}
 		}
 	}
 }
