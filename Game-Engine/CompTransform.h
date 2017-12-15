@@ -24,6 +24,7 @@ public:
 	void SetRotation(float4 rot);
 	void SetRotation(Quat rot);
 	float3 GetPosition();
+	float3 GetScale();
 	float3 GetRotation();
 	float4x4 GetLocalMatrix();
 private:

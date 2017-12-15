@@ -86,30 +86,33 @@ void CompAnimation::Update(float dt)
 		animetime += dt;
 		animetime += TicksPerSecond / resourceAnim->duration;
 
+		nextanimetime += dt;
+		nextanimetime += TicksPerSecond / resourceAnim->duration;
+
 		for (int i = 0; i < resourceAnim->bones.size(); i++)
 		{
 			myGO->FindSiblingOrChildGameObjectWithName(resourceAnim->bones[i]->name.c_str(), test);
 
-			for (int p = 0, a = 1; p < resourceAnim->bones[i]->positionkeys.size(); p++, a++)
+			for (int p = 0; p < resourceAnim->bones[i]->positionkeys.size(); p++)
 			{
 				SetActualPositionKey(actualposkey, nextposkey, resourceAnim->bones[i], p,animetime);
-				SetActualPositionKey(BLactualposkey, BLnextposkey, resourceAnim->bones[i], p, ActualClip->StartFrameTime);
+				SetActualPositionKey(BLactualposkey, BLnextposkey, resourceAnim->bones[i], p, nextanimetime);
 
 			}
-			for (int p = 0, a = 1; p < resourceAnim->bones[i]->rotationkeys.size(); p++, a++)
+			for (int p = 0; p < resourceAnim->bones[i]->rotationkeys.size(); p++)
 			{
 				SetActualRotationKey(actualrotkey, nextrotkey, resourceAnim->bones[i], p,animetime);
-				SetActualRotationKey(BLactualrotkey, BLnextrotkey, resourceAnim->bones[i], p, ActualClip->StartFrameTime);
+				SetActualRotationKey(BLactualrotkey, BLnextrotkey, resourceAnim->bones[i], p, nextanimetime);
 			}
 
-			actualPosition = GetBonePosition(test, actualposkey, nextposkey);
-			actualRotation = GetBoneRotation(test, actualrotkey, nextrotkey);
+			actualPosition = GetBonePosition(test, actualposkey, nextposkey, animetime);
+			actualRotation = GetBoneRotation(test, actualrotkey, nextrotkey, animetime);
 
-			nextPosition=GetBonePosition(test, BLactualposkey, BLnextposkey);
-			nextRotation=GetBoneRotation(test, BLactualrotkey, BLnextrotkey);
+			nextPosition = GetBonePosition(test, BLactualposkey, BLnextposkey, nextanimetime);
+			nextRotation = GetBoneRotation(test, BLactualrotkey, BLnextrotkey, nextanimetime);
 
-			float3 position = float3::Lerp(actualPosition, nextPosition, blendtime/blendingtime);
-			Quat rotation = actualRotation.Slerp(nextRotation, blendtime/blendingtime);
+			float3 position = float3::Lerp(actualPosition, nextPosition, (blendtime/blendingtime));
+			Quat rotation = Quat::Slerp(actualRotation,nextRotation, (blendtime / blendingtime));
 
 			BoneTransform = (CompTransform*)(test->FindComponent(Component_Transform));
 			BoneTransform->SetPosition(position);
@@ -117,12 +120,21 @@ void CompAnimation::Update(float dt)
 				
 		}
 
+		if (animetime >= LastClip->EndFrameTime)
+		{
+			animetime = LastClip->StartFrameTime;
+		}
+		if (nextanimetime >= ActualClip->EndFrameTime)
+		{
+			nextanimetime = ActualClip->StartFrameTime;
+		}
+
 		if (blendtime >= blendingtime)
 		{
 			LastClip = nullptr;
 			blendtime = 0.0f;
 			AnimState = A_PLAY;
-			animetime = ActualClip->StartFrameTime;
+			animetime = nextanimetime;
 		}
 
 
@@ -194,6 +206,7 @@ void CompAnimation::OnEditor()
 							LastClip = ActualClip;
 							ActualClip = animationclips[i];
 							AnimState = A_BLENDING;
+							nextanimetime = ActualClip->StartFrameTime;
 
 						}
 					}
@@ -421,7 +434,7 @@ void CompAnimation::SetBoneRotation(GameObject * Bone, RotationKey * ActualRot, 
 
 }
 
-float3 CompAnimation::GetBonePosition(GameObject * Bone, PositionKey * ActualPos, PositionKey * NextPos)
+float3 CompAnimation::GetBonePosition(GameObject * Bone, PositionKey * ActualPos, PositionKey * NextPos, float timeanim)
 {
 	if (Bone != nullptr)
 	{
@@ -437,7 +450,7 @@ float3 CompAnimation::GetBonePosition(GameObject * Bone, PositionKey * ActualPos
 				}
 				else
 				{
-					time = (animetime - ActualPos->time) / (NextPos->time - ActualPos->time);
+					time = (timeanim - ActualPos->time) / (NextPos->time - ActualPos->time);
 					float3 position = float3::Lerp(ActualPos->position, NextPos->position, time);
 					return position;
 				}
@@ -454,7 +467,7 @@ float3 CompAnimation::GetBonePosition(GameObject * Bone, PositionKey * ActualPos
 }
 
 
-Quat CompAnimation::GetBoneRotation(GameObject * Bone, RotationKey * ActualRot, RotationKey * NextRot)
+Quat CompAnimation::GetBoneRotation(GameObject * Bone, RotationKey * ActualRot, RotationKey * NextRot, float timeanim)
 {
 	if (Bone != nullptr)
 	{
@@ -475,7 +488,7 @@ Quat CompAnimation::GetBoneRotation(GameObject * Bone, RotationKey * ActualRot, 
 					Quat ActualQuat = Quat(ActualRot->rotation.x, ActualRot->rotation.y, ActualRot->rotation.z, ActualRot->rotation.w);
 					Quat NextQuat = Quat(NextRot->rotation.x, NextRot->rotation.y, NextRot->rotation.z, NextRot->rotation.w);
 
-					time = (animetime - ActualRot->time) / (NextRot->time - ActualRot->time);
+					time = (timeanim - ActualRot->time) / (NextRot->time - ActualRot->time);
 					Quat rotation = ActualQuat.Slerp(NextQuat, time);
 					return rotation;
 					

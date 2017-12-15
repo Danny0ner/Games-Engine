@@ -248,6 +248,11 @@ float3 CompTransform::GetPosition()
 	return position;
 }
 
+float3 CompTransform::GetScale()
+{
+	return scale;
+}
+
 float3 CompTransform::GetRotation()
 {
 

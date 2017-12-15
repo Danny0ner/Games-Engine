@@ -37,6 +37,7 @@ public:
 	void DrawSkeletonDebug();
 	int GetUID();
 	float3 GetPosition();
+	float3 GetScale();
 protected:
 	int uid;
 	GameObject* parent;

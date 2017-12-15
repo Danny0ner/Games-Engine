@@ -47,14 +47,15 @@ public:
 	void SetBonePosition(GameObject* Bone, PositionKey* ActualPos, PositionKey* NextPos);
 	void SetBoneRotation(GameObject* Bone, RotationKey* ActualRot, RotationKey* NextRot);
 
-	float3 GetBonePosition(GameObject* Bone, PositionKey* ActualPos, PositionKey* NextPos);
-	Quat GetBoneRotation(GameObject* Bone, RotationKey* ActualRot, RotationKey* NextRot);
+	float3 GetBonePosition(GameObject* Bone, PositionKey* ActualPos, PositionKey* NextPos, float time);
+	Quat GetBoneRotation(GameObject* Bone, RotationKey* ActualRot, RotationKey* NextRot, float time);
 
 	ResourceAnimation * GetResourceAnim();
 public:
 	float blendingtime = 0.5f;
 	float blendtime = 0.0f;
 	float animetime = 0.0f;
+	float nextanimetime = 0.0f;
 	bool drawdebug = false;
 	bool ChangingAnimation = false;
 	bool Interpolation = true;
