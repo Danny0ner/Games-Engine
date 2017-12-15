@@ -63,7 +63,9 @@ void CompTransform::UpdatePositionMatrix()
 		CompTransform* transf = dynamic_cast<CompTransform*>(GO->FindComponent(Component_Transform));
 		
 		if(transf != nullptr) TransMatrix =transf->GetTransMatrix() * TransMatrix;
+
 	}
+
 	needToUpdate = false;
 	UpdateChildsTransMatrix();
 }
@@ -241,6 +243,11 @@ void CompTransform::SetRotation(Quat rot)
 	eulerrot = rotation.ToEulerXYZ();
 	eulerrot *= RADTODEG;
 
+}
+
+void CompTransform::SetScale(float3 scale)
+{
+	this->scale = scale;
 }
 
 float3 CompTransform::GetPosition()

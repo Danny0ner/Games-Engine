@@ -60,12 +60,25 @@ void CompMesh::DrawDebug() const
 {
 	if (resourceMesh->idNormals > 0)
 	{
-		for (int i = 0; i < resourceMesh->numVertices * 3; i += 3)
+		if (deformableMesh == nullptr)
 		{
-			pLine vNormal(resourceMesh->vertices[i], resourceMesh->vertices[i + 1], resourceMesh->vertices[i + 2], 
-				resourceMesh->vertices[i] + resourceMesh->normals[i], resourceMesh->vertices[i + 1] + resourceMesh->normals[i + 1], resourceMesh->vertices[i + 2] + resourceMesh->normals[i + 2]);
-			vNormal.color = {1.0f, 0.85f, 0.0f};
-			vNormal.Render();
+			for (int i = 0; i < resourceMesh->numVertices * 3; i += 3)
+			{
+				pLine vNormal(resourceMesh->vertices[i], resourceMesh->vertices[i + 1], resourceMesh->vertices[i + 2],
+					resourceMesh->vertices[i] + resourceMesh->normals[i], resourceMesh->vertices[i + 1] + resourceMesh->normals[i + 1], resourceMesh->vertices[i + 2] + resourceMesh->normals[i + 2]);
+				vNormal.color = { 1.0f, 0.85f, 0.0f };
+				vNormal.Render();
+			}
+		}
+		else
+		{
+			for (int i = 0; i < deformableMesh->numVertices * 3; i += 3)
+			{
+				pLine vNormal(deformableMesh->vertices[i], deformableMesh->vertices[i + 1], deformableMesh->vertices[i + 2],
+					deformableMesh->vertices[i] + deformableMesh->normals[i], deformableMesh->vertices[i + 1] + deformableMesh->normals[i + 1], deformableMesh->vertices[i + 2] + deformableMesh->normals[i + 2]);
+				vNormal.color = { 1.0f, 0.85f, 0.0f };
+				vNormal.Render();
+			}
 		}
 	}
 
@@ -233,6 +246,11 @@ void CompMesh::ResetDeformableMesh()
 
 void CompMesh::PlaceBones()
 {
+
+	CompTransform* trans = (CompTransform*)myGO->FindComponent(Component_Transform);
+	trans->SetScale(float3(0.03f, 0.03f, 0.03f));
+	trans->UpdatePositionMatrix();
+
 	GameObject* bone = nullptr;
 	for (int i = 0; i < resourceskeleton->MeshBones.size(); i++)
 	{

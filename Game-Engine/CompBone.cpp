@@ -51,37 +51,31 @@ void CompBone::Update(float dt)
 			MeshToDeform->deformableMesh->normals[actualvertexpos * 3 + 2] += toAddd.z *  actualbone->VertexWeights[x]->Weight;
 
 		}
-		if (getMyGO()->childs.size() == 0)
-		{
-			glBindBuffer(GL_ARRAY_BUFFER, MeshToDeform->deformableMesh->idVertices);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * MeshToDeform->deformableMesh->numVertices * 3, MeshToDeform->deformableMesh->vertices, GL_DYNAMIC_DRAW);
-			glBindBuffer(GL_ARRAY_BUFFER, MeshToDeform->deformableMesh->idNormals);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * MeshToDeform->deformableMesh->numVertices * 3, MeshToDeform->deformableMesh->normals, GL_DYNAMIC_DRAW);
-		}
+
+		glBindBuffer(GL_ARRAY_BUFFER, MeshToDeform->deformableMesh->idVertices);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * MeshToDeform->deformableMesh->numVertices * 3, MeshToDeform->deformableMesh->vertices, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, MeshToDeform->deformableMesh->idNormals);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * MeshToDeform->deformableMesh->numVertices * 3, MeshToDeform->deformableMesh->normals, GL_DYNAMIC_DRAW);
+
+	}
+	if (drawdebug)
+	{
+		DebugDraw();
 	}
 }
 
 void CompBone::OnEditor()
 {
-	//if (ImGui::TreeNodeEx("Material", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
-	//{
-	//	ImGui::Text(name.c_str());
+	if (ImGui::TreeNodeEx("Material", ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		for (int i = 0; i < actualbone->VertexWeights.size(); i++)
+		{
+			ImGui::Text("vertex ID %i , Bone Weight %f", actualbone->VertexWeights[i]->VertexID, actualbone->VertexWeights[i]->Weight);
+		}
+		ImGui::Checkbox("Debugdraw", &drawdebug);
 
-	//	if (resourceTex != nullptr)
-	//	{
-	//		ImGui::Text("Texture ID: %i", resourceTex->textureID);
-	//		ImGui::Text("Resource ID: %i", resourceTex->GetUID());
-	//		ImGui::Text("Resource reference counting: %i", resourceTex->GetReferenceCount());
-	//		ImGui::Image((ImTextureID)resourceTex->textureID, ImVec2(124, 124));
-	//	}
-	//	if (ImGui::BeginMenu("Change Texture", &changingtexture))
-	//	{
-	//		App->resources->ShowTextureResources(this);
-	//		ImGui::EndMenu();
-	//	}
-
-	//	ImGui::TreePop();
-	//}
+	ImGui::TreePop();
+	}
 }
 
 void CompBone::OnSave(Configuration & data) const
@@ -91,4 +85,26 @@ void CompBone::OnSave(Configuration & data) const
 
 void CompBone::OnLoad(Configuration & data)
 {
+}
+
+void CompBone::DebugDraw() const
+{
+	CompTransform* tmpTrans = (CompTransform*)MeshToDeform->getMyGO()->FindComponent(Component_Transform);
+	glPushMatrix();
+	if (tmpTrans != nullptr)
+	{
+		glMultMatrixf(tmpTrans->GetTransMatrix().Transposed().ptr());
+	}
+	for (int i = 0; i < actualbone->VertexWeights.size(); i++)
+	{
+		glColor3f(actualbone->VertexWeights[i]->Weight, 1.0f - actualbone->VertexWeights[i]->Weight, 0.0f);
+		int ind = actualbone->VertexWeights[i]->VertexID;
+		float3 vertex(&MeshToDeform->deformableMesh->vertices[ind * 3]);
+		glPointSize(5.0f);
+		glBegin(GL_POINTS);
+		glVertex3f(vertex.x, vertex.y, vertex.z);
+		glEnd();
+	}
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glPopMatrix();
 }

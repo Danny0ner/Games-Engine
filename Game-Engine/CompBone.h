@@ -22,6 +22,7 @@ public:
 	void OnSave(Configuration& data) const;
 	void OnLoad(Configuration& data);
 
+	void DebugDraw() const;
 	//void AddResourceByName(std::string filename);
 	//void AddResource(int uid);
 

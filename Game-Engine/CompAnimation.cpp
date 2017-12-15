@@ -203,11 +203,13 @@ void CompAnimation::OnEditor()
 
 								}
 							}
-							LastClip = ActualClip;
-							ActualClip = animationclips[i];
-							AnimState = A_BLENDING;
-							nextanimetime = ActualClip->StartFrameTime;
-
+							if (ActualClip != nullptr)
+							{
+								LastClip = ActualClip;
+								ActualClip = animationclips[i];
+								AnimState = A_BLENDING;
+								nextanimetime = ActualClip->StartFrameTime;
+							}
 						}
 					}
 					ImGui::DragFloat("Start Frame", &animationclips[i]->StartFrameTime, 0.01, 0, resourceAnim->duration);
