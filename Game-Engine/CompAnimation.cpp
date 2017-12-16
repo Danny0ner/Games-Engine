@@ -30,16 +30,8 @@ void CompAnimation::Update(float dt)
 	PositionKey* nextposkey = nullptr;
 	RotationKey* actualrotkey = nullptr;
 	RotationKey* nextrotkey = nullptr;
-	PositionKey* BLactualposkey = nullptr;
-	PositionKey* BLnextposkey = nullptr;
-	RotationKey* BLactualrotkey = nullptr;
-	RotationKey* BLnextrotkey = nullptr;
+
 	GameObject* test = nullptr;
-	Quat		actualRotation;
-	Quat		nextRotation;
-	float3		actualPosition;
-	float3		nextPosition;
-	CompTransform*	BoneTransform;
 
 	switch (AnimState)
 	{
@@ -85,6 +77,12 @@ void CompAnimation::Update(float dt)
 
 	case A_BLENDING:
 
+		PositionKey* BLactualposkey = nullptr;
+		PositionKey* BLnextposkey = nullptr;
+
+		RotationKey* BLactualrotkey = nullptr;
+		RotationKey* BLnextrotkey = nullptr;
+
 		blendtime += dt;
 		animetime += dt;
 		animetime += TicksPerSecond / resourceAnim->duration;
@@ -108,16 +106,16 @@ void CompAnimation::Update(float dt)
 				SetActualRotationKey(BLactualrotkey, BLnextrotkey, resourceAnim->bones[i], p, nextanimetime);
 			}
 
-			actualPosition = GetBonePosition(test, actualposkey, nextposkey, animetime);
-			actualRotation = GetBoneRotation(test, actualrotkey, nextrotkey, animetime);
+			float3 actualPosition = GetBonePosition(test, actualposkey, nextposkey, animetime);
+			Quat actualRotation = GetBoneRotation(test, actualrotkey, nextrotkey, animetime);
 
-			nextPosition = GetBonePosition(test, BLactualposkey, BLnextposkey, nextanimetime);
-			nextRotation = GetBoneRotation(test, BLactualrotkey, BLnextrotkey, nextanimetime);
+			float3 nextPosition = GetBonePosition(test, BLactualposkey, BLnextposkey, nextanimetime);
+			Quat nextRotation = GetBoneRotation(test, BLactualrotkey, BLnextrotkey, nextanimetime);
 
 			float3 position = float3::Lerp(actualPosition, nextPosition, (blendtime/blendingtime));
 			Quat rotation = Quat::Slerp(actualRotation,nextRotation, (blendtime / blendingtime));
 
-			BoneTransform = (CompTransform*)(test->FindComponent(Component_Transform));
+			CompTransform* BoneTransform = (CompTransform*)(test->FindComponent(Component_Transform));
 			BoneTransform->SetPosition(position);
 			BoneTransform->SetRotation(rotation);
 				
