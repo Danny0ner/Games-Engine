@@ -19,6 +19,7 @@ struct AnimationClip
 	float StartFrameTime = 0.0f;
 	float EndFrameTime = 0.0f;
 	bool ActuallyRunning = false;
+	bool finished = true;
 };
 
 class CompAnimation : public Component
@@ -51,6 +52,8 @@ public:
 	Quat GetBoneRotation(GameObject* Bone, RotationKey* ActualRot, RotationKey* NextRot, float time);
 
 	ResourceAnimation * GetResourceAnim();
+
+	void AnimationMoves(); //Only for the demo
 public:
 	float blendingtime = 0.5f;
 	float blendtime = 0.0f;

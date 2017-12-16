@@ -24,8 +24,56 @@ CompAnimation::~CompAnimation()
 	}
 }
 
+
+void CompAnimation::AnimationMoves()
+{
+	if (animationclips[0] != nullptr && animationclips[1] != nullptr && animationclips[2] != nullptr)
+	{
+		if (animationclips[2]->finished == true)
+		{
+			if (ActualClip == animationclips[2])
+			{
+				LastClip = ActualClip;
+				ActualClip = animationclips[0];
+				AnimState = A_BLENDING;
+				nextanimetime = ActualClip->StartFrameTime;
+			}
+
+			if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+			{
+				LastClip = ActualClip;
+				ActualClip = animationclips[1];
+				AnimState = A_BLENDING;
+				nextanimetime = ActualClip->StartFrameTime;
+			}
+			if (App->input->GetKey(SDL_SCANCODE_2) == KEY_UP)
+			{
+				LastClip = ActualClip;
+				ActualClip = animationclips[0];
+				AnimState = A_BLENDING;
+				nextanimetime = ActualClip->StartFrameTime;
+			}
+		}
+		if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+		{
+			if (animationclips[2]->finished == true)
+			{
+				LastClip = ActualClip;
+				ActualClip = animationclips[2];
+				AnimState = A_BLENDING;
+				nextanimetime = ActualClip->StartFrameTime;
+				ActualClip->finished = false;
+			}
+		}
+	}
+}
+
+
+
 void CompAnimation::Update(float dt)
 {
+	AnimationMoves();
+
 	PositionKey* actualposkey = nullptr;
 	PositionKey* nextposkey = nullptr;
 	RotationKey* actualrotkey = nullptr;
@@ -36,7 +84,7 @@ void CompAnimation::Update(float dt)
 	switch (AnimState)
 	{
 	case A_PLAY:
-
+		
 		if (ActualClip != nullptr)
 		{
 			animetime += dt;
@@ -59,9 +107,22 @@ void CompAnimation::Update(float dt)
 				SetBonePosition(test, actualposkey, nextposkey);
 				SetBoneRotation(test, actualrotkey, nextrotkey);
 			}
-			if (ActualClip->Loop == true)
+			
+			if (animetime >= ActualClip->EndFrameTime)
 			{
-				if (animetime >= ActualClip->EndFrameTime) animetime = ActualClip->StartFrameTime;
+				if (ActualClip->Loop == true)
+				{
+					animetime = ActualClip->StartFrameTime;
+					ActualClip->finished = true;
+				}
+				else
+				{
+					ActualClip->finished = true;
+				}
+			}
+			else
+			{
+				ActualClip->finished = false;
 			}
 		}
 		
