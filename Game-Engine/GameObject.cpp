@@ -162,7 +162,7 @@ void GameObject::DrawSkeletonDebug()
 {
 	for (int i = 0; i < childs.size(); i++)
 	{
-		pLine vLine(GetPosition().x, GetPosition().y, GetPosition().z, childs[i]->GetPosition().x, childs[i]->GetPosition().y, childs[i]->GetPosition().z);
+		pLine vLine(GetPosition().x* GetScale().x, GetPosition().y* GetScale().y, GetPosition().z* GetScale().z, childs[i]->GetPosition().x * childs[i]->GetScale().x, childs[i]->GetPosition().y * childs[i]->GetScale().y, childs[i]->GetPosition().z* childs[i]->GetScale().z);
 		vLine.color = { 1.0f, 0.85f, 0.0f };
 		vLine.Render();
 		for (int x = 0; x < childs[i]->childs.size(); x++)

@@ -29,41 +29,35 @@ void CompAnimation::AnimationMoves()
 {
 	if (animationclips[0] != nullptr && animationclips[1] != nullptr && animationclips[2] != nullptr)
 	{
-		if (animationclips[2]->finished == true)
+		if (ActualClip == animationclips[2] && ActualClip->finished == true)
 		{
-			if (ActualClip == animationclips[2])
-			{
-				LastClip = ActualClip;
-				ActualClip = animationclips[0];
-				AnimState = A_BLENDING;
-				nextanimetime = ActualClip->StartFrameTime;
-			}
+			LastClip = ActualClip;
+			ActualClip = animationclips[0];
+			AnimState = A_BLENDING;
+			nextanimetime = ActualClip->StartFrameTime;
+		}
 
-			if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
-			{
-				LastClip = ActualClip;
-				ActualClip = animationclips[1];
-				AnimState = A_BLENDING;
-				nextanimetime = ActualClip->StartFrameTime;
-			}
-			if (App->input->GetKey(SDL_SCANCODE_2) == KEY_UP)
-			{
-				LastClip = ActualClip;
-				ActualClip = animationclips[0];
-				AnimState = A_BLENDING;
-				nextanimetime = ActualClip->StartFrameTime;
-			}
+		if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+		{
+			LastClip = ActualClip;
+			ActualClip = animationclips[1];
+			AnimState = A_BLENDING;
+			nextanimetime = ActualClip->StartFrameTime;
+		}
+		if (App->input->GetKey(SDL_SCANCODE_2) == KEY_UP)
+		{
+			LastClip = ActualClip;
+			ActualClip = animationclips[0];
+			AnimState = A_BLENDING;
+			nextanimetime = ActualClip->StartFrameTime;
 		}
 		if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 		{
-			if (animationclips[2]->finished == true)
-			{
-				LastClip = ActualClip;
-				ActualClip = animationclips[2];
-				AnimState = A_BLENDING;
-				nextanimetime = ActualClip->StartFrameTime;
-				ActualClip->finished = false;
-			}
+			LastClip = ActualClip;
+			ActualClip = animationclips[2];
+			AnimState = A_BLENDING;
+			nextanimetime = ActualClip->StartFrameTime;
+			ActualClip->finished = false;
 		}
 	}
 }
@@ -72,138 +66,141 @@ void CompAnimation::AnimationMoves()
 
 void CompAnimation::Update(float dt)
 {
-	AnimationMoves();
-
-	PositionKey* actualposkey = nullptr;
-	PositionKey* nextposkey = nullptr;
-	RotationKey* actualrotkey = nullptr;
-	RotationKey* nextrotkey = nullptr;
-
-	GameObject* test = nullptr;
-
-	switch (AnimState)
+	if (App->GetGameStatus() == GameStatus::PLAY)
 	{
-	case A_PLAY:
-		
-		if (ActualClip != nullptr)
+		AnimationMoves();
+
+		PositionKey* actualposkey = nullptr;
+		PositionKey* nextposkey = nullptr;
+		RotationKey* actualrotkey = nullptr;
+		RotationKey* nextrotkey = nullptr;
+
+		GameObject* test = nullptr;
+
+		switch (AnimState)
 		{
+		case A_PLAY:
+
+			if (ActualClip != nullptr)
+			{
+				animetime += dt;
+				animetime += TicksPerSecond / resourceAnim->duration;
+				if (animetime >= ActualClip->EndFrameTime) animetime = ActualClip->EndFrameTime;
+				for (int i = 0; i < resourceAnim->bones.size(); i++)
+				{
+					myGO->FindSiblingOrChildGameObjectWithName(resourceAnim->bones[i]->name.c_str(), test);
+
+					for (int p = 0, a = 1; p < resourceAnim->bones[i]->positionkeys.size(); p++, a++)
+					{
+						SetActualPositionKey(actualposkey, nextposkey, resourceAnim->bones[i], p, animetime);
+
+					}
+					for (int p = 0, a = 1; p < resourceAnim->bones[i]->rotationkeys.size(); p++, a++)
+					{
+						SetActualRotationKey(actualrotkey, nextrotkey, resourceAnim->bones[i], p, animetime);
+					}
+
+					SetBonePosition(test, actualposkey, nextposkey);
+					SetBoneRotation(test, actualrotkey, nextrotkey);
+				}
+
+				if (animetime >= ActualClip->EndFrameTime)
+				{
+					if (ActualClip->Loop == true)
+					{
+						animetime = ActualClip->StartFrameTime;
+						ActualClip->finished = true;
+					}
+					else
+					{
+						ActualClip->finished = true;
+					}
+				}
+				else
+				{
+					ActualClip->finished = false;
+				}
+			}
+
+
+
+			break;
+
+		case A_STOP:
+
+			animetime = 0.0f;
+
+			break;
+
+		case A_BLENDING:
+
+			PositionKey* BLactualposkey = nullptr;
+			PositionKey* BLnextposkey = nullptr;
+
+			RotationKey* BLactualrotkey = nullptr;
+			RotationKey* BLnextrotkey = nullptr;
+
+			blendtime += dt;
 			animetime += dt;
 			animetime += TicksPerSecond / resourceAnim->duration;
-			if (animetime >= ActualClip->EndFrameTime) animetime = ActualClip->EndFrameTime;
+
+			nextanimetime += dt;
+			nextanimetime += TicksPerSecond / resourceAnim->duration;
+
 			for (int i = 0; i < resourceAnim->bones.size(); i++)
 			{
 				myGO->FindSiblingOrChildGameObjectWithName(resourceAnim->bones[i]->name.c_str(), test);
 
-				for (int p = 0, a = 1; p < resourceAnim->bones[i]->positionkeys.size(); p++, a++)
+				for (int p = 0; p < resourceAnim->bones[i]->positionkeys.size(); p++)
 				{
-					SetActualPositionKey(actualposkey, nextposkey, resourceAnim->bones[i], p,animetime);
-					
+					SetActualPositionKey(actualposkey, nextposkey, resourceAnim->bones[i], p, animetime);
+					SetActualPositionKey(BLactualposkey, BLnextposkey, resourceAnim->bones[i], p, nextanimetime);
+
 				}
-				for (int p = 0, a = 1; p < resourceAnim->bones[i]->rotationkeys.size(); p++, a++)
+				for (int p = 0; p < resourceAnim->bones[i]->rotationkeys.size(); p++)
 				{
-					SetActualRotationKey(actualrotkey, nextrotkey, resourceAnim->bones[i],p,animetime);
+					SetActualRotationKey(actualrotkey, nextrotkey, resourceAnim->bones[i], p, animetime);
+					SetActualRotationKey(BLactualrotkey, BLnextrotkey, resourceAnim->bones[i], p, nextanimetime);
 				}
 
-				SetBonePosition(test, actualposkey, nextposkey);
-				SetBoneRotation(test, actualrotkey, nextrotkey);
+				float3 actualPosition = GetBonePosition(test, actualposkey, nextposkey, animetime);
+				Quat actualRotation = GetBoneRotation(test, actualrotkey, nextrotkey, animetime);
+
+				float3 nextPosition = GetBonePosition(test, BLactualposkey, BLnextposkey, nextanimetime);
+				Quat nextRotation = GetBoneRotation(test, BLactualrotkey, BLnextrotkey, nextanimetime);
+
+				float3 position = float3::Lerp(actualPosition, nextPosition, (blendtime / blendingtime));
+				Quat rotation = Quat::Slerp(actualRotation, nextRotation, (blendtime / blendingtime));
+
+				CompTransform* BoneTransform = (CompTransform*)(test->FindComponent(Component_Transform));
+				BoneTransform->SetPosition(position);
+				BoneTransform->SetRotation(rotation);
+
 			}
-			
-			if (animetime >= ActualClip->EndFrameTime)
+
+			if (animetime >= LastClip->EndFrameTime)
 			{
-				if (ActualClip->Loop == true)
-				{
-					animetime = ActualClip->StartFrameTime;
-					ActualClip->finished = true;
-				}
-				else
-				{
-					ActualClip->finished = true;
-				}
+				animetime = LastClip->StartFrameTime;
 			}
-			else
+			if (nextanimetime >= ActualClip->EndFrameTime)
 			{
-				ActualClip->finished = false;
+				nextanimetime = ActualClip->StartFrameTime;
 			}
-		}
-		
-		
 
-		break;
-
-	case A_STOP:
-
-		animetime = 0.0f;
-
-		break;
-
-	case A_BLENDING:
-
-		PositionKey* BLactualposkey = nullptr;
-		PositionKey* BLnextposkey = nullptr;
-
-		RotationKey* BLactualrotkey = nullptr;
-		RotationKey* BLnextrotkey = nullptr;
-
-		blendtime += dt;
-		animetime += dt;
-		animetime += TicksPerSecond / resourceAnim->duration;
-
-		nextanimetime += dt;
-		nextanimetime += TicksPerSecond / resourceAnim->duration;
-
-		for (int i = 0; i < resourceAnim->bones.size(); i++)
-		{
-			myGO->FindSiblingOrChildGameObjectWithName(resourceAnim->bones[i]->name.c_str(), test);
-
-			for (int p = 0; p < resourceAnim->bones[i]->positionkeys.size(); p++)
+			if (blendtime >= blendingtime)
 			{
-				SetActualPositionKey(actualposkey, nextposkey, resourceAnim->bones[i], p,animetime);
-				SetActualPositionKey(BLactualposkey, BLnextposkey, resourceAnim->bones[i], p, nextanimetime);
-
-			}
-			for (int p = 0; p < resourceAnim->bones[i]->rotationkeys.size(); p++)
-			{
-				SetActualRotationKey(actualrotkey, nextrotkey, resourceAnim->bones[i], p,animetime);
-				SetActualRotationKey(BLactualrotkey, BLnextrotkey, resourceAnim->bones[i], p, nextanimetime);
+				LastClip = nullptr;
+				blendtime = 0.0f;
+				AnimState = A_PLAY;
+				animetime = nextanimetime;
 			}
 
-			float3 actualPosition = GetBonePosition(test, actualposkey, nextposkey, animetime);
-			Quat actualRotation = GetBoneRotation(test, actualrotkey, nextrotkey, animetime);
 
-			float3 nextPosition = GetBonePosition(test, BLactualposkey, BLnextposkey, nextanimetime);
-			Quat nextRotation = GetBoneRotation(test, BLactualrotkey, BLnextrotkey, nextanimetime);
-
-			float3 position = float3::Lerp(actualPosition, nextPosition, (blendtime/blendingtime));
-			Quat rotation = Quat::Slerp(actualRotation,nextRotation, (blendtime / blendingtime));
-
-			CompTransform* BoneTransform = (CompTransform*)(test->FindComponent(Component_Transform));
-			BoneTransform->SetPosition(position);
-			BoneTransform->SetRotation(rotation);
-				
-		}
-
-		if (animetime >= LastClip->EndFrameTime)
-		{
-			animetime = LastClip->StartFrameTime;
-		}
-		if (nextanimetime >= ActualClip->EndFrameTime)
-		{
-			nextanimetime = ActualClip->StartFrameTime;
-		}
-
-		if (blendtime >= blendingtime)
-		{
-			LastClip = nullptr;
-			blendtime = 0.0f;
-			AnimState = A_PLAY;
-			animetime = nextanimetime;
+			break;
 		}
 
 
-		break;
 	}
-
-	
 	if (drawdebug)	DrawDebug();
 }
 

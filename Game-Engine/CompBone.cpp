@@ -8,6 +8,7 @@
 CompBone::CompBone(MeshBone * bone) : Component(Component_Bone)
 {
 	actualbone = bone;
+
 }
 
 CompBone::~CompBone()
@@ -17,45 +18,48 @@ CompBone::~CompBone()
 
 void CompBone::Update(float dt)
 {
-	if (actualbone != nullptr && MeshToDeform != nullptr)
+	if (App->GetGameStatus() == GameStatus::PLAY)
 	{
-		CompTransform* trans = (CompTransform*)myGO->FindComponent(Component_Transform);
-
-		CompTransform* meshtransform = (CompTransform*)MeshToDeform->getMyGO()->FindComponent(Component_Transform);
-
-		float4x4 bonematrix = trans->GetTransMatrix();
-
-		bonematrix = meshtransform->GetLocalMatrix().Inverted() * bonematrix;
-
-		bonematrix = bonematrix * actualbone->offsetmatrix;
-
-		for (int x = 0; x < actualbone->VertexWeights.size(); x++)
+		if (actualbone != nullptr && MeshToDeform->deformableMesh != nullptr)
 		{
-			int actualvertexpos = (actualbone->VertexWeights[x]->VertexID);
+			CompTransform* trans = (CompTransform*)myGO->FindComponent(Component_Transform);
 
-			float3 originalV(&MeshToDeform->resourceMesh->vertices[actualvertexpos * 3]);
+			CompTransform* meshtransform = (CompTransform*)MeshToDeform->getMyGO()->FindComponent(Component_Transform);
 
-			float3 toAdd = bonematrix.TransformPos(originalV);
+			float4x4 bonematrix = trans->GetTransMatrix();
 
-			MeshToDeform->deformableMesh->vertices[actualvertexpos * 3] += toAdd.x * actualbone->VertexWeights[x]->Weight;
-			MeshToDeform->deformableMesh->vertices[actualvertexpos * 3 + 1] += toAdd.y * actualbone->VertexWeights[x]->Weight;
-			MeshToDeform->deformableMesh->vertices[actualvertexpos * 3 + 2] += toAdd.z * actualbone->VertexWeights[x]->Weight;
+			bonematrix = meshtransform->GetLocalMatrix().Inverted() * bonematrix;
 
-			float3 originalN(&MeshToDeform->resourceMesh->normals[actualvertexpos * 3]);
+			bonematrix = bonematrix * actualbone->offsetmatrix;
 
-			float3 toAddd = bonematrix.TransformPos(originalN);
+			for (int x = 0; x < actualbone->VertexWeights.size(); x++)
+			{
+				int actualvertexpos = (actualbone->VertexWeights[x]->VertexID);
 
-			MeshToDeform->deformableMesh->normals[actualvertexpos * 3] += toAddd.x * actualbone->VertexWeights[x]->Weight;;
-			MeshToDeform->deformableMesh->normals[actualvertexpos * 3 + 1] += toAddd.y * actualbone->VertexWeights[x]->Weight;;
-			MeshToDeform->deformableMesh->normals[actualvertexpos * 3 + 2] += toAddd.z *  actualbone->VertexWeights[x]->Weight;
+				float3 originalV(&MeshToDeform->resourceMesh->vertices[actualvertexpos * 3]);
+
+				float3 toAdd = bonematrix.TransformPos(originalV);
+
+				MeshToDeform->deformableMesh->vertices[actualvertexpos * 3] += toAdd.x * actualbone->VertexWeights[x]->Weight;
+				MeshToDeform->deformableMesh->vertices[actualvertexpos * 3 + 1] += toAdd.y * actualbone->VertexWeights[x]->Weight;
+				MeshToDeform->deformableMesh->vertices[actualvertexpos * 3 + 2] += toAdd.z * actualbone->VertexWeights[x]->Weight;
+
+				float3 originalN(&MeshToDeform->resourceMesh->normals[actualvertexpos * 3]);
+
+				float3 toAddd = bonematrix.TransformPos(originalN);
+
+				MeshToDeform->deformableMesh->normals[actualvertexpos * 3] += toAddd.x * actualbone->VertexWeights[x]->Weight;;
+				MeshToDeform->deformableMesh->normals[actualvertexpos * 3 + 1] += toAddd.y * actualbone->VertexWeights[x]->Weight;;
+				MeshToDeform->deformableMesh->normals[actualvertexpos * 3 + 2] += toAddd.z *  actualbone->VertexWeights[x]->Weight;
+
+			}
+
+			glBindBuffer(GL_ARRAY_BUFFER, MeshToDeform->deformableMesh->idVertices);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * MeshToDeform->deformableMesh->numVertices * 3, MeshToDeform->deformableMesh->vertices, GL_DYNAMIC_DRAW);
+			glBindBuffer(GL_ARRAY_BUFFER, MeshToDeform->deformableMesh->idNormals);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * MeshToDeform->deformableMesh->numVertices * 3, MeshToDeform->deformableMesh->normals, GL_DYNAMIC_DRAW);
 
 		}
-
-		glBindBuffer(GL_ARRAY_BUFFER, MeshToDeform->deformableMesh->idVertices);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * MeshToDeform->deformableMesh->numVertices * 3, MeshToDeform->deformableMesh->vertices, GL_DYNAMIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, MeshToDeform->deformableMesh->idNormals);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * MeshToDeform->deformableMesh->numVertices * 3, MeshToDeform->deformableMesh->normals, GL_DYNAMIC_DRAW);
-
 	}
 	if (drawdebug)
 	{

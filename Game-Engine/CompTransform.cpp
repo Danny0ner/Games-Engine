@@ -251,6 +251,7 @@ void CompTransform::SetRotation(Quat rot)
 void CompTransform::SetScale(float3 scale)
 {
 	this->scale = scale;
+	UpdatePositionMatrix();
 }
 
 float3 CompTransform::GetPosition()

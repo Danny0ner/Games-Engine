@@ -38,19 +38,34 @@ CompMesh::~CompMesh()
 
 void CompMesh::Update(float dt)
 {
-
-	if (bonesplaceds == false)
+	if (App->GetGameStatus() == GameStatus::STOP)
+	{
+		if (deformableMesh != nullptr)
+		{
+			CompTransform* trans = (CompTransform*)myGO->FindComponent(Component_Transform);
+			trans->SetScale(float3(0.105f, 0.105f, 0.105f));									//FBX and DAE files export their bones in a different scale so we need to match the mesh with the rig scaling it. 
+			DeleteDeformableMesh();
+		}
+	}
+	if (App->GetGameStatus() == GameStatus::PLAY)
 	{
 		if (resourceskeleton != nullptr)
 		{
-			PlaceBones();
-			bonesplaceds = true;
-		}
-	}
+			if (bonesplaceds == false)
+			{
+				PlaceBones();
+				bonesplaceds = true;
+			}
 
-	if (deformableMesh != nullptr)
-	{
-		ResetDeformableMesh();
+			if (deformableMesh != nullptr)
+			{
+				ResetDeformableMesh();
+			}
+			else
+			{
+				CreateDeformableMesh();
+			}
+		}
 	}
 }
 
@@ -256,6 +271,12 @@ void CompMesh::CreateDeformableMesh()
 		glGenBuffers(1, (GLuint*)&deformableMesh->idNormals);
 		glBindBuffer(GL_ARRAY_BUFFER, deformableMesh->idNormals);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * deformableMesh->numVertices * 3, deformableMesh->normals, GL_DYNAMIC_DRAW);
+
+		if (myGO != nullptr)
+		{
+			CompTransform* trans = (CompTransform*)myGO->FindComponent(Component_Transform);
+			trans->SetScale(float3(0.01f, 0.01f, 0.01f));									//FBX and DAE files export their bones in a different scale so we need to match the mesh with the rig scaling it. 
+		}
 	}
 }
 
@@ -266,12 +287,25 @@ void CompMesh::ResetDeformableMesh()
 	memcpy(deformableMesh->normals, resourceMesh->normals, deformableMesh->numVertices * 3 * sizeof(float));
 }
 
+void CompMesh::DeleteDeformableMesh()
+{
+	if (deformableMesh->vertices != nullptr)
+	{
+		delete[] deformableMesh->vertices;
+		deformableMesh->vertices = nullptr;
+	}
+	if (deformableMesh->normals != nullptr)
+	{
+		delete[] deformableMesh->normals;
+		deformableMesh->normals = nullptr;
+	}
+	delete deformableMesh;
+	deformableMesh = nullptr;
+}
+
 void CompMesh::PlaceBones()
 {
 
-	CompTransform* trans = (CompTransform*)myGO->FindComponent(Component_Transform);
-	trans->SetScale(float3(0.03f, 0.03f, 0.03f));									//FBX and DAE files export their bones in a different scale so we need to match the mesh with the rig scaling it. 
-	trans->UpdatePositionMatrix();
 
 	GameObject* bone = nullptr;
 	for (int i = 0; i < resourceskeleton->MeshBones.size(); i++)

@@ -284,6 +284,11 @@ int Application::GetGameStart()
 	return gametime.GameStart.Read();
 }
 
+GameStatus Application::GetGameStatus()
+{
+	return gamestatus;
+}
+
 std::string Application::GetFilenameOfString(std::string file)
 {
 	std::string tmpPath = file;

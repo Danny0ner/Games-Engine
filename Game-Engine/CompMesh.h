@@ -66,6 +66,7 @@ public:
 
 	void CreateDeformableMesh();
 	void ResetDeformableMesh();
+	void DeleteDeformableMesh();
 	void PlaceBones();
 public:
 	DeformableMesh* deformableMesh = nullptr;

@@ -46,10 +46,6 @@ struct RealTime
 	uint	prev_last_sec_frame_count = 0;
 	uint	last_sec_frame_count = 0;
 	Performance	performance;
-
-
-
-
 };
 
 enum GameStatus
@@ -109,6 +105,7 @@ public:
 	void StartGame();
 	int GetEditorDt();
 	int GetGameStart();
+	GameStatus GetGameStatus();
 	float GetDeltaTime();
 	int GetFramesSinceStart();
 	int GetlastFrames();
