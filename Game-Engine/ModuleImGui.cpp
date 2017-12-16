@@ -72,6 +72,19 @@ update_status ModuleImGui::PostUpdate(float dt)
 
 	if (ImGui::BeginMainMenuBar())
 	{
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Load"))
+			{
+				App->editor->LoadScene("Library/Scenes/Scene test.Pochinki");
+			}
+			if (ImGui::MenuItem("Save"))
+			{
+				App->editor->SerializeScene("Scene test");
+			}
+
+			ImGui::EndMenu();
+		}
 		if (ImGui::BeginMenu("Help"))
 		{
 			if (ImGui::MenuItem("Documentation"))

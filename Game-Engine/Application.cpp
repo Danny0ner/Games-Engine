@@ -266,14 +266,13 @@ void Application::StatusSwitch()
 
 void Application::RestartGame()
 {
-	App->editor->LoadScene("Library/Scenes/Scene test.Pochinki");
+	
 
 
 }
 void Application::StartGame()
 {
-	App->editor->SerializeScene("Scene test");
-
+	
 }
 
 int Application::GetEditorDt()
