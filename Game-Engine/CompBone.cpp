@@ -5,10 +5,9 @@
 #include "mmgr\mmgr.h"
 #include "CompTransform.h"
 
-CompBone::CompBone(MeshBone * bone, CompMesh * meshtodeform) : Component(Component_Bone)
+CompBone::CompBone(MeshBone * bone) : Component(Component_Bone)
 {
 	actualbone = bone;
-	MeshToDeform = meshtodeform;
 }
 
 CompBone::~CompBone()
@@ -107,4 +106,9 @@ void CompBone::DebugDraw() const
 	}
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glPopMatrix();
+}
+
+void CompBone::SetMeshToDeform(CompMesh * mesh)
+{
+	MeshToDeform = mesh;
 }

@@ -105,7 +105,6 @@ Component* GameObject::FindComponent(ComponentType type) const
 			return components[i];
 		}
 	}
-
 	return nullptr;
 }
 
@@ -360,6 +359,13 @@ void GameObject::Deserialize(Configuration & dataToLoad)
 			AddComponent(compMat);
 			break;
 		}
+		case Component_Animation:
+		{
+			CompAnimation* compAnim = new CompAnimation();
+			compAnim->OnLoad(componentConfig);
+			AddComponent(compAnim);
+			break;
+		}
 		default:
 		{
 			LOG("Error in component %i of %s, unknown type", &i, name.c_str());
@@ -367,5 +373,5 @@ void GameObject::Deserialize(Configuration & dataToLoad)
 		}
 		}
 	}
-	App->editor->Static_Vector.push_back(this);
+	App->editor->Dynamic_Vector.push_back(this);
 }

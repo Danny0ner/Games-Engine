@@ -47,8 +47,7 @@ update_status ModuleEditor::Update(float dt)
 
 	root->Update(dt);
 
-	if (App->input->GetKey(SDL_SCANCODE_H) == KEY_DOWN) 
-		SerializeScene("Scene test");
+
 	return UPDATE_CONTINUE;
 }
 
@@ -64,9 +63,7 @@ void ModuleEditor::Render()
 	if (selected != nullptr)
 	{
 		selected->ShowInspector();
-		//DrawGuizmo(selected);
 	}
-
 }
 
 void ModuleEditor::ShowEditor()
@@ -112,6 +109,7 @@ void ModuleEditor::ReCreateQuadtree()
 	}
 	AABB Enclosing_Box;
 	Enclosing_Box.SetNegativeInfinity();
+
 	for (std::vector<GameObject*>::const_iterator tmp = Static_Vector.begin(); tmp != Static_Vector.end(); tmp++)
 	{
 		CompMesh* tmpmesh = (CompMesh*)(*tmp)->FindComponent(Component_Mesh);
@@ -279,6 +277,8 @@ void ModuleEditor::LoadScene(const char * fileTitle)
 	if (load.IsValueValid() == true)
 	{
 		root->DeleteChilds();
+		Static_Vector.clear();
+		Dynamic_Vector.clear();
 		selected = nullptr;
 		App->resources->LoadResources(load);
 		for (int i = 0; i < load.GetArraySize("Scene Game Objects"); i++)
@@ -298,7 +298,7 @@ void ModuleEditor::LoadScene(const char * fileTitle)
 	{
 		((CompTransform*)root->childs[i]->FindComponent(Component_Transform))->UpdateChildsTransMatrixNow();
 	}
-	ReCreateQuadtree();
+	//ReCreateQuadtree();
 }
 
 void ModuleEditor::LockInput()			//Locking input from camera//

@@ -21,7 +21,7 @@ CompTransform::CompTransform(float3 pos, float3 scale, Quat rot, ComponentType t
 
 CompTransform::~CompTransform()
 {
-	
+
 }
 
 void CompTransform::Update(float dt)

@@ -192,10 +192,11 @@ void OctreeNode::CollectIntersectionsFrustum(std::vector<GameObject*>& objects, 
 		{
 			CompMesh* tmp = (CompMesh*)(*it)->FindComponent(Component_Mesh);
 			CompTransform* transf = (CompTransform*)(*it)->FindComponent(Component_Transform);
-			AABB Enclosing_Box = tmp->enclosingBox;
-			Enclosing_Box.TransformAsAABB(transf->GetTransMatrix());
+		
 			if (tmp != nullptr)
 			{
+				AABB Enclosing_Box = tmp->enclosingBox;
+				Enclosing_Box.TransformAsAABB(transf->GetTransMatrix());
 				if (primitive.Contains(Enclosing_Box) || primitive.Intersects(Enclosing_Box))
 				{
 					bool found = false;

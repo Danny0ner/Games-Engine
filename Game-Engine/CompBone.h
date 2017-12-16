@@ -10,7 +10,7 @@
 class CompBone : public Component
 {
 public:
-	CompBone(MeshBone* bone, CompMesh* meshtodeform);
+	CompBone(MeshBone* bone);
 
 	~CompBone();
 
@@ -23,8 +23,8 @@ public:
 	void OnLoad(Configuration& data);
 
 	void DebugDraw() const;
-	//void AddResourceByName(std::string filename);
-	//void AddResource(int uid);
+
+	void SetMeshToDeform(CompMesh* mesh);
 
 public:
 	MeshBone* actualbone = nullptr;

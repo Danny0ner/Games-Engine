@@ -18,7 +18,10 @@ CompAnimation::CompAnimation() : Component(Component_Animation)
 
 CompAnimation::~CompAnimation()
 {
-
+	for (std::vector<AnimationClip*>::iterator temp = animationclips.begin(); temp != animationclips.end(); temp++)
+	{
+		RELEASE((*temp));
+	}
 }
 
 void CompAnimation::Update(float dt)
@@ -232,20 +235,50 @@ void CompAnimation::OnEditor()
 
 void CompAnimation::OnSave(Configuration & data) const
 {
-	/*if (resourceMesh != nullptr)
+	if (resourceAnim != nullptr)
 	{
-		data.SetString("ResourceMesh Name", resourceMesh->GetFile());
+		data.SetString("ResourceAnim Name", resourceAnim->GetFile());
 	}
 	else
 	{
-		data.SetString("ResourceMesh Name", "noresource");
-	}*/
+		data.SetString("ResourceAnim Name", "noresource");
+	}
+	data.AddArray("Animation Clips");
+
+	for (std::vector<AnimationClip*>::const_iterator temp = animationclips.begin(); temp != animationclips.end(); temp++)
+	{
+		Configuration AnimClip;
+
+		AnimClip.SetString("Name", (*temp)->name.c_str());
+		AnimClip.SetFloat("StartFrame", (*temp)->StartFrameTime);
+		AnimClip.SetFloat("EndFrame", (*temp)->EndFrameTime);
+		AnimClip.SetBool("Loop", (*temp)->Loop);
+		AnimClip.SetBool("Actually Running", (*temp)->ActuallyRunning);
+		data.AddArrayEntry(AnimClip);
+	}
 
 }
 
 void CompAnimation::OnLoad(Configuration & data)
 {
-	//AddResourceByName(data.GetString("ResourceMesh Name"));
+	AddResourceByName(data.GetString("ResourceAnim Name"));
+
+	for (int i = 0; i < data.GetArraySize("Animation Clips"); i++)
+	{
+		AnimationClip* tmpanimclip = new AnimationClip();
+		Configuration loadAnimClip = data.GetArray("Animation Clips", i);
+
+		tmpanimclip->name = loadAnimClip.GetString("Name");
+		tmpanimclip->StartFrameTime = loadAnimClip.GetFloat("StartFrame");
+		tmpanimclip->EndFrameTime = loadAnimClip.GetFloat("EndFrame");
+		tmpanimclip->Loop = loadAnimClip.GetBool("Loop");
+		tmpanimclip->ActuallyRunning = loadAnimClip.GetBool("Actually Running");
+		if (tmpanimclip->ActuallyRunning == true)
+		{
+			ActualClip = tmpanimclip;
+		}
+		animationclips.push_back(tmpanimclip);
+	}
 }
 
 void CompAnimation::AddResourceByName(std::string filename)
@@ -254,7 +287,7 @@ void CompAnimation::AddResourceByName(std::string filename)
 	if (resourceAnim != nullptr)
 		resourceAnim->LoadToComponent();
 
-	TicksPerSecond = resourceAnim->ticksPerSec;
+	TicksPerSecond = 0.0f;
 }
 
 void CompAnimation::AddResource(int uid)
@@ -264,7 +297,7 @@ void CompAnimation::AddResource(int uid)
 		resourceAnim->LoadToComponent();
 
 	TicksPerSecond = resourceAnim->ticksPerSec;
-	if (resourceAnim->duration / TicksPerSecond <= 1)
+	if (resourceAnim->duration / TicksPerSecond >= 1)
 		TicksPerSecond = 0;
 }
 

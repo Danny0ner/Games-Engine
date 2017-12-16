@@ -161,12 +161,22 @@ void CompMesh::OnSave(Configuration & data) const
 	{
 		data.SetString("ResourceMesh Name", "noresource");
 	}
+	if (resourceskeleton != nullptr)
+	{
+		data.SetString("ResourceSkeleton Name", resourceskeleton->GetFile());
+	}
+	else
+	{
+		data.SetString("ResourceSkeleton Name", "noresource");
+	}
 
 }
 
 void CompMesh::OnLoad(Configuration & data)
 {
 	AddResourceByName(data.GetString("ResourceMesh Name"));
+
+	AddResourceSkeletonByName(data.GetString("ResourceSkeleton Name"));
 }
 
 AABB CompMesh::GetEnclosingBox()
@@ -201,14 +211,20 @@ void CompMesh::AddResourceSkeletonByName(std::string filename)
 {
 	resourceskeleton = (ResourceSkeleton*)App->resources->GetResourceByName(filename.c_str());
 	if (resourceskeleton != nullptr)
+	{
 		resourceskeleton->LoadToComponent();
+		CreateDeformableMesh();
+	}
 }
 
 void CompMesh::AddResourceSkeleton(int uid)
 {
 	resourceskeleton = (ResourceSkeleton*)App->resources->Get(uid);
 	if (resourceskeleton != nullptr)
+	{
 		resourceskeleton->LoadToComponent();
+		CreateDeformableMesh();
+	}
 }
 
 ResourceMesh * CompMesh::GetResourceMesh()
@@ -221,20 +237,23 @@ ResourceMesh * CompMesh::GetResourceMesh()
 
 void CompMesh::CreateDeformableMesh()
 {
-	deformableMesh = new DeformableMesh();
-	deformableMesh->vertices = new float[resourceMesh->numVertices * 3 * sizeof(float)];
-	memcpy(deformableMesh->vertices, resourceMesh->vertices, resourceMesh->numVertices * 3 * sizeof(float));
-	deformableMesh->numVertices = resourceMesh->numVertices;
-	deformableMesh->normals = new float[resourceMesh->numVertices * 3 * sizeof(float)];
-	memcpy(deformableMesh->normals, resourceMesh->normals, resourceMesh->numVertices * 3 * sizeof(float));
-	
-	glGenBuffers(1, (GLuint*)&deformableMesh->idVertices);
-	glBindBuffer(GL_ARRAY_BUFFER, deformableMesh->idVertices);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * deformableMesh->numVertices * 3, deformableMesh->vertices, GL_DYNAMIC_DRAW);
-	
-	glGenBuffers(1, (GLuint*)&deformableMesh->idNormals);
-	glBindBuffer(GL_ARRAY_BUFFER, deformableMesh->idNormals);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * deformableMesh->numVertices * 3, deformableMesh->normals, GL_DYNAMIC_DRAW);
+	if (deformableMesh == nullptr)
+	{
+		deformableMesh = new DeformableMesh();
+		deformableMesh->vertices = new float[resourceMesh->numVertices * 3 * sizeof(float)];
+		memcpy(deformableMesh->vertices, resourceMesh->vertices, resourceMesh->numVertices * 3 * sizeof(float));
+		deformableMesh->numVertices = resourceMesh->numVertices;
+		deformableMesh->normals = new float[resourceMesh->numVertices * 3 * sizeof(float)];
+		memcpy(deformableMesh->normals, resourceMesh->normals, resourceMesh->numVertices * 3 * sizeof(float));
+
+		glGenBuffers(1, (GLuint*)&deformableMesh->idVertices);
+		glBindBuffer(GL_ARRAY_BUFFER, deformableMesh->idVertices);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * deformableMesh->numVertices * 3, deformableMesh->vertices, GL_DYNAMIC_DRAW);
+
+		glGenBuffers(1, (GLuint*)&deformableMesh->idNormals);
+		glBindBuffer(GL_ARRAY_BUFFER, deformableMesh->idNormals);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * deformableMesh->numVertices * 3, deformableMesh->normals, GL_DYNAMIC_DRAW);
+	}
 }
 
 void CompMesh::ResetDeformableMesh()
@@ -248,14 +267,15 @@ void CompMesh::PlaceBones()
 {
 
 	CompTransform* trans = (CompTransform*)myGO->FindComponent(Component_Transform);
-	trans->SetScale(float3(0.03f, 0.03f, 0.03f));
+	trans->SetScale(float3(0.03f, 0.03f, 0.03f));									//FBX and DAE files export their bones in a different scale so we need to match the mesh with the rig scaling it. 
 	trans->UpdatePositionMatrix();
 
 	GameObject* bone = nullptr;
 	for (int i = 0; i < resourceskeleton->MeshBones.size(); i++)
 	{
 		myGO->GetParent()->FindSiblingOrChildGameObjectWithName(resourceskeleton->MeshBones[i]->name.c_str(), bone);
-		CompBone* tempbone = new CompBone(resourceskeleton->MeshBones[i], this);
+		CompBone* tempbone = new CompBone(resourceskeleton->MeshBones[i]);
+		tempbone->SetMeshToDeform(this);
 		bone->AddComponent(tempbone);
 	}
 }
