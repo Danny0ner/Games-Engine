@@ -222,6 +222,7 @@ void CompTransform::UpdateChildsTransMatrixNow()
 void CompTransform::SetPosition(float3 pos)
 {
 	position = pos;
+	UpdatePositionMatrix();
 }
 
 void CompTransform::SetRotation(float4 rot)
@@ -232,6 +233,7 @@ void CompTransform::SetRotation(float4 rot)
 	rotation.z = rot.z;
 	eulerrot = rotation.ToEulerXYZ();
 	eulerrot *= RADTODEG;
+	UpdatePositionMatrix();
 
 }
 void CompTransform::SetRotation(Quat rot)
@@ -242,6 +244,7 @@ void CompTransform::SetRotation(Quat rot)
 	rotation.z = rot.z;
 	eulerrot = rotation.ToEulerXYZ();
 	eulerrot *= RADTODEG;
+	UpdatePositionMatrix();
 
 }
 

@@ -19,18 +19,21 @@ CompMesh::CompMesh() : Component(Component_Mesh)
 
 CompMesh::~CompMesh()
 {
-	if (deformableMesh->vertices != nullptr)
+	if (deformableMesh != nullptr)
 	{
-		delete[] deformableMesh->vertices;
-		deformableMesh->vertices = nullptr;
+		if (deformableMesh->vertices != nullptr)
+		{
+			delete[] deformableMesh->vertices;
+			deformableMesh->vertices = nullptr;
+		}
+		if (deformableMesh->normals != nullptr)
+		{
+			delete[] deformableMesh->normals;
+			deformableMesh->normals = nullptr;
+		}
+		delete deformableMesh;
+		deformableMesh = nullptr;
 	}
-	if (deformableMesh->normals != nullptr)
-	{
-		delete[] deformableMesh->normals;
-		deformableMesh->normals = nullptr;
-	}
-	delete deformableMesh;
-	deformableMesh = nullptr;
 }
 
 void CompMesh::Update(float dt)
