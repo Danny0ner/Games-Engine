@@ -27,7 +27,7 @@ CompAnimation::~CompAnimation()
 
 void CompAnimation::AnimationMoves()
 {
-	if (animationclips[0] != nullptr && animationclips[1] != nullptr && animationclips[2] != nullptr)
+	if (animationclips.size() >= 3)
 	{
 		if (ActualClip == animationclips[2] && ActualClip->finished == true)
 		{
@@ -224,7 +224,7 @@ void CompAnimation::OnEditor()
 			ImGui::DragFloat("TicksPerSec", &TicksPerSecond, 0.01, 0, 60);
 			ImGui::Checkbox("Interpolation", &Interpolation);
 			ImGui::DragFloat("Blending Time", &blendingtime, 0.10, 0.1, 10);
-			if(ImGui::Button("Create Animation Clip",ImVec2(40, 25)))
+			if(ImGui::Button("Create Animation Clip",ImVec2(125, 25)))
 			{
 				AnimationClip* tempanimclip = new AnimationClip();
 				tempanimclip->name += std::to_string(animationclips.size()).c_str();
@@ -259,7 +259,6 @@ void CompAnimation::OnEditor()
 								if (j != i)
 								{
 									animationclips[j]->ActuallyRunning = false;
-
 								}
 							}
 							if (ActualClip != nullptr)

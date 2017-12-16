@@ -240,7 +240,6 @@ void Application::StatusSwitch()
 	}
 	else if (gamestatus == PAUSE)
 	{
-		
 		gametime.TimeScale = 0.0f;
 		gametime.GameStart.Pause();
 	}
@@ -256,9 +255,7 @@ void Application::StatusSwitch()
 	}
 	else if (gamestatus == NEXTFRAME)
 	{
-		
 		gametime.TimeScale = 0.0f;
-
 	}
 
 

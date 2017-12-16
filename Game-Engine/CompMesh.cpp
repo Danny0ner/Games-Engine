@@ -158,7 +158,6 @@ void CompMesh::OnEditor()
 			ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Indexes ID: %i", resourceMesh->idIndices);
 			ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Num Indexes: %i", resourceMesh->numIndices);
 			ImGui::TextColored({ 1.0f, 0.85f, 0.0f ,1 }, "Resource reference counting: %i", resourceMesh->GetReferenceCount());
-			if (ImGui::Checkbox("Debug Draw", &drawdebug)) {}
 		}
 		if(ImGui::BeginMenu("Change Mesh", &ChangingMesh))
 		{

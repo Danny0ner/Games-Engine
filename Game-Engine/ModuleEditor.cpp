@@ -34,6 +34,7 @@ bool ModuleEditor::Start()
 	root->AddComponent(cam);
 	Quadroot = new Octree(AABB(float3(-100, -20, -100), float3(100, 120, 100)));
 	
+	LoadScene("Library/Scenes/Scene test.Pochinki");
 	
 	return true;
 }

@@ -364,15 +364,6 @@ update_status ModuleImGui::PostUpdate(float dt)
 			{
 				App->Stop();
 			}
-			ImGui::SameLine();
-			if (ImGui::Button("NextFrame", ImVec2(70, 25)))
-			{
-				App->NextFrame();
-			}
-
-			
-
-			
 			ImGui::End();
 			ImGui::PopStyleColor();
 	}
