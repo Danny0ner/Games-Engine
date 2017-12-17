@@ -184,12 +184,16 @@ update_status ModuleCamera3D::Update(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
 	{
 		if (App->editor->selected != nullptr)
-		{	
+		{
+
 			CompMesh* tmpMesh = (CompMesh*)App->editor->selected->FindComponent(Component_Mesh);
-			CompTransform* tmpTrans = (CompTransform*)App->editor->selected->FindComponent(Component_Transform);
-			AABB	tempAABB = tmpMesh->enclosingBox;
-			tempAABB.TransformAsAABB(tmpTrans->GetTransMatrix());
-			CenterCameraToGeometry(tempAABB);
+			if (tmpMesh != nullptr)
+			{
+				CompTransform* tmpTrans = (CompTransform*)App->editor->selected->FindComponent(Component_Transform);
+				AABB	tempAABB = tmpMesh->enclosingBox;
+				tempAABB.TransformAsAABB(tmpTrans->GetTransMatrix());
+				CenterCameraToGeometry(tempAABB);
+			}
 		}
 	}
 	

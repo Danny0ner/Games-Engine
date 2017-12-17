@@ -187,21 +187,45 @@ void ModuleEditor::TestRay(const LineSegment& Segment, float& Distance, GameObje
 			float LocalHitPoint;
 			if (Mesh->resourceMesh->numIndices > 9 || Mesh->resourceMesh->numVertices % 3 == 0)
 			{
-				for (int i = 0; i < Mesh->resourceMesh->numIndices; i += 3)
+				if (Mesh->deformableMesh == nullptr)
 				{
-					Triangle face(float3(Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i] * 3], Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i] * 3 + 1], Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i] * 3 + 2]),
-						float3(Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i + 1] * 3], Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i + 1] * 3 + 1], Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i + 1] * 3 + 2]),
-						float3(Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i + 2] * 3], Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i + 2] * 3 + 1], Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i + 2] * 3 + 2]));
-
-					float LocalDistance = 0;
-					float3 LocalHitPoint;
-					LocalHitPoint.x = 0; LocalHitPoint.y = 0; LocalHitPoint.z = 0;
-					if (SegmentLocal.Intersects(face, &LocalDistance, &LocalHitPoint))
+					for (int i = 0; i < Mesh->resourceMesh->numIndices; i += 3)
 					{
-						if (LocalDistance < Distance)
+						Triangle face(float3(Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i] * 3], Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i] * 3 + 1], Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i] * 3 + 2]),
+							float3(Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i + 1] * 3], Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i + 1] * 3 + 1], Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i + 1] * 3 + 2]),
+							float3(Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i + 2] * 3], Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i + 2] * 3 + 1], Mesh->resourceMesh->vertices[Mesh->resourceMesh->indices[i + 2] * 3 + 2]));
+
+						float LocalDistance = 0;
+						float3 LocalHitPoint;
+						LocalHitPoint.x = 0; LocalHitPoint.y = 0; LocalHitPoint.z = 0;
+						if (SegmentLocal.Intersects(face, &LocalDistance, &LocalHitPoint))
 						{
-							Distance = LocalDistance;
-							Select = (*tmp);
+							if (LocalDistance < Distance)
+							{
+								Distance = LocalDistance;
+								Select = (*tmp);
+							}
+						}
+					}
+				}
+				else
+				{
+					for (int i = 0; i < Mesh->resourceMesh->numIndices; i += 3)
+					{
+						Triangle face(float3(Mesh->deformableMesh->vertices[Mesh->resourceMesh->indices[i] * 3] * transf->GetScale().x, Mesh->deformableMesh->vertices[Mesh->resourceMesh->indices[i] * 3 + 1] * transf->GetScale().y, Mesh->deformableMesh->vertices[Mesh->resourceMesh->indices[i] * 3 + 2] * transf->GetScale().x),
+							float3(Mesh->deformableMesh->vertices[Mesh->resourceMesh->indices[i + 1] * 3] * transf->GetScale().x, Mesh->deformableMesh->vertices[Mesh->resourceMesh->indices[i + 1] * 3 + 1] * transf->GetScale().y, Mesh->deformableMesh->vertices[Mesh->resourceMesh->indices[i + 1] * 3 + 2] * transf->GetScale().y),
+							float3(Mesh->deformableMesh->vertices[Mesh->resourceMesh->indices[i + 2] * 3] * transf->GetScale().x, Mesh->deformableMesh->vertices[Mesh->resourceMesh->indices[i + 2] * 3 + 1] * transf->GetScale().z, Mesh->deformableMesh->vertices[Mesh->resourceMesh->indices[i + 2] * 3 + 2]* transf->GetScale().z));
+
+						float LocalDistance = 0;
+						float3 LocalHitPoint;
+						LocalHitPoint.x = 0; LocalHitPoint.y = 0; LocalHitPoint.z = 0;
+						if (SegmentLocal.Intersects(face, &LocalDistance, &LocalHitPoint))
+						{
+							if (LocalDistance < Distance)
+							{
+								Distance = LocalDistance;
+								Select = (*tmp);
+							}
 						}
 					}
 				}

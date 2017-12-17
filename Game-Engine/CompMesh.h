@@ -56,6 +56,8 @@ public:
 	AABB GetEnclosingBox();
 	void CreateEnclosingBox();
 
+	void CreateDeformableMeshEnclosingBox();
+
 	void AddResourceByName(std::string filename);
 	void AddResource(int uid);
 

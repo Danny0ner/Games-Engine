@@ -38,13 +38,16 @@ CompMesh::~CompMesh()
 
 void CompMesh::Update(float dt)
 {
+	
 	if (App->GetGameStatus() == GameStatus::STOP)
 	{
 		if (deformableMesh != nullptr)
 		{
 			CompTransform* trans = (CompTransform*)myGO->FindComponent(Component_Transform);
-			trans->SetScale(float3(0.105f, 0.105f, 0.105f));									//FBX and DAE files export their bones in a different scale so we need to match the mesh with the rig scaling it. 
+			float3 parentscale = myGO->GetParent()->GetScale();
+			trans->SetScale(parentscale);									//FBX and DAE files export their bones in a different scale so we need to match the mesh with the rig scaling it. 
 			DeleteDeformableMesh();
+			CreateEnclosingBox();
 		}
 	}
 	if (App->GetGameStatus() == GameStatus::PLAY)
@@ -59,11 +62,14 @@ void CompMesh::Update(float dt)
 
 			if (deformableMesh != nullptr)
 			{
+				CreateDeformableMeshEnclosingBox();
 				ResetDeformableMesh();
+				//Used to update the deformablemesh after moving/animating it
 			}
 			else
 			{
 				CreateDeformableMesh();
+				CreateDeformableMeshEnclosingBox();
 			}
 		}
 	}
@@ -207,6 +213,15 @@ void CompMesh::CreateEnclosingBox()
 	{
 		enclosingBox.SetNegativeInfinity();
 		enclosingBox.Enclose((float3*)resourceMesh->vertices, resourceMesh->numVertices);
+	}
+}
+
+void CompMesh::CreateDeformableMeshEnclosingBox()
+{
+	if (resourceMesh != nullptr && deformableMesh != nullptr)
+	{
+		enclosingBox.SetNegativeInfinity();
+		enclosingBox.Enclose((float3*)deformableMesh->vertices, deformableMesh->numVertices);
 	}
 }
 
