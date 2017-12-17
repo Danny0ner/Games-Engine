@@ -33,6 +33,8 @@ void CompAnimation::AnimationMoves()
 		{
 			LastClip = ActualClip;
 			ActualClip = animationclips[0];
+			LastClip->ActuallyRunning = false;
+			ActualClip->ActuallyRunning = true;
 			AnimState = A_BLENDING;
 			nextanimetime = ActualClip->StartFrameTime;
 		}
@@ -41,6 +43,8 @@ void CompAnimation::AnimationMoves()
 		{
 			LastClip = ActualClip;
 			ActualClip = animationclips[1];
+			LastClip->ActuallyRunning = false;
+			ActualClip->ActuallyRunning = true;
 			AnimState = A_BLENDING;
 			nextanimetime = ActualClip->StartFrameTime;
 		}
@@ -48,6 +52,8 @@ void CompAnimation::AnimationMoves()
 		{
 			LastClip = ActualClip;
 			ActualClip = animationclips[0];
+			LastClip->ActuallyRunning = false;
+			ActualClip->ActuallyRunning = true;
 			AnimState = A_BLENDING;
 			nextanimetime = ActualClip->StartFrameTime;
 		}
@@ -55,6 +61,8 @@ void CompAnimation::AnimationMoves()
 		{
 			LastClip = ActualClip;
 			ActualClip = animationclips[2];
+			LastClip->ActuallyRunning = false;
+			ActualClip->ActuallyRunning = true;
 			AnimState = A_BLENDING;
 			nextanimetime = ActualClip->StartFrameTime;
 			ActualClip->finished = false;
@@ -267,6 +275,12 @@ void CompAnimation::OnEditor()
 								ActualClip = animationclips[i];
 								AnimState = A_BLENDING;
 								nextanimetime = ActualClip->StartFrameTime;
+							}
+							if (ActualClip == nullptr)
+							{
+								ActualClip = animationclips[i];
+								AnimState = A_PLAY;
+								animetime = animationclips[i]->StartFrameTime;
 							}
 						}
 					}
