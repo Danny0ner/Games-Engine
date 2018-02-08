@@ -20,6 +20,7 @@ struct AnimationClip
 	float EndFrameTime = 0.0f;
 	bool ActuallyRunning = false;
 	bool finished = true;
+	uint actualpos[2];
 };
 
 class CompAnimation : public Component
@@ -50,6 +51,7 @@ public:
 
 	float3 GetBonePosition(GameObject* Bone, PositionKey* ActualPos, PositionKey* NextPos, float time);
 	Quat GetBoneRotation(GameObject* Bone, RotationKey* ActualRot, RotationKey* NextRot, float time);
+
 
 	ResourceAnimation * GetResourceAnim();
 

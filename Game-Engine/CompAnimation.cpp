@@ -93,7 +93,9 @@ void CompAnimation::Update(float dt)
 			{
 				animetime += dt;
 				animetime += TicksPerSecond / resourceAnim->duration;
+
 				if (animetime >= ActualClip->EndFrameTime) animetime = ActualClip->EndFrameTime;
+
 				for (int i = 0; i < resourceAnim->bones.size(); i++)
 				{
 					myGO->FindSiblingOrChildGameObjectWithName(resourceAnim->bones[i]->name.c_str(), test);
@@ -101,7 +103,6 @@ void CompAnimation::Update(float dt)
 					for (int p = 0, a = 1; p < resourceAnim->bones[i]->positionkeys.size(); p++, a++)
 					{
 						SetActualPositionKey(actualposkey, nextposkey, resourceAnim->bones[i], p, animetime);
-
 					}
 					for (int p = 0, a = 1; p < resourceAnim->bones[i]->rotationkeys.size(); p++, a++)
 					{
@@ -129,9 +130,6 @@ void CompAnimation::Update(float dt)
 					ActualClip->finished = false;
 				}
 			}
-
-
-
 			break;
 
 		case A_STOP:
@@ -202,8 +200,6 @@ void CompAnimation::Update(float dt)
 				AnimState = A_PLAY;
 				animetime = nextanimetime;
 			}
-
-
 			break;
 		}
 
@@ -443,6 +439,7 @@ void CompAnimation::SetActualPositionKey(PositionKey * &Actual, PositionKey * &N
 	if (time == 0)
 	{
 		Actual = bone->positionkeys[0];
+
 		if (bone->positionkeys.size() > 1)
 		{
 			Next = bone->positionkeys[1];

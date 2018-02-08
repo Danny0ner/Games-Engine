@@ -3,6 +3,8 @@
 #include "Resource.h"
 #include "MathGeo\MathGeoLib.h"
 
+struct AnimationClip;
+
 struct PositionKey 
 {
 	float time;
@@ -15,23 +17,24 @@ struct RotationKey
 	float4 rotation;
 };
 
-struct Bone
+class Bone
 {
+public:
+	void UpdateBone(float time, const std::vector<AnimationClip*>& clip_vec);
+	~Bone();
+
+private:
+
+	float3 GetPosition(float time, const std::vector<AnimationClip*>& clip_vec);
+	Quat GetRotation(float time, const std::vector<AnimationClip*>& clip_vec);
+	float3 GetScale(float time, const std::vector<AnimationClip*>& clip_vec);
+
+	GameObject* linked_go = nullptr;
+
 	std::string name;
 
 	std::vector<PositionKey*> positionkeys;
 	std::vector<RotationKey*> rotationkeys;
-	~Bone()
-	{
-		for (std::vector<PositionKey*>::iterator temp = positionkeys.begin(); temp != positionkeys.end(); temp++)
-		{
-			RELEASE((*temp));
-		}
-		for (std::vector<RotationKey*>::iterator temp = rotationkeys.begin(); temp != rotationkeys.end(); temp++)
-		{
-			RELEASE((*temp));
-		}
-	};
 };
 
 class ResourceAnimation : public Resource
@@ -50,6 +53,4 @@ public:
 	float ticksPerSec;
 
 	std::vector<Bone*> bones;
-
-
 };
