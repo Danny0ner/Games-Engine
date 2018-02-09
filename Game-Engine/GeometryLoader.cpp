@@ -150,6 +150,21 @@ bool GeometryLoader::ImportAnimation(const aiAnimation * animation)
 				rotationKey.AddArrayFloat("Rotation", &animation->mChannels[y]->mRotationKeys[x].mValue.w, 4);
 				AnimBone.AddArrayEntry(rotationKey);
 			}
+			AnimBone.AddArray("ScaleKeys");
+			for (int x = 0; x < animation->mChannels[y]->mNumScalingKeys; x++)
+			{
+				ScaleKey* tempscakey = new ScaleKey();
+				tempscakey->time = animation->mChannels[y]->mScalingKeys[x].mTime;
+				tempscakey->scale.x = animation->mChannels[y]->mScalingKeys[x].mValue.x;
+				tempscakey->scale.y = animation->mChannels[y]->mScalingKeys[x].mValue.y;
+				tempscakey->scale.z = animation->mChannels[y]->mScalingKeys[x].mValue.z;
+				tempbone->scalekeys.push_back(tempscakey);
+
+				Configuration scalekey;
+				scalekey.SetFloat("Time", animation->mChannels[y]->mScalingKeys[x].mTime);
+				scalekey.AddArrayFloat("scale", &animation->mChannels[y]->mScalingKeys[x].mValue.x, 3);
+				AnimBone.AddArrayEntry(scalekey);
+			}
 			save.AddArrayEntry(AnimBone);
 			tmpanim->bones.push_back(tempbone);
 		}

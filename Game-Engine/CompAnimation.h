@@ -5,6 +5,7 @@
 #include "Component.h"
 #include "MathGeo\Geometry\AABB.h"
 #include "ResourceAnimation.h"
+#include <map>
 
 enum AnimationState
 {
@@ -21,6 +22,8 @@ struct AnimationClip
 	bool ActuallyRunning = false;
 	bool finished = true;
 	uint actualpos[2];
+	uint actualrot[2];
+	uint actualscale[2];
 };
 
 class CompAnimation : public Component
@@ -70,5 +73,9 @@ public:
 	AnimationClip* ActualClip = nullptr;
 	AnimationClip* LastClip = nullptr;
 	AnimationState AnimState=A_PLAY;
+
+	bool bonesplaceds = false;
+
+	std::map<const char*, GameObject*> bonesGOs;
 };
 #endif

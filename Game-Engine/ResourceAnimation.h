@@ -17,24 +17,27 @@ struct RotationKey
 	float4 rotation;
 };
 
+struct ScaleKey
+{
+	float time;
+	float3 scale;
+};
+
 class Bone
 {
 public:
 	void UpdateBone(float time, const std::vector<AnimationClip*>& clip_vec);
 	~Bone();
 
-private:
-
 	float3 GetPosition(float time, const std::vector<AnimationClip*>& clip_vec);
 	Quat GetRotation(float time, const std::vector<AnimationClip*>& clip_vec);
 	float3 GetScale(float time, const std::vector<AnimationClip*>& clip_vec);
-
-	GameObject* linked_go = nullptr;
 
 	std::string name;
 
 	std::vector<PositionKey*> positionkeys;
 	std::vector<RotationKey*> rotationkeys;
+	std::vector<ScaleKey*> scalekeys;
 };
 
 class ResourceAnimation : public Resource

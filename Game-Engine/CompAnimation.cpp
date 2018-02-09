@@ -88,7 +88,15 @@ void CompAnimation::Update(float dt)
 		switch (AnimState)
 		{
 		case A_PLAY:
-
+			if (!bonesplaceds)
+			{
+				for (int i = 0; i < resourceAnim->bones.size(); i++)
+				{
+					myGO->FindSiblingOrChildGameObjectWithName(resourceAnim->bones[i]->name.c_str(), test);
+					bonesGOs[resourceAnim->bones[i]->name.c_str()] = test;
+				}
+				bonesplaceds = true;
+			}
 			if (ActualClip != nullptr)
 			{
 				animetime += dt;
@@ -98,7 +106,7 @@ void CompAnimation::Update(float dt)
 
 				for (int i = 0; i < resourceAnim->bones.size(); i++)
 				{
-					myGO->FindSiblingOrChildGameObjectWithName(resourceAnim->bones[i]->name.c_str(), test);
+					test = bonesGOs[resourceAnim->bones[i]->name.c_str()];
 
 					for (int p = 0, a = 1; p < resourceAnim->bones[i]->positionkeys.size(); p++, a++)
 					{
