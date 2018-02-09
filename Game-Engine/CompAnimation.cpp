@@ -14,11 +14,12 @@
 CompAnimation::CompAnimation() : Component(Component_Animation)
 {
 	name = "Animation";
+
 }
 
 CompAnimation::~CompAnimation()
 {
-	for (std::vector<AnimationClip*>::iterator temp = animationclips.begin(); temp != animationclips.end(); temp++)
+	for (std::vector<AnimationClip*>::iterator temp = animation_clips.begin(); temp != animation_clips.end(); temp++)
 	{
 		RELEASE((*temp));
 	}
@@ -27,54 +28,78 @@ CompAnimation::~CompAnimation()
 
 void CompAnimation::AnimationMoves()
 {
-	if (animationclips.size() >= 3)
+	/*if (animation_clips.size() >= 3)
 	{
-		if (ActualClip == animationclips[2] && ActualClip->finished == true)
+		if (ActualClip == animation_clips[2] && ActualClip->finished == true)
 		{
 			LastClip = ActualClip;
-			ActualClip = animationclips[0];
+			ActualClip = animation_clips[0];
 			LastClip->ActuallyRunning = false;
 			ActualClip->ActuallyRunning = true;
 			AnimState = A_BLENDING;
-			nextanimetime = ActualClip->StartFrameTime;
+			nextanimetime = ActualClip->start_frame_time;
 		}
 
 		if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
 		{
 			LastClip = ActualClip;
-			ActualClip = animationclips[1];
+			ActualClip = animation_clips[1];
 			LastClip->ActuallyRunning = false;
 			ActualClip->ActuallyRunning = true;
 			AnimState = A_BLENDING;
-			nextanimetime = ActualClip->StartFrameTime;
+			nextanimetime = ActualClip->start_frame_time;
 		}
 		if (App->input->GetKey(SDL_SCANCODE_2) == KEY_UP)
 		{
 			LastClip = ActualClip;
-			ActualClip = animationclips[0];
+			ActualClip = animation_clips[0];
 			LastClip->ActuallyRunning = false;
 			ActualClip->ActuallyRunning = true;
 			AnimState = A_BLENDING;
-			nextanimetime = ActualClip->StartFrameTime;
+			nextanimetime = ActualClip->start_frame_time;
 		}
 		if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 		{
 			LastClip = ActualClip;
-			ActualClip = animationclips[2];
+			ActualClip = animation_clips[2];
 			LastClip->ActuallyRunning = false;
 			ActualClip->ActuallyRunning = true;
 			AnimState = A_BLENDING;
-			nextanimetime = ActualClip->StartFrameTime;
+			nextanimetime = ActualClip->start_frame_time;
 			ActualClip->finished = false;
 		}
-	}
+	}*/
 }
 
 
 
 void CompAnimation::Update(float dt)
 {
-	if (App->GetGameStatus() == GameStatus::PLAY)
+	std::vector<AnimationClip*> clips_playing;
+	for (std::vector<AnimationClip*>::const_iterator it = animation_clips.begin(); it != animation_clips.end(); ++it)
+		if ((*it)->state == AnimationState::A_PLAY)
+		{
+			(*it)->time += dt;
+			if ((*it)->time > (*it)->end_frame_time)
+			{
+				if ((*it)->loop == true)
+				{
+					(*it)->RestartAnimationClip();
+
+					clips_playing.push_back(*it);
+				}
+				else
+					(*it)->state = AnimationState::A_STOP;
+			}			
+			else
+				clips_playing.push_back(*it);
+
+		}
+
+	for (std::vector<std::pair<GameObject*,const Bone*>>::iterator it = bone_update_vector.begin(); it != bone_update_vector.end(); ++it)
+		it->second->UpdateBone(it->first, clips_playing);
+
+	/*if (App->GetGameStatus() == GameStatus::PLAY)
 	{
 		AnimationMoves();
 
@@ -90,42 +115,42 @@ void CompAnimation::Update(float dt)
 		case A_PLAY:
 			if (!bonesplaceds)
 			{
-				for (int i = 0; i < resourceAnim->bones.size(); i++)
+				for (int i = 0; i < resource->bones.size(); i++)
 				{
-					myGO->FindSiblingOrChildGameObjectWithName(resourceAnim->bones[i]->name.c_str(), test);
-					bonesGOs[resourceAnim->bones[i]->name.c_str()] = test;
+					myGO->FindSiblingOrChildGameObjectWithName(resource->bones[i]->name.c_str(), test);
+					bonesGOs[resource->bones[i]->name.c_str()] = test;
 				}
 				bonesplaceds = true;
 			}
 			if (ActualClip != nullptr)
 			{
 				animetime += dt;
-				animetime += TicksPerSecond / resourceAnim->duration;
+				animetime += TicksPerSecond / resource->duration;
 
-				if (animetime >= ActualClip->EndFrameTime) animetime = ActualClip->EndFrameTime;
+				if (animetime >= ActualClip->end_frame_time) animetime = ActualClip->end_frame_time;
 
-				for (int i = 0; i < resourceAnim->bones.size(); i++)
+				for (int i = 0; i < resource->bones.size(); i++)
 				{
-					test = bonesGOs[resourceAnim->bones[i]->name.c_str()];
+					test = bonesGOs[resource->bones[i]->name.c_str()];
 
-					for (int p = 0, a = 1; p < resourceAnim->bones[i]->positionkeys.size(); p++, a++)
+					for (int p = 0, a = 1; p < resource->bones[i]->positionkeys.size(); p++, a++)
 					{
-						SetActualPositionKey(actualposkey, nextposkey, resourceAnim->bones[i], p, animetime);
+						SetActualPositionKey(actualposkey, nextposkey, resource->bones[i], p, animetime);
 					}
-					for (int p = 0, a = 1; p < resourceAnim->bones[i]->rotationkeys.size(); p++, a++)
+					for (int p = 0, a = 1; p < resource->bones[i]->rotationkeys.size(); p++, a++)
 					{
-						SetActualRotationKey(actualrotkey, nextrotkey, resourceAnim->bones[i], p, animetime);
+						SetActualRotationKey(actualrotkey, nextrotkey, resource->bones[i], p, animetime);
 					}
 
 					SetBonePosition(test, actualposkey, nextposkey);
 					SetBoneRotation(test, actualrotkey, nextrotkey);
 				}
 
-				if (animetime >= ActualClip->EndFrameTime)
+				if (animetime >= ActualClip->end_frame_time)
 				{
 					if (ActualClip->Loop == true)
 					{
-						animetime = ActualClip->StartFrameTime;
+						animetime = ActualClip->start_frame_time;
 						ActualClip->finished = true;
 					}
 					else
@@ -156,25 +181,25 @@ void CompAnimation::Update(float dt)
 
 			blendtime += dt;
 			animetime += dt;
-			animetime += TicksPerSecond / resourceAnim->duration;
+			animetime += TicksPerSecond / resource->duration;
 
 			nextanimetime += dt;
-			nextanimetime += TicksPerSecond / resourceAnim->duration;
+			nextanimetime += TicksPerSecond / resource->duration;
 
-			for (int i = 0; i < resourceAnim->bones.size(); i++)
+			for (int i = 0; i < resource->bones.size(); i++)
 			{
-				myGO->FindSiblingOrChildGameObjectWithName(resourceAnim->bones[i]->name.c_str(), test);
+				myGO->FindSiblingOrChildGameObjectWithName(resource->bones[i]->name.c_str(), test);
 
-				for (int p = 0; p < resourceAnim->bones[i]->positionkeys.size(); p++)
+				for (int p = 0; p < resource->bones[i]->positionkeys.size(); p++)
 				{
-					SetActualPositionKey(actualposkey, nextposkey, resourceAnim->bones[i], p, animetime);
-					SetActualPositionKey(BLactualposkey, BLnextposkey, resourceAnim->bones[i], p, nextanimetime);
+					SetActualPositionKey(actualposkey, nextposkey, resource->bones[i], p, animetime);
+					SetActualPositionKey(BLactualposkey, BLnextposkey, resource->bones[i], p, nextanimetime);
 
 				}
-				for (int p = 0; p < resourceAnim->bones[i]->rotationkeys.size(); p++)
+				for (int p = 0; p < resource->bones[i]->rotationkeys.size(); p++)
 				{
-					SetActualRotationKey(actualrotkey, nextrotkey, resourceAnim->bones[i], p, animetime);
-					SetActualRotationKey(BLactualrotkey, BLnextrotkey, resourceAnim->bones[i], p, nextanimetime);
+					SetActualRotationKey(actualrotkey, nextrotkey, resource->bones[i], p, animetime);
+					SetActualRotationKey(BLactualrotkey, BLnextrotkey, resource->bones[i], p, nextanimetime);
 				}
 
 				float3 actualPosition = GetBonePosition(test, actualposkey, nextposkey, animetime);
@@ -192,13 +217,13 @@ void CompAnimation::Update(float dt)
 
 			}
 
-			if (animetime >= LastClip->EndFrameTime)
+			if (animetime >= LastClip->end_frame_time)
 			{
-				animetime = LastClip->StartFrameTime;
+				animetime = LastClip->start_frame_time;
 			}
-			if (nextanimetime >= ActualClip->EndFrameTime)
+			if (nextanimetime >= ActualClip->end_frame_time)
 			{
-				nextanimetime = ActualClip->StartFrameTime;
+				nextanimetime = ActualClip->start_frame_time;
 			}
 
 			if (blendtime >= blendingtime)
@@ -213,6 +238,7 @@ void CompAnimation::Update(float dt)
 
 
 	}
+	*/
 	if (drawdebug)	DrawDebug();
 }
 
@@ -226,70 +252,69 @@ void CompAnimation::OnEditor()
 {
 	if (ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_::ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		if (resourceAnim != nullptr)
+		if (resource != nullptr)
 		{
-			ImGui::Text("Name: %s", resourceAnim->name.c_str());
-			ImGui::Text("Duration: %f", resourceAnim->duration);
-			ImGui::Text("TicksPerSec: %f", resourceAnim->ticksPerSec);
-			ImGui::Text("Number of Bones: %i", resourceAnim->bones.size());
-			ImGui::DragFloat("AnimTime", &animetime, 0.01, 0, resourceAnim->duration);
+			ImGui::Text("Name: %s", resource->name.c_str());
+			ImGui::Text("Duration: %f", resource->duration);
+			ImGui::Text("TicksPerSec: %f", resource->ticksPerSec);
+			ImGui::Text("Number of Bones: %i", resource->bones.size());
+			ImGui::DragFloat("AnimTime", &animetime, 0.01, 0, resource->duration);
 			ImGui::DragFloat("TicksPerSec", &TicksPerSecond, 0.01, 0, 60);
 			ImGui::Checkbox("Interpolation", &Interpolation);
 			ImGui::DragFloat("Blending Time", &blendingtime, 0.10, 0.1, 10);
 			if(ImGui::Button("Create Animation Clip",ImVec2(125, 25)))
 			{
 				AnimationClip* tempanimclip = new AnimationClip();
-				tempanimclip->name += std::to_string(animationclips.size()).c_str();
-				tempanimclip->EndFrameTime = resourceAnim->duration;
-				if (animationclips.size() == 0)
+				tempanimclip->name += std::to_string(animation_clips.size()).c_str();
+				tempanimclip->end_frame_time = resource->duration;
+				if (animation_clips.size() == 0)
 				{
 					ActualClip = tempanimclip;
 					tempanimclip->ActuallyRunning = true;
 				}
-				animationclips.push_back(tempanimclip);
+				animation_clips.push_back(tempanimclip);
 			}
-			if (animationclips.size() > 0)
+			if (animation_clips.size() > 0)
 			{
 				ImGui::Separator();
-				for (int i = 0; i < animationclips.size(); i++)
+				for (int i = 0; i < animation_clips.size(); i++)
 				{
-					ImGui::Text(animationclips[i]->name.c_str());
+					ImGui::Text(animation_clips[i]->name.c_str());
 				
 					ImGui::PushID(i);
-					if (ImGui::Checkbox("Loop", &animationclips[i]->Loop)) {}
-					if (ImGui::Checkbox("Actually Running", &animationclips[i]->ActuallyRunning)) 
+					if (ImGui::Checkbox("Loop", &animation_clips[i]->loop)) {}
+					if (ImGui::Checkbox("Actually Running", &animation_clips[i]->ActuallyRunning)) 
 					{
-						if (ActualClip == animationclips[i])
+						if (ActualClip == animation_clips[i])
 						{
 							ActualClip = nullptr;
 							
 						}
 						else
 						{
-							for (uint j = 0; j < animationclips.size(); j++)
+							for (uint j = 0; j < animation_clips.size(); j++)
 							{
 								if (j != i)
 								{
-									animationclips[j]->ActuallyRunning = false;
+									animation_clips[j]->ActuallyRunning = false;
 								}
 							}
 							if (ActualClip != nullptr)
 							{
 								LastClip = ActualClip;
-								ActualClip = animationclips[i];
-								AnimState = A_BLENDING;
-								nextanimetime = ActualClip->StartFrameTime;
+								ActualClip = animation_clips[i];
+								nextanimetime = ActualClip->start_frame_time;
 							}
 							if (ActualClip == nullptr)
 							{
-								ActualClip = animationclips[i];
+								ActualClip = animation_clips[i];
 								AnimState = A_PLAY;
-								animetime = animationclips[i]->StartFrameTime;
+								animetime = animation_clips[i]->start_frame_time;
 							}
 						}
 					}
-					ImGui::DragFloat("Start Frame", &animationclips[i]->StartFrameTime, 0.01, 0, resourceAnim->duration);
-					ImGui::DragFloat("End Frame", &animationclips[i]->EndFrameTime, 0.01, 0, 60);
+					ImGui::DragFloat("Start Frame", &animation_clips[i]->start_frame_time, 0.01, 0, resource->duration);
+					ImGui::DragFloat("End Frame", &animation_clips[i]->end_frame_time, 0.01, 0, 60);
 					ImGui::PopID();
 					ImGui::Separator();
 				}
@@ -308,9 +333,9 @@ void CompAnimation::OnEditor()
 
 void CompAnimation::OnSave(Configuration & data) const
 {
-	if (resourceAnim != nullptr)
+	if (resource != nullptr)
 	{
-		data.SetString("ResourceAnim Name", resourceAnim->GetFile());
+		data.SetString("ResourceAnim Name", resource->GetFile());
 	}
 	else
 	{
@@ -318,14 +343,14 @@ void CompAnimation::OnSave(Configuration & data) const
 	}
 	data.AddArray("Animation Clips");
 
-	for (std::vector<AnimationClip*>::const_iterator temp = animationclips.begin(); temp != animationclips.end(); temp++)
+	for (std::vector<AnimationClip*>::const_iterator temp = animation_clips.begin(); temp != animation_clips.end(); temp++)
 	{
 		Configuration AnimClip;
 
 		AnimClip.SetString("Name", (*temp)->name.c_str());
-		AnimClip.SetFloat("StartFrame", (*temp)->StartFrameTime);
-		AnimClip.SetFloat("EndFrame", (*temp)->EndFrameTime);
-		AnimClip.SetBool("Loop", (*temp)->Loop);
+		AnimClip.SetFloat("StartFrame", (*temp)->start_frame_time);
+		AnimClip.SetFloat("EndFrame", (*temp)->end_frame_time);
+		AnimClip.SetBool("Loop", (*temp)->loop);
 		AnimClip.SetBool("Actually Running", (*temp)->ActuallyRunning);
 		data.AddArrayEntry(AnimClip);
 	}
@@ -342,35 +367,53 @@ void CompAnimation::OnLoad(Configuration & data)
 		Configuration loadAnimClip = data.GetArray("Animation Clips", i);
 
 		tmpanimclip->name = loadAnimClip.GetString("Name");
-		tmpanimclip->StartFrameTime = loadAnimClip.GetFloat("StartFrame");
-		tmpanimclip->EndFrameTime = loadAnimClip.GetFloat("EndFrame");
-		tmpanimclip->Loop = loadAnimClip.GetBool("Loop");
+		tmpanimclip->start_frame_time = loadAnimClip.GetFloat("StartFrame");
+		tmpanimclip->end_frame_time = loadAnimClip.GetFloat("EndFrame");
+		tmpanimclip->loop = loadAnimClip.GetBool("Loop");
 		tmpanimclip->ActuallyRunning = loadAnimClip.GetBool("Actually Running");
 		if (tmpanimclip->ActuallyRunning == true)
 		{
 			ActualClip = tmpanimclip;
 		}
-		animationclips.push_back(tmpanimclip);
+		animation_clips.push_back(tmpanimclip);
 	}
 }
 
 void CompAnimation::AddResourceByName(std::string filename)
 {
-	resourceAnim = (ResourceAnimation*)App->resources->GetResourceByName(filename.c_str());
-	if (resourceAnim != nullptr)
-		resourceAnim->LoadToComponent();
+	resource = (ResourceAnimation*)App->resources->GetResourceByName(filename.c_str());
+	if (resource != nullptr)
+		resource->LoadToComponent();
+
+
+	GameObject* test;
+	for (int i = 0; i < resource->bones.size(); i++)
+	{
+		myGO->FindSiblingOrChildGameObjectWithName(resource->bones[i]->name.c_str(), test);
+		bone_update_vector.push_back(std::make_pair(test, resource->bones[i]));
+	}
+	bonesplaceds = true;
+
 
 	TicksPerSecond = 0.0f;
 }
 
 void CompAnimation::AddResource(int uid)
 {
-	resourceAnim = (ResourceAnimation*)App->resources->Get(uid);
-	if (resourceAnim != nullptr)
-		resourceAnim->LoadToComponent();
+	resource = (ResourceAnimation*)App->resources->Get(uid);
+	if (resource != nullptr)
+		resource->LoadToComponent();
 
-	TicksPerSecond = resourceAnim->ticksPerSec;
-	if (resourceAnim->duration / TicksPerSecond >= 1)
+	GameObject* test;
+	for (int i = 0; i < resource->bones.size(); i++)
+	{
+		myGO->FindSiblingOrChildGameObjectWithName(resource->bones[i]->name.c_str(), test);
+		bone_update_vector.push_back(std::make_pair(test, resource->bones[i]));
+	}
+	bonesplaceds = true;
+
+	TicksPerSecond = resource->ticksPerSec;
+	if (resource->duration / TicksPerSecond >= 1)
 		TicksPerSecond = 0;
 }
 
@@ -618,10 +661,14 @@ Quat CompAnimation::GetBoneRotation(GameObject * Bone, RotationKey * ActualRot, 
 
 ResourceAnimation * CompAnimation::GetResourceAnim()
 {
-	if (resourceAnim != nullptr)
-		return resourceAnim;
+	if (resource != nullptr)
+		return resource;
 	else
 		return nullptr;
 
 }
 
+void AnimationClip::RestartAnimationClip()
+{
+	time = start_frame_time;
+}

@@ -31,6 +31,7 @@ public:
 	float3 GetRotation();
 
 	float4x4 GetLocalMatrix();
+	void SetLocalMatrix(float4x4 matrix);
 private:
 	float3 startposition;
 	float3 position;

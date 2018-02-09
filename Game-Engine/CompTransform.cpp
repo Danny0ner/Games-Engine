@@ -274,3 +274,32 @@ float4x4 CompTransform::GetLocalMatrix()
 {
 	return localmatrix;
 }
+
+void CompTransform::SetLocalMatrix(float4x4 matrix)
+{
+	matrix = TransMatrix;
+
+	float3 pos;
+	Quat rot;
+	float3 scal;
+	TransMatrix.Decompose(pos, rot, scal);
+
+	position = pos;
+	rotation = rot;
+	eulerrot = rotation.ToEulerXYZ();
+	eulerrot *= RADTODEG;
+	scale = scal;
+
+	if (myGO != nullptr)
+	{
+		GameObject* GO = myGO->GetParent();
+
+		CompTransform* transf = dynamic_cast<CompTransform*>(GO->FindComponent(Component_Transform));
+
+		if (transf != nullptr) TransMatrix = transf->GetTransMatrix() * TransMatrix;
+
+	}
+
+	needToUpdate = false;
+	UpdateChildsTransMatrix();
+}

@@ -11,19 +11,20 @@ enum AnimationState
 {
 	A_PLAY,
 	A_STOP,
-	A_BLENDING
+	A_PAUSED
 };
 struct AnimationClip
 {
 	std::string name = "Animation Clip";
-	bool Loop = true;
-	float StartFrameTime = 0.0f;
-	float EndFrameTime = 0.0f;
+	bool loop = true;
+	float time = start_frame_time;
+	float start_frame_time = 0.0f;
+	float end_frame_time = 0.0f;
 	bool ActuallyRunning = false;
 	bool finished = true;
-	uint actualpos[2];
-	uint actualrot[2];
-	uint actualscale[2];
+	AnimationState state = A_PLAY;
+
+	void RestartAnimationClip();
 };
 
 class CompAnimation : public Component
@@ -61,21 +62,24 @@ public:
 	void AnimationMoves(); //Only for the demo
 public:
 	float blendingtime = 0.5f;
+
 	float blendtime = 0.0f;
 	float animetime = 0.0f;
+
 	float nextanimetime = 0.0f;
 	bool drawdebug = false;
 	bool ChangingAnimation = false;
 	bool Interpolation = true;
 	float TicksPerSecond = 0;
-	ResourceAnimation* resourceAnim = nullptr;
-	std::vector<AnimationClip*> animationclips;
+	ResourceAnimation* resource = nullptr;
+	std::vector<AnimationClip*> animation_clips;
 	AnimationClip* ActualClip = nullptr;
 	AnimationClip* LastClip = nullptr;
 	AnimationState AnimState=A_PLAY;
 
 	bool bonesplaceds = false;
 
-	std::map<const char*, GameObject*> bonesGOs;
+	//std::map<const char*, GameObject*> bonesGOs;
+	std::vector<std::pair<GameObject*, const Bone*>> bone_update_vector;
 };
 #endif

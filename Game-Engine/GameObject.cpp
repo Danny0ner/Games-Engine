@@ -130,16 +130,12 @@ void GameObject::DeleteChild(GameObject * todelete)
 
 void GameObject::FindSiblingOrChildGameObjectWithName(const char * name, GameObject* &gameobj)
 {
-
-	if (parent != nullptr)
+	for (int i = 0; i < parent->childs.size(); i++)
 	{
-		for (int i = 0; i < parent->childs.size(); i++)
+		if (strcmp(name, parent->childs[i]->Getname().c_str()) == 0)
 		{
-			if (strcmp(name, parent->childs[i]->Getname().c_str()) == 0)
-			{
-				gameobj = parent->childs[i];
-				return;
-			}
+			gameobj = parent->childs[i];
+			return;
 		}
 	}
 	FindChildGameObjectWithName(name, gameobj);

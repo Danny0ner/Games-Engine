@@ -162,7 +162,7 @@ bool GeometryLoader::ImportAnimation(const aiAnimation * animation)
 
 				Configuration scalekey;
 				scalekey.SetFloat("Time", animation->mChannels[y]->mScalingKeys[x].mTime);
-				scalekey.AddArrayFloat("scale", &animation->mChannels[y]->mScalingKeys[x].mValue.x, 3);
+				scalekey.AddArrayFloat("Scale", &animation->mChannels[y]->mScalingKeys[x].mValue.x, 3);
 				AnimBone.AddArrayEntry(scalekey);
 			}
 			save.AddArrayEntry(AnimBone);
@@ -253,6 +253,16 @@ void GeometryLoader::LoadAnimation(const char * inputFile, ResourceAnimation * a
 				tmprotkey->rotation.y = loadrotkey.GetFloat("Rotation", 2);
 				tmprotkey->rotation.z = loadrotkey.GetFloat("Rotation", 3);
 				tmpbone->rotationkeys.push_back(tmprotkey);
+			}
+			for (int x = 0; x < loadbone.GetArraySize("ScaleKeys"); x++)
+			{
+				ScaleKey* tmpscalekey = new ScaleKey();
+				Configuration loadrotkey = loadbone.GetArray("ScaleKeys", x);
+				tmpscalekey->time = loadrotkey.GetFloat("Time");
+				tmpscalekey->scale.x = loadrotkey.GetFloat("Scale", 0);
+				tmpscalekey->scale.y = loadrotkey.GetFloat("Scale", 1);
+				tmpscalekey->scale.z = loadrotkey.GetFloat("Scale", 2);
+				tmpbone->scalekeys.push_back(tmpscalekey);
 			}
 			anim->bones.push_back(tmpbone);
 		}

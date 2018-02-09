@@ -3,6 +3,7 @@
 #include "Resource.h"
 #include "MathGeo\MathGeoLib.h"
 
+class GameObject;
 struct AnimationClip;
 
 struct PositionKey 
@@ -14,7 +15,7 @@ struct PositionKey
 struct RotationKey
 {
 	float time;
-	float4 rotation;
+	Quat rotation;
 };
 
 struct ScaleKey
@@ -26,12 +27,12 @@ struct ScaleKey
 class Bone
 {
 public:
-	void UpdateBone(float time, const std::vector<AnimationClip*>& clip_vec);
+	void UpdateBone(GameObject* gameobject, std::vector<AnimationClip*>& clip_vec) const;
 	~Bone();
 
-	float3 GetPosition(float time, const std::vector<AnimationClip*>& clip_vec);
-	Quat GetRotation(float time, const std::vector<AnimationClip*>& clip_vec);
-	float3 GetScale(float time, const std::vector<AnimationClip*>& clip_vec);
+	float3 GetPosition(AnimationClip* clip_vec) const;
+	Quat GetRotation(AnimationClip* clip_vec) const;
+	float3 GetScale(AnimationClip* clip_vec) const;
 
 	std::string name;
 
